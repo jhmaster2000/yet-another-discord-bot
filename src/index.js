@@ -5,7 +5,7 @@ import { fileURLToPath } from 'url';
 
 process.on('uncaughtException', err => console.error('<!!!> UNCAUGHT ERROR:', err));
 process.env.VERSION_TIMESTAMP = new Date().valueOf();
-process.env.GIT_HASH = fs.readFileSync('./.git/refs/heads/main').toString().trim(); // comment out this line if not using git
+process.env.GIT_HASH = fs.readFileSync('./.git/refs/heads/master').toString().trim(); // comment out this line if not using git
 process.env.workdir = dirname(fileURLToPath(import.meta.url));
 
 console.info(

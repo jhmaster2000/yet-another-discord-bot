@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "author": "jhmaster (https://github.com/jhmaster2000)",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "type": "module",
   "homepage": "https://github.com/jhmaster2000/yet-another-discord-bot",
   "repository": {
