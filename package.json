@@ -1,0 +1,35 @@
+{
+  "name": "yet-another-discord-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "jhmaster (https://github.com/jhmaster2000)",
+  "license": "MIT",
+  "type": "module",
+  "homepage": "https://github.com/jhmaster2000/yet-another-discord-bot",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jhmaster2000/yet-another-discord-bot.git"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "scripts": {
+    "dev": "nodemon -r dotenv/config --experimental-loader ./hotloader.js src/index.js",
+    "start": "node -r dotenv/config --experimental-loader ./hotloader.js src/index.js"
+  },
+  "dependencies": {
+    "discord.js": "^12.5.3",
+    "dotenv": "^9.0.2",
+    "express": "^4.17.1",
+    "figlet": "^1.5.0",
+    "got": "^9.6.0",
+    "lexure": "^0.17.0",
+    "pretty-ms": "^7.0.1",
+    "ps-node": "^0.1.6",
+    "striptags": "^4.0.0-alpha.2",
+    "utc-date": "^0.0.11"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
