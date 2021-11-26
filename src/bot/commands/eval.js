@@ -11,6 +11,7 @@ export function run(client, message, args) {
     const split = args.flags.has('split') || args.flags.has('s');
     const async = args.flags.has('async') || args.flags.has('a');
     const promises = args.flags.has('promises') || args.flags.has('p');
+    const depth = Number(args.options.get('depth')) || Number(args.options.get('d')) || 0;
 
     try {
         const code = args.ordered.map(arg => {
@@ -25,7 +26,7 @@ export function run(client, message, args) {
                 let asyncEvaled = '⚠️ Failed to set async return value.';
                 await eval(`(async () => { ${code} } )().then(p => asyncEvaled = p);`);
                 if (asyncEvaled === undefined) asyncEvaled = '⚠️ No return value.';
-                if (typeof asyncEvaled !== 'string') asyncEvaled = util.inspect(asyncEvaled, false, 0);
+                if (typeof asyncEvaled !== 'string') asyncEvaled = util.inspect(asyncEvaled, false, depth, false);
                 return message.channel.send(clean(asyncEvaled), { code: 'js', split: split }).catch(e => {
                     message.channel.send('⚠️ AsyncOutput is too long, check console for details! (or use `--split` flag)');
                     console.info(`[ASYNCEVAL_STDOUT] ${asyncEvaled}`);
@@ -40,10 +41,10 @@ export function run(client, message, args) {
 
         let evaled = eval(code);
         if (evaled instanceof Promise && !promises) {
-            evaled = util.inspect(evaled, false, 0, false);
+            evaled = util.inspect(evaled, false, depth, false);
             if (evaled.includes('<pending>') || evaled.includes('{ undefined }')) return;
         }
-        if (typeof evaled !== 'string') evaled = util.inspect(evaled, false, 0, false);
+        if (typeof evaled !== 'string') evaled = util.inspect(evaled, false, depth, false);
 
         return message.channel.send(clean(evaled), { code: 'js', split: split }).catch(e => {
             message.channel.send('⚠️ Output is too long, check console for details! (or use `--split` flag)');
@@ -84,6 +85,16 @@ export const config = {
             a: 'Shortcut for --async',
             s: 'Shortcut for --split',
             p: 'Shortcut for --promises'
+        },
+        options: {
+            depth: {
+                value: '<depth>',
+                info: 'Depth to inspect the output. (Default: 0)'
+            },
+            d: {
+                value: '<depth>',
+                info: 'Shortcut for --depth'
+            }
         }
     }
 }
