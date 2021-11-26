@@ -9,26 +9,24 @@ export function checkPermissions(client, message, cmd, helpCmd) {
     // false-y values = allowed
     // true-y values  = no permission
 
-    if (!selfPerms && !userPerms) return { code: NaN };
+    if (!selfPerms.length && !userPerms.length) return { code: NaN };
 
     if (userPerms.includes('SPECIAL:OWNER')) {
         if (message.author.id !== client.owner.id) {
             if (!helpCmd) message.channel.send('🔒 This is a bot owner only command.');
             return { code: -1 };
         }
-        userPerms = false;
+        userPerms = [];
     }
 
-    if (selfPerms) {
+    if (selfPerms.length) {
         selfPerms.forEach(perm => {
             if (!self.has(perm)) return selfMiss.push(perm);
-            else return;
         });
     }
-    if (userPerms) {
+    if (userPerms.length) {
         userPerms.forEach(perm => {
             if (!user.has(perm)) return userMiss.push(perm);
-            else return;
         });
     }
 
