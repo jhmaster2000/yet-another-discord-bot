@@ -1,5 +1,5 @@
 import Discord from 'discord.js';
-import util from 'util';
+
 const cdnurl = 'https://cdn.discordapp.com/';
 const cdn = {
     icon: (guild, id) => { return `${cdnurl}icons/${guild}/${id}.png?size=4096` },
