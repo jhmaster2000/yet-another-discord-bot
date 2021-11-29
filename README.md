@@ -19,8 +19,8 @@ Random Commit Hash: `000001`
 
 ### Run with Docker
 - Setup `.env` (See: [.env.template](/.env.template))
-- Run `docker build -t yet-another-discord-bot`
-- Run `docker start yet-another-discord-bot`
+- Run `docker build -t yet-another-discord-bot .`
+- Run `docker run yet-another-discord-bot`
 
 ## Differences between running on Windows or Linux
 Feature | Windows | Linux
