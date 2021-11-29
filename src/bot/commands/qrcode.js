@@ -23,16 +23,16 @@ export function run(client, message, args) {
         if (!qrLink) return message.channel.send(`${client.em.xmark} Please provide an image URL with a QR code on it to be scanned!`);
 
         message.channel.send(`${client.em.loadingfast} **Scanning QR Code...**`).then(msg => {
-            got.get(`https://api.qrserver.com/v1/read-qr-code/?fileurl=${encodeURIComponent(qrLink)}`, { timeout: 5000, retry: false }).then(response => {
+            got.get(`https://api.qrserver.com/v1/read-qr-code/?fileurl=${encodeURIComponent(qrLink)}`, { timeout: 15000, retry: false }).then(response => {
                 const scanned = JSON.parse(response.body)[0].symbol[0];
                 let result = `${client.em.check} **QR Scan Result:**\n${RegExp.escapeMarkdown(scanned.data)}`;
 
                 if (!scanned.data) result = `${client.em.xmark} **QR Scan Error:** \`\`\`js\n${scanned.error}\`\`\``;
-                if (scanned.error?.includes('download error')) result = `${client.em.xmark} That is not a valid image URL.`;
+                if (scanned.error?.includes('download error')) result = `${client.em.xmark} That is not a valid image URL. (Download error)`;
 
                 return msg.edit(result);
             }).catch(err => {
-                if (err.code === 'ETIMEDOUT') return msg.edit(`${client.em.xmark} That is not a valid image URL.`);
+                if (err.code === 'ETIMEDOUT') return msg.edit(`${client.em.xmark} That is not a valid image URL. (Timed out)`);
                 if (err.statusCode === 400) return msg.edit(`${client.em.xmark} That is not a valid image URL.`);
                 console.error(err);
                 return msg.edit(`${client.em.xmark} **QR Scan Fatal Error:** \`\`\`js\n${err}\`\`\``);
