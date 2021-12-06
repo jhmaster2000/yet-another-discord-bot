@@ -1,7 +1,7 @@
 {
   "name": "yet-another-discord-bot",
-  "version": "1.0.0",
-  "main": "index.js",
+  "version": "2.0.0",
+  "main": "dist/index.js",
   "author": "jhmaster (https://github.com/jhmaster2000)",
   "license": "Apache-2.0",
   "type": "module",
@@ -11,13 +11,17 @@
     "url": "https://github.com/jhmaster2000/yet-another-discord-bot.git"
   },
   "engines": {
-    "node": ">=14.0.0"
+    "node": ">=16.0.0"
   },
   "scripts": {
-    "dev": "nodemon -r dotenv/config --experimental-loader ./hotloader.js src/index.js",
-    "start": "node -r dotenv/config --experimental-loader ./hotloader.js src/index.js"
+    "start": "node --loader ts-node/esm -r dotenv/config src/index.ts",
+    "deploy": "cross-env RUNNING_JS=1 node -r dotenv/config dist/index.js",
+    "build": "tsc --build .",
+    "js": "npm run build && npm run deploy",
+    "ts": "npm start"
   },
   "dependencies": {
+    "cross-env": "^7.0.3",
     "discord.js": "^12.5.3",
     "dotenv": "^9.0.2",
     "express": "^4.17.1",
@@ -30,6 +34,7 @@
     "utc-date": "^0.0.11"
   },
   "devDependencies": {
-    "nodemon": "^2.0.7"
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.2"
   }
 }
