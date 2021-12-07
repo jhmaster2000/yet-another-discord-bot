@@ -7,7 +7,7 @@ export default function loadEvents(client: Bot): void {
     readdir(join(process.env.workdir!, './bot/events/'), (err, files) => {
         if (err) return console.error(err);
 
-        files = files.filter(file => file.endsWith('.js'));
+        files = files.filter(file => file.endsWith('.js') || file.endsWith('.ts'));
         files.forEach(async file => {
             const eventName = file.split('.')[0];
             let event: any;

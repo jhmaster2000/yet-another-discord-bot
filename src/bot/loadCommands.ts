@@ -11,7 +11,7 @@ export default function loadCommands(client: Bot): void {
     readdir(join(process.env.workdir!, './bot/commands/'), (err, files) => {
         if (err) return console.error(err);
 
-        files = files.filter(file => file.endsWith('.js'));
+        files = files.filter(file => file.endsWith('.js') || file.endsWith('.ts'));
         files.forEach(async (file) => {
             const commandName = file.split('.')[0];
             let command;
