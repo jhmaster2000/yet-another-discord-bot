@@ -1,4 +1,6 @@
-export default function loadCustomEmojis(client) {
+import Bot from './Bot.js';
+
+export default function loadCustomEmojis(client: Bot) {
     /* Emojis */
     client.em = {
         help: '<:help:864200218646675478>',

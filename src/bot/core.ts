@@ -1,12 +1,9 @@
-import Discord from 'discord.js';
+import Bot from './Bot.js';
+
 Error.stackTraceLimit = Number(process.env.STACKTRACE_LIMIT);
 
 /* Client Setup */
-const client = new Discord.Client({ disableMentions: 'everyone', allowedMentions: { parse: ['users'] } });
-
-client.isWin = (process.platform === 'win32');
-client.prefixes = ['plz'];
-if (!process.env.PRODUCTION) client.prefixes = ['pl'];
+const client = new Bot({ disableMentions: 'everyone', allowedMentions: { parse: ['users'] } });
 
 import loadCustomEmojis from './loadCustomEmojis.js'; loadCustomEmojis(client);
 import loadCommands from './loadCommands.js'; loadCommands(client);

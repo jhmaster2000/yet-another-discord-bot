@@ -1,18 +1,19 @@
 import { pathToFileURL } from 'url';
 import { readdir } from 'fs';
 import { join } from 'path';
+import Bot from './Bot.js';
 
-export default function loadEvents(client) {
-    readdir(join(process.env.workdir, './bot/events/'), (err, files) => {
+export default function loadEvents(client: Bot): void {
+    readdir(join(process.env.workdir!, './bot/events/'), (err, files) => {
         if (err) return console.error(err);
 
         files = files.filter(file => file.endsWith('.js'));
         files.forEach(async file => {
             const eventName = file.split('.')[0];
-            let event;
+            let event: any;
             try {
                 Error.stackTraceLimit = 8;
-                event = await import(pathToFileURL(join(process.env.workdir, `./bot/events/${file}`)));
+                event = await import(pathToFileURL(join(process.env.workdir!, `./bot/events/${file}`)).href);
             } catch (err) {
                 return console.error(`EVENT_LOADER > FAILED TO LOAD: ${eventName}`, err);
             }
