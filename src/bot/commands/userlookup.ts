@@ -1,32 +1,34 @@
-import Discord from 'discord.js';
+import Discord, { Message } from 'discord.js';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
 
-export async function run(client, message, args) {
-    args = await args.basic.map(arg => arg.raw);
-    if (!await args[0]) args[0] = await message.author.id; 
+export async function run(client: Bot, message: Message, argsx: Args) {
+    const args = argsx.basic.map(arg => arg.raw);
+    if (!args[0]) args[0] = message.author.id; 
 
     let id;
-    if (await message.mentions.users.first()) id = await message.mentions.users.first().id;
-    else id = await args[0];
+    if (message.mentions.users.first()) id = message.mentions.users.first()!.id;
+    else id = args[0];
 
     let user;
     try {
         user = await client.users.fetch(id);
-    } catch(err) {
+    } catch(err: any) {
         if (err.code === 10013) return message.channel.send(`${client.em.xmark} User does not exist.`);
         else return message.channel.send(`${client.em.xmark} That is not a valid user ID or mention.`);
     }
 
-    let bot = false;
-    if (await user.bot) bot = 'https://cdn.discordapp.com/emojis/856855630727348246.png?v=1';
+    let bot = '';
+    if (user.bot) bot = 'https://cdn.discordapp.com/emojis/856855630727348246.png?v=1';
 
     let badges = [];
-    if (await user.flags) {
-        const flags = await user.flags.serialize();
-        flags.DISCORD_CERTIFIED_MODERATOR = await user.flags.has(1 << 18);
-        if (flags.DISCORD_CERTIFIED_MODERATOR) badges.push(client.em.discord_mod);
+    if (user.flags) {
+        const flags = user.flags.serialize();
+        (<any>flags).DISCORD_CERTIFIED_MODERATOR = user.flags.has(1 << 18);
+        if ((<any>flags).DISCORD_CERTIFIED_MODERATOR) badges.push(client.em.discord_mod);
         if (flags.DISCORD_EMPLOYEE) badges.push(client.em.discord_staff);
         if (flags.DISCORD_PARTNER || flags.PARTNERED_SERVER_OWNER) badges.push(client.em.partner_owner);
-        if (flags.VERIFIED_DEVELOPER || flags.EARLY_VERIFIED_BOT_DEVELOPER) badges.push(client.em.bot_dev);
+        if (flags.VERIFIED_DEVELOPER || (<any>flags).EARLY_VERIFIED_BOT_DEVELOPER) badges.push(client.em.bot_dev);
         if (flags.EARLY_SUPPORTER) badges.push(client.em.early_supporter);
         if (flags.HYPESQUAD_EVENTS) badges.push(client.em.hs_events);
         if (flags.HOUSE_BRAVERY) badges.push(client.em.hs_bravery);
@@ -38,6 +40,7 @@ export async function run(client, message, args) {
     }
 
     let userdata = [];
+    //@ts-ignore // TODO: Refer to sideloadUtils.ts
     userdata.push(`**User Tag:** \`\`${await RegExp.escapeBacktick(await user.tag)}\`\``);
     userdata.push(`**Badges:** ${badges.length ? badges.join(' ') : 'None'}`);
 

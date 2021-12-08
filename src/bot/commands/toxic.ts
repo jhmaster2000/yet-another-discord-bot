@@ -1,9 +1,11 @@
-import Discord from 'discord.js';
+import Discord, { Message } from 'discord.js';
 import got from 'got';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
 
-export function run(client, message, args) {
-    if (!args.basic.length) return message.channel.send(`${client.em.xmark} Missing input.`);
-    args = args.basic.map(arg => arg.raw).join(' ');
+export function run(client: Bot, message: Message, argsx: Args) {
+    if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} Missing input.`);
+    const args = argsx.basic.map(arg => arg.raw).join(' ');
 
     got.post(`https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${process.env.PERSPECTIVE_APIKEY}`, {
         body: `{ comment: { text: '${args}' }, languages: ['en'], requestedAttributes: { TOXICITY:{} } }`,
@@ -31,6 +33,7 @@ export function run(client, message, args) {
         const toxicEmbed = new Discord.MessageEmbed()
             .setColor(color)
             .setTitle(`${label} (${percentFormat(score)}%)`)
+            //@ts-ignore // TODO: Refer to sideloadUtils.ts
             .setDescription(RegExp.escapeMarkdown(args))
             .setFooter(`Requested by ${message.author.tag}`, message.author.displayAvatarURL({ dynamic: true, format: 'png' }))
             .setTimestamp();
@@ -41,7 +44,7 @@ export function run(client, message, args) {
     });
 }
 
-function percentFormat(x) {
+function percentFormat(x: string): string {
     return (parseFloat(x) * 100).toFixed(1);
 }
 
