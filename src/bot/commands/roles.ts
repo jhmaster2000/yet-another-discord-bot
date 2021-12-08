@@ -1,8 +1,10 @@
-import Discord from 'discord.js';
+import Discord, { Message } from 'discord.js';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
 
-export function run(client, message, args) {
-    let rolesData = [];
-    let rolesList = message.guild.roles.cache.sort((roleA, roleB) => roleB.position - roleA.position);
+export function run(client: Bot, message: Message, args: Args) {
+    let rolesData: string[] = [];
+    let rolesList = message.guild!.roles.cache.sort((roleA, roleB) => roleB.position - roleA.position);
     rolesList.forEach(role => rolesData.push(`${role} (${role.members.size} members)`));
 
     if (rolesData.join('\n').length > 2048) return simpleRoles(rolesList, message);
@@ -13,8 +15,8 @@ export function run(client, message, args) {
     return message.channel.send(rolesEmbed);
 }
 
-function simpleRoles(rolesList, message) {
-    let simpleRolesData = [];
+function simpleRoles(rolesList: Discord.Collection<string, Discord.Role>, message: Message) {
+    let simpleRolesData: Discord.Role[] = [];
     rolesList.forEach(role => simpleRolesData.push(role));
 
     if (simpleRolesData.join(', ').length > 2048) return tooManyRoles(simpleRolesData.length, message);
@@ -26,7 +28,7 @@ function simpleRoles(rolesList, message) {
     return message.channel.send(simpleRolesEmbed);
 }
 
-function tooManyRoles(rolesCount, message) {
+function tooManyRoles(rolesCount: number, message: Discord.Message): Promise<Discord.Message> {
     const tooManyRolesEmbed = new Discord.MessageEmbed()
         .setColor(0xFF0000)
         .setTitle(`Roles in this server: (${rolesCount})`)

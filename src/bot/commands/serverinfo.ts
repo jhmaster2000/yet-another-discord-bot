@@ -1,7 +1,9 @@
-import Discord from 'discord.js';
+import Discord, { Message } from 'discord.js';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
 
-export function run(client, message, args) {
-    const guild = message.guild;
+export function run(client: Bot, message: Message, args: Args) {
+    const guild = message.guild!;
     guild.members.fetch();
     const isDiscoverable = guild.features.includes('DISCOVERABLE');
     const isCommunity = guild.features.includes('COMMUNITY');
@@ -16,8 +18,10 @@ export function run(client, message, args) {
 
     const serverEmbed = new Discord.MessageEmbed()
         .setColor(0x27d11a)
+        //@ts-ignore // TODO: Refer to sideloadUtils.ts
         .setTitle(`${partnerBadge}${verifiedBadge}${boostBadge}Server info for ${RegExp.escapeMarkdown(guild.name)}`)
-        .addField(`${client.em.owner} Owner`, `\`\`${RegExp.escapeBacktick(guild.owner.user.tag)}\`\`\t​`, true)
+        //@ts-ignore // TODO: Refer to sideloadUtils.ts
+        .addField(`${client.em.owner} Owner`, `\`\`${RegExp.escapeBacktick(guild.owner!.user.tag)}\`\`\t​`, true)
         .addField('🌎 Region', `\`${guild.region}\``, true)
         .addField(`${client.em.verification} Verify Level`, `\`${guild.verificationLevel.replace(/_/g, ' ')}\``, true)
         .addField(`${client.em.members} Members: \`${guild.members.cache.size}\``, `<:online:819698342690291752>\`${guild.members.cache.filter(m => m.user.presence.status === 'online').size}\` <:idle:819698386465849414>\`${guild.members.cache.filter(m => m.user.presence.status === 'idle').size}\`\n<:offline:819698482415140874>\`${guild.members.cache.filter(m => m.user.presence.status === 'offline').size}\` <:dnd:819698439189299221>\`${guild.members.cache.filter(m => m.user.presence.status === 'dnd').size}\``, true)
@@ -26,7 +30,7 @@ export function run(client, message, args) {
         .addField(`${client.em.roles} Roles: \`${guild.roles.cache.size}\``, '​', true)
         .addField(`${client.em.emojis} Emojis: \`${guild.emojis.cache.size}\``, '​', true)
         .addField(`${client.em.boost} Boosts: \`${guild.premiumSubscriptionCount}\``, '​', true)
-        .setThumbnail(guild.iconURL())
+        .setThumbnail(guild.iconURL()!)
         .setFooter(`Server ID: ${guild.id} • Created on: ${guild.createdAt.toUTCString()}`, message.author.displayAvatarURL({ dynamic: true, format: 'png' }));
     if (guild.description) serverEmbed.setDescription(guild.description);
     return message.channel.send(serverEmbed);

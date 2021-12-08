@@ -1,6 +1,9 @@
 import { spawn } from 'child_process';
+import { Message } from 'discord.js';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
 
-export function run(client, message, args) {
+export function run(client: Bot, message: Message, args: Args) {
     message.channel.send(`${client.em.loadingfast} Restarting...`).then(msg => {
         try {
             const newInstance = spawn('npm', ['start'], {

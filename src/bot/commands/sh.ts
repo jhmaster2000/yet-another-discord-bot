@@ -1,14 +1,17 @@
 import { exec } from 'child_process';
 import util from 'util';
 import ps from 'ps-node';
+import Bot from '../Bot.js';
+import { Message } from 'discord.js';
+import { Args } from '../events/message.js';
 process.env.RUNNING_EXEC_PIDS = '[]';
 
-function killRunningSubprocesses(message) {
-    const runningExecPIDs = JSON.parse(process.env.RUNNING_EXEC_PIDS);
+function killRunningSubprocesses(message: Message): Promise<Message> | undefined {
+    const runningExecPIDs = JSON.parse(process.env.RUNNING_EXEC_PIDS!);
     if (runningExecPIDs.length === 0) return message.channel.send('`No running commands to kill.`');
-    runningExecPIDs.forEach(pid => {
+    runningExecPIDs.forEach((pid: number) => {
         ps.lookup({ ppid: pid }, (err, resultList) => {
-            if (err) throw new Error(err);
+            if (err) throw err;
             const proc = resultList[0];
             if (!proc) return message.channel.send(`\`Failed to locate subprocess of ${pid}. Try again.\``);
             const killed = process.kill(proc.pid);
@@ -18,16 +21,16 @@ function killRunningSubprocesses(message) {
     });
 }
 
-export function run(client, message, args) {
-    if (!args.basic.length) return message.channel.send(`${client.em.xmark} No command given.`);
-    args = args.basic.map(arg => arg.raw);
+export function run(client: Bot, message: Message, argsx: Args) {
+    if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} No command given.`);
+    const args = argsx.basic.map(arg => arg.raw);
     if (args[0] === '^C') return killRunningSubprocesses(message);
 
     message.channel.send(`${client.em.loadingfast} Output:\n\`\`\`xl\n \`\`\``).then(msg => {
         const output = [`${client.em.loadingfast} Output:`, '```xl'];
         const cmd = exec(args.join(' '), { timeout: 30000 }, (error, stdout, stderr) => {
-            const runningExecPIDs = JSON.parse(process.env.RUNNING_EXEC_PIDS);
-            process.env.RUNNING_EXEC_PIDS = util.inspect(runningExecPIDs.filter(pid => pid !== cmd.pid));
+            const runningExecPIDs = JSON.parse(process.env.RUNNING_EXEC_PIDS!);
+            process.env.RUNNING_EXEC_PIDS = util.inspect(runningExecPIDs.filter((pid: number): boolean => pid !== cmd.pid));
             let exitstate = client.em.xmark;
             if (!error) exitstate = client.em.check;
             output.shift();
@@ -43,7 +46,7 @@ export function run(client, message, args) {
                 message.channel.send(output.join('\n'), { split: { prepend: '```xl\n', append: '```' } });
             });
         });
-        let runningExecPIDs = JSON.parse(process.env.RUNNING_EXEC_PIDS);
+        let runningExecPIDs = JSON.parse(process.env.RUNNING_EXEC_PIDS!);
         runningExecPIDs.push(cmd.pid);
         process.env.RUNNING_EXEC_PIDS = util.inspect(runningExecPIDs);
     });

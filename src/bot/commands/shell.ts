@@ -1,14 +1,17 @@
 import { spawn } from 'child_process';
+import { Message } from 'discord.js';
 import ps from 'ps-node';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
 
 let runningCommands = 0;
 const term = spawn('sh');
-process.env.TERM_PID = term.pid;
+process.env.TERM_PID = term.pid?.toString();
 process.env.TERM_KILL_CMD = '0';
 
-function killRunningSubprocess(message, graceful) {
+function killRunningSubprocess(message: Message, graceful: boolean) {
     ps.lookup({ ppid: term.pid }, (err, resultList) => {
-        if (err) throw new Error(err);
+        if (err) throw err;
         if (resultList.length === 0 && runningCommands === 0 && !graceful) return message.channel.send('`No running subprocess to kill.`');
         if (!graceful) process.env.TERM_KILL_CMD = '1';
         resultList.forEach(proc => {
@@ -20,9 +23,9 @@ function killRunningSubprocess(message, graceful) {
     });
 }
 
-export function run(client, message, args) {
-    if (!args.basic.length) return message.channel.send(`${client.em.xmark} No command given. \`[Terminal PID: ${term.pid}]\``);
-    args = args.basic.map(arg => arg.raw);
+export function run(client: Bot, message: Message, argsx: Args) {
+    if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} No command given. \`[Terminal PID: ${term.pid}]\``);
+    const args = argsx.basic.map(arg => arg.raw);
     if (args[0] === '^C') return killRunningSubprocess(message, false);
     if (runningCommands !== 0) return message.channel.send(`\`⚠️ A command is still running!\``);
 
@@ -38,16 +41,16 @@ export function run(client, message, args) {
             output.push(err);
         });
         term.on('error', (error) => {
-            clearInterval(timer);
+            //clearInterval(timer);
             msg.delete();
             return message.channel.send(`${client.em.xmark} Failed to run command: ${error}`);
         });
 
-        term.stdin.setEncoding('utf-8');
+        //term.stdin.setEncoding('utf-8');
         term.stdin.write(`${args.join(' ')}\n`);
 
         ps.lookup({ ppid: term.pid }, (err, resultList) => {
-            if (err) throw new Error(err);
+            if (err) throw err;
             let time = 0;
             let timer = setInterval(() => {
                 time++;
@@ -60,7 +63,7 @@ export function run(client, message, args) {
                 if (time > 300) return endCommand('timeout');
             }, 100);
 
-            function endCommand(reason) {
+            function endCommand(reason: string): void {
                 clearInterval(timer);
                 if (reason === 'timeout') killRunningSubprocess(message, true);
                 process.env.TERM_KILL_CMD = '0';
