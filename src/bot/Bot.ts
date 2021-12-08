@@ -17,6 +17,6 @@ export default class Bot extends Client {
     readonly events: { [eventName: string]: any | any[] } = (<any>this)._events;
     readonly isWin: boolean = process.platform === 'win32';
 
-    paginate: (message: Message, pages: any[], pagesCount: number, timeout: number, startPage: number) => void;
+    paginate: (message: Message, pages: any[], pagesCount: number, timeout?: number, startPage?: number) => void;
     promptYesNo: (from: User, msg: Message, callback: (answer: boolean | null) => void, timeout?: number, reactions?: any) => void;
 }

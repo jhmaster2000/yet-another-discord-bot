@@ -1,32 +1,38 @@
-import Discord from 'discord.js';
+import Discord, { Message } from 'discord.js';
 import got from 'got';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
 
-const Schema = {
-    ///status: String,
-    online: Boolean,
-    motd: String,
-    motd_json: String | Object,
-    favicon: String,
-    error: String | null,
-    players: {
-        max: Number,
-        now: Number,
-        sample: [
-            {
-                name: String,
-                id: String // UUID
-            }
-        ]
-    },
-    server: {
-        name: String,
-        protocol: Number
-    },
-    last_updated: String, // UNIX timestamp (seconds)
-    duration: String // Nanoseconds
+interface MOTDObject {
+    text: string;
+    extra?: MOTDObject[];
+    bold?: true;
+    italic?: true;
+    strikethrough?: true;
+    underlined?: true;
 }
 
-export function run(client, message, args) {
+interface Schema {
+    status: string,
+    online: boolean,
+    motd: string,
+    motd_json: string | MOTDObject,
+    favicon: string,
+    error: string | null,
+    players: {
+        max: number,
+        now: number,
+        sample: ({ name: string, id: string })[]
+    },
+    server: {
+        name: string,
+        protocol: number
+    },
+    last_updated: string, // UNIX timestamp (seconds)
+    duration: string // Nanoseconds
+}
+
+export function run(client: Bot, message: Message, args: Args) {
     if (!args.ordered.length) return message.channel.send(`${client.em.xmark} No Minecraft server IP provided.`);
 
     const ip = args.ordered[0].value.split(':');
@@ -50,7 +56,7 @@ export function run(client, message, args) {
             .addField('Players', `${server.players.now}/${server.players.max}`, true)
             .addField('Version', removeColorCodes(server.server.name).replace(/\|/g, '|\u200B') || '`Unknown`', true)
             .addField('Protocol', server.server.protocol || '`Unknown`', true)
-            .setFooter(`Last Updated ${new Date(server.last_updated * 1000).toUTCString()}`, message.author.avatarURL());
+            .setFooter(`Last Updated ${new Date(server.last_updated * 1000).toUTCString()}`, message.author.avatarURL() ?? undefined);
 
         if (server.favicon) {
             const faviconData = Buffer.from(server.favicon.split(',').slice(1).join(','), 'base64');
@@ -63,7 +69,7 @@ export function run(client, message, args) {
     });
 }
 
-function parseEntry(e) {
+function parseEntry(e: MOTDObject): string {
     let text = e.text;
     if (e.extra) text += e.extra.map(parseEntry).join('');
     if (e.bold && e.italic) text = `***${text}***\u200B`;
@@ -74,7 +80,7 @@ function parseEntry(e) {
     return text;
 }
 
-function parseMOTD(motdjson, motd) {
+function parseMOTD(motdjson: string | MOTDObject, motd: string) {
     if (!motdjson && !motd) return 'A Minecraft Server';
     if (typeof motdjson === 'string') return removeColorCodes(motdjson || motd || 'A Minecraft Server');
     if (!Object.keys(motdjson).length) return removeColorCodes(motd || 'A Minecraft Server');
@@ -82,7 +88,7 @@ function parseMOTD(motdjson, motd) {
     return motdjson.text + motdjson.extra.map(parseEntry).join('');
 }
 
-function removeColorCodes(str) {
+function removeColorCodes(str: string): string {
     return str.includes('§') ? str.replace(/§[a-f\dkrmnlo]/gi, '') : str;
 }
 

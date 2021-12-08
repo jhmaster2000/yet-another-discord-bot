@@ -2,7 +2,7 @@ import { Message, User } from 'discord.js';
 import Bot from './Bot.js';
 
 export default function loadPaginator(client: Bot): void {
-    client.paginate = (message: Message, pages: any[], pagesCount: number, timeout: number, startPage: number): void => {
+    client.paginate = (message: Message, pages: any[], pagesCount: number, timeout?: number, startPage?: number): void => {
         const authorAvatar = message.author.displayAvatarURL({ dynamic: true, format: 'png' });
         message.channel.send(pages[startPage || 0].setFooter(`${(startPage || 0) + 1}/${pagesCount}`, authorAvatar)).then((msg: Message): void => {
             msg.react('⏮').then(() => {

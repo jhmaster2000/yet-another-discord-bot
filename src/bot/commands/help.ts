@@ -1,7 +1,9 @@
-import Discord from 'discord.js';
+import Discord, { Message, MessageEmbed } from 'discord.js';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
 import { checkPermissions } from '../permissionsHandler.js';
 
-export function run(client, message, args) {
+export function run(client: Bot, message: Message, args: Args) {
     const commands = client.commands;
     const command = args.ordered.length ? args.ordered[0].value : null;
     const helpEmbed = new Discord.MessageEmbed();
@@ -52,10 +54,10 @@ export function run(client, message, args) {
     if (helpRequirements.length)   helpEmbed.addField('**__Requirements__**', helpRequirements.join('\n'));
     return sendHelp(helpEmbed);
 
-    function sendHelp(embed) { return message.channel.send(embed); }
+    function sendHelp(embed: MessageEmbed) { return message.channel.send(embed); }
 }
 
-function helpFlags(cmd) {
+function helpFlags(cmd: { config: { usage: { flags: { [x: string]: any; }; }; }; }): string {
     let flags = [];
     for (const flag in cmd.config.usage.flags) {
         const flagInfo = cmd.config.usage.flags[flag];
@@ -64,7 +66,7 @@ function helpFlags(cmd) {
     return flags.join('\n');
 }
 
-function helpOptions(cmd) {
+function helpOptions(cmd: { config: { usage: { options: { [x: string]: { value: any; info: any }; }; }; }; }): string {
     let options = [];
     for (const option in cmd.config.usage.options) {
         const optionInfo = cmd.config.usage.options[option].info;
