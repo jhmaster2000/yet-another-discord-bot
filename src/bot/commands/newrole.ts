@@ -1,4 +1,8 @@
-export function run(client, message, args) {
+import { Message } from 'discord.js';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
+
+export function run(client: Bot, message: Message, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} Please provide a name for the role.`);
     const argsr = args.ordered.map(arg => arg.raw);
 
@@ -11,12 +15,12 @@ export function run(client, message, args) {
     const hoisted = roledata.hoist ? client.em.check : client.em.xmark;
     const mention = roledata.mentionable ? client.em.check : client.em.xmark;
 
-    message.guild.roles.create({
+    message.guild!.roles.create({
         data: roledata,
         reason: `Requested by user: ${message.author.tag}`
     })
     .then(role => message.channel.send(`${client.em.check} Successfully created role ${role.toString()} (\`Hoisted?\` ${hoisted} | \`Mentionable?\` ${mention})`))
-    .catch(e => message.channel.send(`${client.em.xmark} Role name is too long. (\`${roledata.name.length}\` characters out of \`100\` maximum)`).then(console.error(e)));
+    .catch(e => message.channel.send(`${client.em.xmark} Role name is too long. (\`${roledata.name.length}\` characters out of \`100\` maximum)`).then(<any>console.error(e)));
 }
 
 export const config = {

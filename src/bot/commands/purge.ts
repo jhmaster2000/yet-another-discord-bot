@@ -1,10 +1,15 @@
-export function run(client, message, args) {
-    args = args.ordered.map(arg => arg.value);
+import { Message, NewsChannel, TextChannel } from 'discord.js';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
+
+export function run(client: Bot, message: Message, argsx: Args): any {
+    const args = argsx.ordered.map(arg => arg.value);
     const msgcount = Number(args[0]);
 
     if (isNaN(msgcount) || (msgcount < 1 || msgcount > 99)) return message.channel.send(`${client.em.xmark} Please provide a number from 1 to 99 as argument!`);
 
-    message.channel.bulkDelete(msgcount + 1, true).then(deleted => {
+    //@ts-ignore
+    (message.channel as TextChannel | NewsChannel).bulkDelete(msgcount + 1, true).then(deleted => {
         let notDeleted = '';
         const diffcount = msgcount + 1 - deleted.size;
         if (deleted.size === 0) return message.channel.send(`${client.em.xmark} No messages deleted due to all messages on this channel being older than 2 weeks.`);

@@ -1,11 +1,15 @@
-export function run(client, message, args) {
+import { Message } from 'discord.js';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
+
+export function run(client: Bot, message: Message, args: Args) {
     const argsr = args.basic.map(arg => arg.raw);
     
     const hasAttachment = Boolean(message.attachments.first());
     const argOffset = hasAttachment ? 1 : 0;
     
     const name = argsr[0];
-    const image = hasAttachment ? message.attachments.first().url : argsr[1];
+    const image = hasAttachment ? message.attachments.first()!.url : argsr[1];
     if (!name) return message.channel.send(`${client.em.xmark} Please provide a name for the emoji.`);
     if (!image) return message.channel.send(`${client.em.xmark} Please provide an image link to be the emoji.`);
     if (!name.match(/^\w{2,32}$/i)) return message.channel.send(`${client.em.xmark} Emoji name must be between \`2\` and \`32\` characters long and **only contain letters, numbers or underscores**.`);
@@ -14,12 +18,13 @@ export function run(client, message, args) {
     const roles = message.mentions.roles;
     if (argsr[2 - argOffset] === '--roles' || argsr[2 - argOffset] === '--r') {
         if (!argsr[3 - argOffset]) return message.channel.send(`${client.em.xmark} The \`--roles\` option requires at least **1** role mention or ID.`);
-        message.guild.roles.fetch();
-        let invalidRoles = [];
+        message.guild!.roles.fetch();
+        let invalidRoles: string[] = [];
         argsr.forEach((possibleRoleID, index) => {
             if (index <= 2 - argOffset) return;
             if (possibleRoleID.trim().match(/^<@&[0-9]{17,20}>$/g)) return;
-            const possibleRole = message.guild.roles.cache.get(possibleRoleID);
+            const possibleRole = message.guild!.roles.cache.get(possibleRoleID);
+            //@ts-ignore // TODO: Refer to sideloadUtils.ts
             if (!possibleRole) return invalidRoles.push(RegExp.escapeBacktick(possibleRoleID));
             else return roles.set(possibleRole.id, possibleRole);
         });
@@ -30,18 +35,18 @@ export function run(client, message, args) {
     }
     if (argsr[2 - argOffset] !== '--roles' && argsr[2 - argOffset] !== '--r') roles.clear();
 
-    message.guild.emojis.create(image, name, {
+    message.guild!.emojis.create(image, name, {
         roles: roles.size ? roles : undefined,
         reason: `Requested by user: ${message.author.tag}`
     }).then(emoji => {
         return message.channel.send(`${client.em.check} Successfully created emoji \`\`:${name}:\`\` ${emoji} ${rolesInfo}`);
-    }).catch(error => {
+    }).catch((error): Promise<Message> => {
         console.error(error);
         if (error.code === 30008) return message.channel.send(`${client.em.xmark} This server has reached the maximum number of emojis.`);
         if (error.code === 50035) {
-            let errmsgs = error.message.split('\n');
+            let errmsgs: string[] = error.message.split('\n');
             errmsgs.shift();
-            return errmsgs.forEach(errmsg => {
+            return <any>errmsgs.forEach(errmsg => {
                 let err = errmsg.split(': ')[1];
                 if (err === 'File cannot be larger than 256.0 kb.') return message.channel.send(`${client.em.xmark} Source image must be under \`256 KB\`.`);
                 if (err === 'Invalid image data') return message.channel.send(`${client.em.xmark} The given link does not lead to a valid image.`);
