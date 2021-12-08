@@ -38,5 +38,6 @@ got.get('https://data.iana.org/TLD/tlds-alpha-by-domain.txt').then(response => {
     const listData = response.body.split('\n');
     const listVersion = listData.shift()!.slice(2);
     listData.pop();
+    if (!fs.existsSync(join(process.env.workdir!, './bot/assets'))) fs.mkdirSync(join(process.env.workdir!, './bot/assets'));
     fs.writeFileSync(join(process.env.workdir!, './bot/assets/tlds.json'), JSON.stringify({ version: listVersion, tlds: listData }));
 });
