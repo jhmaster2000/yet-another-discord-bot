@@ -1,23 +1,25 @@
-import Discord from 'discord.js';
+import Discord, { Message } from 'discord.js';
 import figlet from 'figlet';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
 
-export function run(client, message, args) {
+export function run(client: Bot, message: Message, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} You need to provide some text.`);
-    args = args.basic.map(arg => arg.raw + arg.trailing).join('');
+    const text = args.basic.map(arg => arg.raw + arg.trailing).join('');
 
     const opts = {
         font: 'Standard',
         horizontalLayout: 'fitted',
         verticalLayout: 'default'
-    }
+    } as const
 
-    figlet.text(args, opts, (err, data) => {
+    figlet.text(text, opts, (err, data) => {
         if (err) {
             message.channel.send(`${client.em.critical} Something went wrong...`);
             return console.error(err);
         }
 
-        const file = new Discord.MessageAttachment(Buffer.from(data), 'ascii.txt');
+        const file = new Discord.MessageAttachment(Buffer.from(data!), 'ascii.txt');
         return message.channel.send(file);
     });
 }

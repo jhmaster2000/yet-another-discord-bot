@@ -18,5 +18,5 @@ export default class Bot extends Client {
     readonly isWin: boolean = process.platform === 'win32';
 
     paginate: (message: Message, pages: any[], pagesCount: number, timeout: number, startPage: number) => void;
-    promptYesNo: (from: User, msg: Message, callback: (answer: boolean | null) => void, timeout: number, reactions?: any) => void;
+    promptYesNo: (from: User, msg: Message, callback: (answer: boolean | null) => void, timeout?: number, reactions?: any) => void;
 }

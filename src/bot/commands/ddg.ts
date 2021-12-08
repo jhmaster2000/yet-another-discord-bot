@@ -1,5 +1,7 @@
-import Discord from 'discord.js';
+import Discord, { Message } from 'discord.js';
 import got from 'got';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
 
 const Types = {
     article: 'A',
@@ -7,11 +9,11 @@ const Types = {
     category: 'C',
     name: 'N',
     exclusive: 'E'
-};
+} as const;
 
-export function run(client, message, args) {
-    if (!args.basic.length) return message.channel.send(`${client.em.xmark} You must provide something to search!`);
-    args = args.basic.map(arg => arg.raw);
+export function run(client: Bot, message: Message, argsx: Args) {
+    if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} You must provide something to search!`);
+    const args = argsx.basic.map(arg => arg.raw);
 
     const query = args.join(' ').toLowerCase();
     got.get(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1&no_redirect=1`).then(response => {
@@ -32,8 +34,8 @@ export function run(client, message, args) {
             if (data.Image) ddgEmbed.setThumbnail('https://api.duckduckgo.com' + data.Image);
 
             if (data.RelatedTopics.length) {
-                let related = [];
-                data.RelatedTopics.forEach((topic, index) => {
+                let related: string[] = [];
+                data.RelatedTopics.forEach((topic: { FirstURL: string; }, index: number): void => {
                     if (index >= 5) return;
                     if (!topic.FirstURL) return;
                     let tempArray = topic.FirstURL.split('/');
@@ -76,4 +78,4 @@ export const config = {
     usage: {
         args: '<...search>'
     }
-};
+}

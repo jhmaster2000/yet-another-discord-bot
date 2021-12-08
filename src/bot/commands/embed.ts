@@ -1,7 +1,9 @@
-import Discord from 'discord.js';
-const ZWS = '​';
+import Discord, { Message } from 'discord.js';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
+const ZWS = '​' as const;
 
-export function run(client, message, args) {
+export async function run(client: Bot, message: Message, args: Args): Promise<Discord.Message | undefined> {
     const argsr = args.ordered.map(arg => arg.raw + arg.trailing);
     const opts = args.options;
 
@@ -10,14 +12,14 @@ export function run(client, message, args) {
     const url = opts.get('url') ? opts.get('url') : null;
     const author = opts.get('author') ? opts.get('author') : message.author.username;
     const footer = opts.get('footer') ? opts.get('footer') : null;
-    const color = opts.get('color') ? opts.get('color') : message.member.displayHexColor;
+    const color = opts.get('color') ? opts.get('color') : message.member!.displayHexColor;
     const image = opts.get('image') ? opts.get('image') : null;
     const thumb = opts.get('thumb') ? opts.get('thumb') : null;
 
     const embed = new Discord.MessageEmbed()
         .setAuthor(author, message.author.displayAvatarURL({ dynamic: true, format: 'png' }))
         .setDescription(description)
-        .setColor(color)
+        .setColor(color!)
         .setTimestamp();
     if (title) embed.setTitle(title);
     if (footer) embed.setFooter(footer);
@@ -26,27 +28,37 @@ export function run(client, message, args) {
     if (thumb) embed.setThumbnail(thumb);
 
     message.delete();
-    return message.channel.send(embed).catch(err => {
+    try {
+        return message.channel.send(embed);
+    } catch (err: any) {
         if (err.code === 50035) {
-            let errlist = [];
-            let errmsgs = err.message.split('\n');
+            let errlist: string[] = [];
+            let errmsgs: string[] = err.message.split('\n');
             errmsgs.shift();
             errmsgs.forEach(el => {
-                if (el.startsWith('embeds[0].')) return;
+                if (el.startsWith('embeds[0].'))
+                    return;
                 let opt = el.split(': ')[0].slice(6).replace('nail.url', '').replace('.url', '').replace('.name', '').replace('.text', '');
                 let optmsg = el;
-                if (opt === 'description') return errlist.push(`\`description\`: Too long.  ${description.length} characters out of 2048 maximum. (${2048 - description.length})`);
-                if (opt === 'footer') return errlist.push(`\`--footer\`: Too long.  ${footer.length} characters out of 2048 maximum. (${2048 - footer.length})`);
-                if (opt === 'title') return errlist.push(`\`--title\`: Too long.  ${title.length} characters out of 256 maximum. (${256 - title.length})`);
-                if (opt === 'author') return errlist.push(`\`--author\`: Too long.  ${author.length} characters out of 256 maximum. (${256 - author.length})`);
-                if (opt === 'url') optmsg = 'Not a valid URL.';
-                if (opt === 'image') optmsg = 'Not a valid URL.';
-                if (opt === 'thumb') optmsg = 'Not a valid URL.';
+                if (opt === 'description')
+                    return errlist.push(`\`description\`: Too long.  ${description.length} characters out of 2048 maximum. (${2048 - description.length})`);
+                if (opt === 'footer')
+                    return errlist.push(`\`--footer\`: Too long.  ${footer!.length} characters out of 2048 maximum. (${2048 - footer!.length})`);
+                if (opt === 'title')
+                    return errlist.push(`\`--title\`: Too long.  ${title!.length} characters out of 256 maximum. (${256 - title!.length})`);
+                if (opt === 'author')
+                    return errlist.push(`\`--author\`: Too long.  ${author!.length} characters out of 256 maximum. (${256 - author!.length})`);
+                if (opt === 'url')
+                    optmsg = 'Not a valid URL.';
+                if (opt === 'image')
+                    optmsg = 'Not a valid URL.';
+                if (opt === 'thumb')
+                    optmsg = 'Not a valid URL.';
                 return errlist.push(`\`--${opt}\`: ${optmsg}`);
             });
             return message.channel.send(`${client.em.xmark} **Failed to create embed due to the following issues:**\n${errlist.join('\n')}`);
         }
-    });
+    }
 }
 
 export const config = {

@@ -1,10 +1,12 @@
-import Discord from 'discord.js';
+import Discord, { Message } from 'discord.js';
 import { striptags } from 'striptags';
 import got from 'got';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
 
-export function run(client, message, args) {
-    if (!args.basic.length) return message.channel.send(`${client.em.xmark} You must provide something to search!`);
-    args = args.basic.map(arg => arg.raw);
+export function run(client: Bot, message: Message, argsx: Args) {
+    if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} You must provide something to search!`);
+    const args = argsx.basic.map(arg => arg.raw);
 
     const query = args.join(' ');
     got.get(`https://duckduckgo.com/js/spice/dictionary/definition/${encodeURIComponent(query)}`).then(response => {
@@ -12,8 +14,8 @@ export function run(client, message, args) {
         const body = JSON.parse(response.body.slice(32, -3).trim());
 
         const mainDef = body[0];
-        let definitions = [];
-        body.forEach(def => {
+        let definitions: string[] = [];
+        body.forEach((def: { text: string; partOfSpeech: string; }) => {
             if (!def.text) return;
             def.text = striptags(def.text, { disallowedTags: new Set(['strong']), tagReplacementText: '**' });
             def.text = striptags(def.text, { disallowedTags: new Set(['em', 'i']), tagReplacementText: '*' });

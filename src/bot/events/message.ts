@@ -3,7 +3,7 @@ import * as lexure from 'lexure';
 import Bot from '../Bot.js';
 import { checkPermissions } from '../permissionsHandler.js';
 
-interface Args {
+export interface Args {
     ordered: lexure.Token[];
     flags: Set<string>;
     options: Map<string, string>;

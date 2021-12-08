@@ -1,5 +1,8 @@
 import util from 'util';
 import * as lexure from 'lexure';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
+import { Message } from 'discord.js';
 
 /* Quick Access Modules */
 import Discord from 'discord.js';
@@ -7,7 +10,7 @@ import got from 'got';
 import fs from 'fs';
 import os from 'os';
 
-export function run(client, message, args) {
+export function run(client: Bot, message: Message, args: Args) {
     const split = args.flags.has('split') || args.flags.has('s');
     const async = args.flags.has('async') || args.flags.has('a');
     const promises = args.flags.has('promises') || args.flags.has('p');
@@ -21,7 +24,7 @@ export function run(client, message, args) {
         }).filter(Boolean).join('');
 
         if (async) return asyncEval(code);
-        async function asyncEval(code) {
+        async function asyncEval(code: string) {
             try {
                 let asyncEvaled = '⚠️ Failed to set async return value.';
                 await eval(`(async () => { ${code} } )().then(p => asyncEvaled = p);`);
@@ -58,18 +61,21 @@ export function run(client, message, args) {
     }
 }
 
-function clean(text) {
+function clean(text: unknown): unknown {
     if (typeof text === 'string') return text.replace(/`/g, '`' + String.fromCharCode(8203)).replace(/@/g, '@' + String.fromCharCode(8203));
     else return text;
 }
 
-function createArgs(input) {
+function createArgs(input: string | any[] | undefined): Args {
     if (Array.isArray(input)) input = input.join(' ');
     const createdlexer = new lexure.Lexer(input).setQuotes([[`"`,`"`],[`'`,`'`],['```','```']]).lex();
-    const createdargs = new lexure.Parser(createdlexer).setUnorderedStrategy(lexure.prefixedStrategy(['--'], ['='])).parse();
+    const createdargs = new lexure.Parser(createdlexer).setUnorderedStrategy(lexure.prefixedStrategy(['--'], ['='])).parse() as unknown as Args;
     createdargs.basic = createdlexer;
     createdargs.flags = new Set([...createdargs.flags].filter(Boolean));
-    createdargs.options = new Map([...createdargs.options].filter(o => o[0] && o[1].length).map(o => [o[0], o[1][o[1].length - 1]]).filter(o => o[1]));
+    createdargs.options = new Map(
+        ([...createdargs.options as unknown as Map<string, string[]>].filter(o => o[0] && o[1].length)
+        .map(o => [o[0], o[1][o[1].length - 1]]) as unknown as [string, string][]).filter(o => o[1])
+    );
     return createdargs;
 }
 

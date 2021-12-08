@@ -2,7 +2,7 @@ import { Message, User } from 'discord.js';
 import Bot from './Bot.js';
 
 export default function loadReactionListener(client: Bot): void {
-    client.promptYesNo = (from: User, msg: Message, callback: (answer: boolean | null) => void, timeout: number, reactions?: any) => {
+    client.promptYesNo = (from: User, msg: Message, callback: (answer: boolean | null) => void, timeout?: number, reactions?: any): void => {
         msg.react(reactions?.no || client.re.xmark).then(() => msg.react(reactions?.yes || client.re.check));
 
         const filter = (reaction: string, user: User) => user.id === from.id;

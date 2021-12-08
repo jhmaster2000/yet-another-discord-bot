@@ -1,14 +1,19 @@
-export function run(client, message, args) {
+import { Message, Role } from 'discord.js';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
+
+export function run(client: Bot, message: Message, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} Please provide a mention or ID of at least one role.`);
-    message.guild.roles.fetch();
+    message.guild!.roles.fetch();
 
     const argsr = args.ordered.map(arg => arg.raw);
     const roles = message.mentions.roles;
 
-    let invalidRoles = [];
+    let invalidRoles: string[] = [];
     argsr.forEach(possibleRoleID => {
         if (possibleRoleID.trim().match(/^<@&[0-9]{17,20}>$/g)) return;
-        const possibleRole = message.guild.roles.cache.get(possibleRoleID);
+        const possibleRole = message.guild!.roles.cache.get(possibleRoleID);
+        //@ts-ignore // TODO: Refer to sideloadUtils.ts
         if (!possibleRole) return invalidRoles.push(RegExp.escapeBacktick(possibleRoleID));
         else return roles.set(possibleRole.id, possibleRole);
     });
@@ -19,7 +24,7 @@ export function run(client, message, args) {
     let s = invalidRoles.length === 1 ? '' : 's';
     if (invalidRoles.length) issues.push(`⚠️ Failed to resolve **${invalidRoles.length}** argument${s} into valid roles:\n\`\`${invalidRoles.join('``, ``')}\`\``);
 
-    let notEditableBySelf = [];
+    let notEditableBySelf: Role[] = [];
     roles.filter(role => !role.editable).forEach(role => {
         notEditableBySelf.push(role);
         roles.delete(role.id);
@@ -27,9 +32,9 @@ export function run(client, message, args) {
     s = notEditableBySelf.length === 1 ? '' : 's';
     if (notEditableBySelf.length) issues.push(`⚠️ Unable to delete the **${notEditableBySelf.length}** role${s} listed below because they are above or equal to the bot's highest role, or are protected by Discord:\n${notEditableBySelf.join(' | ')}`);
     
-    if (message.guild.owner.id !== message.author.id) {
-        let notEditableByUser = [];
-        roles.filter(role => message.member.roles.highest.comparePositionTo(role) <= 0).forEach(role => {
+    if (message.guild!.owner!.id !== message.author.id) {
+        let notEditableByUser: Role[] = [];
+        roles.filter(role => message.member!.roles.highest.comparePositionTo(role) <= 0).forEach(role => {
             notEditableByUser.push(role);
             roles.delete(role.id);
         });

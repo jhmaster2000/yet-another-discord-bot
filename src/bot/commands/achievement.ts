@@ -1,4 +1,6 @@
-import Discord from 'discord.js';
+import Discord, { Message } from 'discord.js';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
 
 const icons = {
     grass_block: '1',
@@ -42,7 +44,7 @@ const icons = {
     milk_bucket: '39'
 }
 
-export function run(client, message, args) {
+export function run(client: Bot, message: Message, args: Args) {
     const argsr = args.ordered.map(arg => arg.raw);
     let achName = encodeURIComponent(argsr.join(' ')).replace(/\'/g, '%27').replace(/\%2f/gi, '+');
     if (!argsr.length) achName = '+';
@@ -53,7 +55,7 @@ export function run(client, message, args) {
     title = encodeURIComponent(title).replace(/\'/g, '%27').replace(/\%2f/gi, '+');
 
     let icon = args.options.get('icon') || '1';
-    if (isNaN(icon)) icon = icons[icon] || '1';
+    if (isNaN(Number(icon))) icon = icons[icon as keyof typeof icons] || '1';
 
     const img = `https://minecraftskinstealer.com/achievement/${icon}/${title}/${achName}`;
     const achievement = new Discord.MessageEmbed()

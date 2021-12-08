@@ -1,6 +1,9 @@
+import { Message } from 'discord.js';
 import util from 'util';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
 
-export function run(client, message, args) {
+export function run(client: Bot, message: Message, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} No arguments detected.`);
     console.info(args);
 
@@ -16,7 +19,7 @@ export function run(client, message, args) {
     if (args.flags.size) m.push(`\n**Parsed Flags: ** \`${[...args.flags].join('\` , \`')}\``);
     
     if (args.options.size) {
-        let opts = [];
+        let opts: string[] = [];
         [...args.options].forEach(opt => {
             opts.push(`    \`${opt[0]}\` = \`${opt[1]}\``);
         });

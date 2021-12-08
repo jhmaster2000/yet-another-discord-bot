@@ -1,3 +1,7 @@
+import { Message } from 'discord.js';
+import Bot from '../Bot.js';
+import { Args } from '../events/message.js';
+
 const fortunes = [
     /* Positive answers */
     'Yes.',
@@ -38,7 +42,7 @@ const fortunes = [
     'Lies and myths.'
 ];
 
-export function run(client, message, args) {
+export function run(client: Bot, message: Message, args: Args) {
     if (!args.basic.length) return message.channel.send(`🤦 You have to ask a question smooth brain.`);
     const answer = fortunes[Math.floor(Math.random() * fortunes.length)];
     return message.channel.send(`🎱 ${answer}`);
