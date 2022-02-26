@@ -2,7 +2,7 @@ import { Message } from 'discord.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/message.js';
 
-export function run(client: Bot, message: Message, args: Args) {
+export async function run(client: Bot, message: Message, args: Args) {
     const argsr = args.basic.map(arg => arg.raw);
     
     const hasAttachment = Boolean(message.attachments.first());
@@ -35,27 +35,32 @@ export function run(client: Bot, message: Message, args: Args) {
     }
     if (argsr[2 - argOffset] !== '--roles' && argsr[2 - argOffset] !== '--r') roles.clear();
 
-    message.guild!.emojis.create(image, name, {
-        roles: roles.size ? roles : undefined,
-        reason: `Requested by user: ${message.author.tag}`
-    }).then(emoji => {
-        return message.channel.send(`${client.em.check} Successfully created emoji \`\`:${name}:\`\` ${emoji} ${rolesInfo}`);
-    }).catch((error): Promise<Message> => {
+    try {
+        const emoji = await message.guild!.emojis.create(image, name, {
+            roles: roles.size ? roles : [],
+            reason: `Requested by user: ${message.author.tag}`
+        });
+        return await message.channel.send(`${client.em.check} Successfully created emoji \`\`:${name}:\`\` ${emoji} ${rolesInfo}`);
+    } catch (error: any) {
         console.error(error);
-        if (error.code === 30008) return message.channel.send(`${client.em.xmark} This server has reached the maximum number of emojis.`);
+        if (error.code === 30008)
+            return message.channel.send(`${client.em.xmark} This server has reached the maximum number of emojis.`);
         if (error.code === 50035) {
             let errmsgs: string[] = error.message.split('\n');
             errmsgs.shift();
-            return <any>errmsgs.forEach(errmsg => {
+            return errmsgs.forEach(errmsg => {
                 let err = errmsg.split(': ')[1];
-                if (err === 'File cannot be larger than 256.0 kb.') return message.channel.send(`${client.em.xmark} Source image must be under \`256 KB\`.`);
-                if (err === 'Invalid image data') return message.channel.send(`${client.em.xmark} The given link does not lead to a valid image.`);
+                if (err === 'File cannot be larger than 256.0 kb.')
+                    return message.channel.send(`${client.em.xmark} Source image must be under \`256 KB\`.`);
+                if (err === 'Invalid image data')
+                    return message.channel.send(`${client.em.xmark} The given link does not lead to a valid image.`);
                 return message.channel.send(`${client.em.xmark} An unexpected error has occured (fallback A): ${error.message}`);
             });
         };
-        if (error.code === 'ENOENT' || error.code === 'ENOTFOUND') return message.channel.send(`${client.em.xmark} The given link is not a valid URL.`);
-        return message.channel.send(`${client.em.xmark} An unexpected error has occured (fallback B): ${error.message}`);
-    });
+        if (error.code === 'ENOENT' || error.code === 'ENOTFOUND')
+            return message.channel.send(`${client.em.xmark} The given link is not a valid URL.`);
+        return await message.channel.send(`${client.em.xmark} An unexpected error has occured (fallback B): ${error.message}`);
+    }
 }
 
 export const config = {

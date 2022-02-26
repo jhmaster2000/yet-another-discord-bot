@@ -38,7 +38,7 @@ export function run(client: Bot, message: Message, args: Args) {
     const ip = args.ordered[0].value.split(':');
     const ipAddress = ip[0];
     const port = ip[1] || '25565';
-    got.get(`http://mcapi.us/server/status?ip=${ipAddress}&port=${port}`).then(response => {
+    return got.get(`http://mcapi.us/server/status?ip=${ipAddress}&port=${port}`).then(response => {
         const server = JSON.parse(response.body);
         if (server.error) return message.channel.send(`${client.em.xmark} Error: ${server.error}`);
         if (!server.online) {

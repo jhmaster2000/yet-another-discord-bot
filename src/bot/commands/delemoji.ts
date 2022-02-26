@@ -2,7 +2,7 @@ import { GuildEmoji, Message } from 'discord.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/message.js';
 
-export function run(client: Bot, message: Message, argsx: Args) {
+export async function run(client: Bot, message: Message, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} Please provide at least **1** custom emoji to delete.`);
     let args = argsx.basic.map(arg => arg.raw);
     args = args.join(' ').replace(/<a??:(\w{2,32}):([0-9]{17,20})>/g, match => match + ' ').split(' ');
@@ -26,15 +26,15 @@ export function run(client: Bot, message: Message, argsx: Args) {
 
     s = emojis.length === 1 ? '' : 's';
     s2 = s ? 'these' : 'this';
-    message.channel.send(`${protectedWarning}\n\n⁉️ Are you sure you want to __permanently__ delete ${s2} **${emojis.length}** custom emoji${s}?: ${emojis.join(' ')}`).then(msg => {
-        client.promptYesNo(message.author, msg, (answer) => {
-            msg.reactions.removeAll();
-            const timedout = answer === null ? '(Timed out)' : '';
-            if (!answer) return msg.edit(`${client.em.neutral} Cancelled deletion of **${emojis.length}** custom emoji${s}. ${timedout}`);
+    const msg = await message.channel.send(`${protectedWarning}\n\n⁉️ Are you sure you want to __permanently__ delete ${s2} **${emojis.length}** custom emoji${s}?: ${emojis.join(' ')}`);
+    return client.promptYesNo(message.author, msg, (answer) => {
+        msg.reactions.removeAll();
+        const timedout = answer === null ? '(Timed out)' : '';
+        if (!answer)
+            return msg.edit(`${client.em.neutral} Cancelled deletion of **${emojis.length}** custom emoji${s}. ${timedout}`);
 
-            emojis.forEach(emoji => emoji.delete(`Requested by user: ${message.author.tag}`).catch(error => message.channel.send(`bruh error:\n${error}`)));
-            msg.edit(`${client.em.check} Successfully deleted **${emojis.length}** custom emoji${s}: \`:${emojis.map(e => e.name).join(':` `:')}:\``);
-        });
+        emojis.forEach(emoji_3 => emoji_3.delete(`Requested by user: ${message.author.tag}`).catch(error => message.channel.send(`bruh error:\n${error}`)));
+        return msg.edit(`${client.em.check} Successfully deleted **${emojis.length}** custom emoji${s}: \`:${emojis.map(e => e.name).join(':` `:')}:\``);
     });
 }
 

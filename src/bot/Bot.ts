@@ -8,7 +8,7 @@ export default class Bot extends Client {
         if (!process.env.PRODUCTION) this.prefixes = ['pl'];
     }
 
-    owner: User;
+    owner!: User;
     prefixes: string[] = [];
     em: { [emojiName: string]: string } = {};
     re: { [emojiName: string]: string } = {};
@@ -17,6 +17,6 @@ export default class Bot extends Client {
     readonly events: { [eventName: string]: any | any[] } = (<any>this)._events;
     readonly isWin: boolean = process.platform === 'win32';
 
-    paginate: (message: Message, pages: any[], pagesCount: number, timeout?: number, startPage?: number) => void;
-    promptYesNo: (from: User, msg: Message, callback: (answer: boolean | null) => void, timeout?: number, reactions?: any) => void;
+    paginate!: (message: Message, pages: any[], pagesCount: number, timeout?: number, startPage?: number) => void;
+    promptYesNo!: (from: User, msg: Message, callback: (answer: boolean | null) => void, timeout?: number, reactions?: any) => void;
 }

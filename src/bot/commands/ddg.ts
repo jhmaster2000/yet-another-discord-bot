@@ -3,20 +3,20 @@ import got from 'got';
 import Bot from '../Bot.js';
 import { Args } from '../events/message.js';
 
-const Types = {
-    article: 'A',
-    disambig: 'D',
-    category: 'C',
-    name: 'N',
-    exclusive: 'E'
-} as const;
+const enum Types {
+    article = 'A',
+    disambig = 'D',
+    category = 'C',
+    name = 'N',
+    exclusive = 'E'
+};
 
 export function run(client: Bot, message: Message, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} You must provide something to search!`);
     const args = argsx.basic.map(arg => arg.raw);
 
     const query = args.join(' ').toLowerCase();
-    got.get(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1&no_redirect=1`).then(response => {
+    return got.get(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1&no_redirect=1`).then(response => {
         const data = JSON.parse(response.body);
         if (!data.Type || data.Redirect) return message.channel.send(`${client.em.xmark} No results found!`);
 
@@ -65,6 +65,7 @@ export function run(client: Bot, message: Message, argsx: Args) {
                 .setColor('CYAN');
             return message.channel.send(ddgEmbed);
         }
+        return;
     }).catch(err => {
         console.error(err);
         return message.channel.send(`${client.em.xmark} An error occured when trying to search. Try again later.`);

@@ -58,6 +58,7 @@ export async function run(client: Bot, message: Message, args: Args): Promise<Di
             });
             return message.channel.send(`${client.em.xmark} **Failed to create embed due to the following issues:**\n${errlist.join('\n')}`);
         }
+        return void console.error(err);
     }
 }
 

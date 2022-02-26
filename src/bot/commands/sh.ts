@@ -6,10 +6,10 @@ import { Message } from 'discord.js';
 import { Args } from '../events/message.js';
 process.env.RUNNING_EXEC_PIDS = '[]';
 
-function killRunningSubprocesses(message: Message): Promise<Message> | undefined {
+function killRunningSubprocesses(message: Message): void {
     const runningExecPIDs = JSON.parse(process.env.RUNNING_EXEC_PIDS!);
-    if (runningExecPIDs.length === 0) return message.channel.send('`No running commands to kill.`');
-    runningExecPIDs.forEach((pid: number) => {
+    if (runningExecPIDs.length === 0) return void message.channel.send('`No running commands to kill.`');
+    return runningExecPIDs.forEach((pid: number) => {
         ps.lookup({ ppid: pid }, (err, resultList) => {
             if (err) throw err;
             const proc = resultList[0];

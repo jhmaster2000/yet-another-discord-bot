@@ -18,8 +18,10 @@ function killRunningSubprocess(message: Message, graceful: boolean) {
             const killed = process.kill(proc.pid);
             if (killed && !graceful) return message.channel.send(`\`Killed subprocess ${proc.pid} for [${proc.command}] command.\``);
             if (!graceful) return message.channel.send(`\`Failed to terminate subprocess ${proc.pid} for [${proc.command}] command.\``);
+            else return;
         });
         if (!graceful && resultList.length === 0) return message.channel.send(`\`Killed all running commands.\``);
+        else return;
     });
 }
 

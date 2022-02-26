@@ -13,7 +13,7 @@ export function run(client: Bot, message: Message, args: Args) {
         verticalLayout: 'default'
     } as const
 
-    figlet.text(text, opts, (err, data) => {
+    return figlet.text(text, opts, (err, data) => {
         if (err) {
             message.channel.send(`${client.em.critical} Something went wrong...`);
             return console.error(err);

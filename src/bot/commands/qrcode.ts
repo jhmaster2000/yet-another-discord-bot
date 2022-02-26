@@ -24,8 +24,8 @@ export function run(client: Bot, message: Message, args: Args) {
         const qrLink = argsr[0];
         if (!qrLink) return message.channel.send(`${client.em.xmark} Please provide an image URL with a QR code on it to be scanned!`);
 
-        message.channel.send(`${client.em.loadingfast} **Scanning QR Code...**`).then(msg => {
-            got.get(`https://api.qrserver.com/v1/read-qr-code/?fileurl=${encodeURIComponent(qrLink)}`, { timeout: 15000, retry: <0><unknown>false }).then(response => {
+        return message.channel.send(`${client.em.loadingfast} **Scanning QR Code...**`).then(msg => {
+            return got.get(`https://api.qrserver.com/v1/read-qr-code/?fileurl=${encodeURIComponent(qrLink)}`, { timeout: { request: 15000 }, retry: { limit: 0 } }).then(response => {
                 const scanned = JSON.parse(response.body)[0].symbol[0];
                 //@ts-ignore // TODO: Refer to sideloadUtils.ts
                 let result = `${client.em.check} **QR Scan Result:**\n${RegExp.escapeMarkdown(scanned.data)}`;
@@ -43,6 +43,7 @@ export function run(client: Bot, message: Message, args: Args) {
         });
     }
     if (!['create', 'scan'].includes(subcommand)) return message.channel.send(`${client.em.xmark} First argument must be either \`create\` or \`scan\`. Check \`${client.prefixes[0]} help qr\` for reference.`);
+    else return;
 }
 
 export const config = {

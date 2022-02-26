@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { ChannelResolvable, Message } from 'discord.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/message.js';
 
@@ -37,13 +37,13 @@ export function run(client: Bot, message: Message, args: Args): any {
 
     message.guild!.channels.create(name, {
         type: type, // text
-        position: undefined, // this is actually rawPosition and not position, so position must be set afterwards
-        parent: type !== 'category' && category ? category : undefined, // No category
-        nsfw: type === 'text' && nsfw ? nsfw : undefined, // false
-        topic: type === 'text' && topic ? topic : undefined, // blank
-        rateLimitPerUser: type === 'text' && slowmode ? Math.round(<number>slowmode) : undefined, // 0 (seconds)
-        bitrate: type === 'voice' && vc_bitrate ? Math.round(vc_bitrate * 1000) : undefined, // 64000 (64kbps)
-        userLimit: type === 'voice' && vc_userlimit ? Math.round(vc_userlimit) : undefined, // 0 (No Limit)
+        //position: undefined, // this is actually rawPosition and not position, so position must be set afterwards
+        parent: type !== 'category' && category ? category : undefined as unknown as ChannelResolvable, // No category
+        nsfw: type === 'text' && nsfw ? nsfw : false, // false
+        topic: type === 'text' && topic ? topic : '', // blank
+        rateLimitPerUser: type === 'text' && slowmode ? Math.round(<number>slowmode) : 0, // 0 (seconds)
+        bitrate: type === 'voice' && vc_bitrate ? Math.round(vc_bitrate * 1000) : 64000, // 64000 (64kbps)
+        userLimit: type === 'voice' && vc_userlimit ? Math.round(vc_userlimit) : 0, // 0 (No Limit)
         reason: `Requested by user: ${message.author.tag}`
     }).then(channel => {
         if (position) channel.setPosition(Math.round(position) - 1);

@@ -2,7 +2,7 @@ import { Message, Role } from 'discord.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/message.js';
 
-export function run(client: Bot, message: Message, args: Args) {
+export async function run(client: Bot, message: Message, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} Please provide a mention or ID of at least one role.`);
     message.guild!.roles.fetch();
 
@@ -44,15 +44,15 @@ export function run(client: Bot, message: Message, args: Args) {
 
     if (!roles.size) return message.channel.send(issues.join('\n'));
     s = roles.size === 1 ? '' : 's';
-    message.channel.send(`${issues.join('\n')}\n\n⁉️ Are you sure you want to __permanently__ delete the **${roles.size}** role${s} listed below?\n${roles.map(r => r).join(' | ')}`).then(msg => {
-        client.promptYesNo(message.author, msg, (answer) => {
-            msg.reactions.removeAll();
-            const timedout = answer === null ? '(Timed out)' : '';
-            if (!answer) return msg.edit(`${client.em.neutral} Cancelled deletion of **${roles.size}** role${s}. ${timedout}`);
+    const msg = await message.channel.send(`${issues.join('\n')}\n\n⁉️ Are you sure you want to __permanently__ delete the **${roles.size}** role${s} listed below?\n${roles.map(r => r).join(' | ')}`);
+    return client.promptYesNo(message.author, msg, (answer) => {
+        msg.reactions.removeAll();
+        const timedout = answer === null ? '(Timed out)' : '';
+        if (!answer)
+            return msg.edit(`${client.em.neutral} Cancelled deletion of **${roles.size}** role${s}. ${timedout}`);
 
-            roles.forEach(role => role.delete(`Requested by user: ${message.author.tag}`));
-            return msg.edit(`${client.em.check} Successfully deleted **${roles.size}** role${s}: \`\`${roles.map(r => r.name).join('``, ``')}\`\``);
-        });
+        roles.forEach(role_5 => role_5.delete(`Requested by user: ${message.author.tag}`));
+        return msg.edit(`${client.em.check} Successfully deleted **${roles.size}** role${s}: \`\`${roles.map(r_1 => r_1.name).join('``, ``')}\`\``);
     });
 }
 

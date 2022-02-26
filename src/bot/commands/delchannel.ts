@@ -2,7 +2,7 @@ import { Collection, GuildChannel, Message } from 'discord.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/message.js';
 
-export function run(client: Bot, message: Message, args: Args) {
+export async function run(client: Bot, message: Message, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} Please provide a mention or ID of at least one channel.`);
 
     const argsr = args.ordered.map(arg => arg.raw);
@@ -34,25 +34,25 @@ export function run(client: Bot, message: Message, args: Args) {
     }
 
     s = channels.size === 1 ? '' : 's';
-    message.channel.send(`${issues.join('\n')}\n\n⁉️ Are you sure you want to __permanently__ delete the **${channels.size}** channel${s} listed below?\n${channels.map(c => c).join(' | ')}`).then(msg => {
-        client.promptYesNo(message.author, msg, async (answer) => {
-            msg.reactions.removeAll();
-            const timedout = answer === null ? '(Timed out)' : '';
-            if (!answer) return msg.edit(`${client.em.neutral} Cancelled deletion of **${channels.size}** channel${s}. ${timedout}`);
+    const msg = await message.channel.send(`${issues.join('\n')}\n\n⁉️ Are you sure you want to __permanently__ delete the **${channels.size}** channel${s} listed below?\n${channels.map(c => c).join(' | ')}`);
+    return client.promptYesNo(message.author, msg, async (answer) => {
+        msg.reactions.removeAll();
+        const timedout = answer === null ? '(Timed out)' : '';
+        if (!answer)
+            return msg.edit(`${client.em.neutral} Cancelled deletion of **${channels.size}** channel${s}. ${timedout}`);
 
-            let results: string[] = [];
-            for (const channel of channels.map(c => c)) {
-                await channel.delete(`Requested by user: ${message.author.tag}`).then(() => {
-                    return results.push(`${client.em.check} Successfully deleted channel: **\`\`${channel.name}\`\`**`);
-                }).catch(error => {
-                    console.error('[DELCHANNEL_ERROR]', error);
-                    return results.push(`${client.em.xmark} Failed to delete ${channel}, does the bot have permissions to view and manage it?`);
-                });
-            }
-            return msg.edit(results.join('\n')).catch(err => {
-                results.unshift('ℹ️ You are receiving this message because you deleted the channel you used the command on.');
-                message.author.send(results.join('\n'));
+        let results: string[] = [];
+        for (const channel_3 of channels.map(c_1 => c_1)) {
+            await channel_3.delete(`Requested by user: ${message.author.tag}`).then(() => {
+                return results.push(`${client.em.check} Successfully deleted channel: **\`\`${channel_3.name}\`\`**`);
+            }).catch(error => {
+                console.error('[DELCHANNEL_ERROR]', error);
+                return results.push(`${client.em.xmark} Failed to delete ${channel_3}, does the bot have permissions to view and manage it?`);
             });
+        }
+        return msg.edit(results.join('\n')).catch(err => {
+            results.unshift('ℹ️ You are receiving this message because you deleted the channel you used the command on.');
+            message.author.send(results.join('\n'));
         });
     });
 }

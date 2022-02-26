@@ -35,12 +35,12 @@ export function checkPermissions(client: Bot, message: Message, cmd: any, helpCm
 
     if (selfPerms.length) {
         selfPerms.forEach((perm: PermissionString) => {
-            if (!self.has(perm)) return selfMiss.push(perm);
+            if (!self.has(perm)) selfMiss.push(perm);
         });
     }
     if (userPerms.length) {
         userPerms.forEach((perm: PermissionString) => {
-            if (!user.has(perm)) return userMiss.push(perm);
+            if (!user.has(perm)) userMiss.push(perm);
         });
     }
 

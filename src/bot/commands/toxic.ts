@@ -3,30 +3,31 @@ import got from 'got';
 import Bot from '../Bot.js';
 import { Args } from '../events/message.js';
 
-export function run(client: Bot, message: Message, argsx: Args) {
+export async function run(client: Bot, message: Message, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} Missing input.`);
     const args = argsx.basic.map(arg => arg.raw).join(' ');
 
-    got.post(`https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${process.env.PERSPECTIVE_APIKEY}`, {
-        body: `{ comment: { text: '${args}' }, languages: ['en'], requestedAttributes: { TOXICITY:{} } }`,
-        headers: { 'Content-Type': 'application/json' }
-    }).then(response => {
+    try {
+        const response = await got.post(`https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${process.env.PERSPECTIVE_APIKEY}`, {
+            body: `{ comment: { text: '${args}' }, languages: ['en'], requestedAttributes: { TOXICITY:{} } }`,
+            headers: { 'Content-Type': 'application/json' }
+        });
         const body = JSON.parse(response.body);
         const score = body.attributeScores.TOXICITY.summaryScore.value;
-        let color = 0x000000;
+        let color = 0;
         let label = '';
 
         if (score >= 0.76) {
-            color = 0xD300F9;
+            color = 13828345;
             label = 'Extremely toxic';
         } else if (score >= 0.5 && score < 0.76) {
-            color = 0x9735FD;
+            color = 9909757;
             label = 'Highly toxic';
         } else if (score >= 0.25 && score < 0.5) {
-            color = 0x5D76FC;
+            color = 6125308;
             label = 'Slightly toxic';
         } else {
-            color = 0x24C1F9;
+            color = 2408953;
             label = 'Not toxic';
         }
 
@@ -37,11 +38,11 @@ export function run(client: Bot, message: Message, argsx: Args) {
             .setDescription(RegExp.escapeMarkdown(args))
             .setFooter(`Requested by ${message.author.tag}`, message.author.displayAvatarURL({ dynamic: true, format: 'png' }))
             .setTimestamp();
-        return message.channel.send(toxicEmbed);
-    }).catch(err => {
+        return await message.channel.send(toxicEmbed);
+    } catch (err) {
         if (!process.env.PERSPECTIVE_APIKEY) console.warn('[MISSING_APIKEY] The PERSPECTIVE_APIKEY is missing!');
-        return message.channel.send(`${client.em.xmark} An unexpected error occured. Try again later.`);
-    });
+        return await message.channel.send(`${client.em.xmark} An unexpected error occured. Try again later.`);
+    }
 }
 
 function percentFormat(x: string): string {
