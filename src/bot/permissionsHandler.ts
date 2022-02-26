@@ -16,8 +16,8 @@ interface PermissionData {
 }
 
 export function checkPermissions(client: Bot, message: Message, cmd: any, helpCmd: boolean = false): PermissionData {
-    const self = message.guild!.me!.permissionsIn(message.channel);
-    const user = message.member!.permissionsIn(message.channel);
+    const self = message.guild!.me!.permissionsIn(message.channel as any);
+    const user = message.member!.permissionsIn(message.channel as any);
     let selfPerms = cmd.config.selfperms || [];
     let userPerms = cmd.config.userperms || [];
     let selfMiss: PermissionString[] = [];

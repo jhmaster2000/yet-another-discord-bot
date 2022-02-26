@@ -1,6 +1,6 @@
 import Discord, { Message, MessageEmbed } from 'discord.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
+import { Args } from '../events/messageCreate.js';
 import { checkPermissions } from '../permissionsHandler.js';
 
 export function run(client: Bot, message: Message, args: Args) {
@@ -12,7 +12,7 @@ export function run(client: Bot, message: Message, args: Args) {
         const help = [];
         help.push(`\`\`${commands.filter(cmd => !cmd.config.disabled).map(cmd => cmd.config.name).sort().join('``, ``')}\`\``);
         help.push(`\n*Use **\`\`${client.prefixes[0]} help [command]\`\`** to get info on a specific command.*`);
-        helpEmbed.setTitle('Here\'s a list of all the commands:').setColor(0x24C0FA).setDescription(help).setTimestamp()
+        helpEmbed.setTitle('Here\'s a list of all the commands:').setColor(0x24C0FA).setDescription(help.join('')).setTimestamp()
                  .setFooter(`Requested by ${message.author.tag}`, message.author.displayAvatarURL({ dynamic: true, format: 'png' }));
         return sendHelp(helpEmbed);
     }
@@ -54,7 +54,7 @@ export function run(client: Bot, message: Message, args: Args) {
     if (helpRequirements.length)   helpEmbed.addField('**__Requirements__**', helpRequirements.join('\n'));
     return sendHelp(helpEmbed);
 
-    function sendHelp(embed: MessageEmbed) { return message.channel.send(embed); }
+    function sendHelp(embed: MessageEmbed) { return message.channel.send({ embeds: [embed] }); }
 }
 
 function helpFlags(cmd: { config: { usage: { flags: { [x: string]: any; }; }; }; }): string {

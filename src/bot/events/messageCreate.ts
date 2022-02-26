@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { GuildChannelResolvable, Message } from 'discord.js';
 import * as lexure from 'lexure';
 import Bot from '../Bot.js';
 import { checkPermissions } from '../permissionsHandler.js';
@@ -13,7 +13,7 @@ export interface Args {
 export async function run(client: Bot, message: Message) {
     if (message.author.bot) return;
     if (!message.guild) return message.reply(`${client.em.xmark} Commands can't be used on DMs.`);
-    if (!message.guild.me!.permissionsIn(message.channel).has('SEND_MESSAGES')) return;
+    if (!message.guild.me!.permissionsIn(<GuildChannelResolvable>message.channel).has('SEND_MESSAGES')) return;
 
     let prefix: string = '';
     for (const thisPrefix of client.prefixes) {
@@ -29,7 +29,7 @@ export async function run(client: Bot, message: Message) {
     if (command.config.disabled) return message.channel.send(`${client.em.xmark} This command is currently disabled.`);
 
     /* Permissions Handler */
-    if (!message.guild.me!.permissionsIn(message.channel).has('USE_EXTERNAL_EMOJIS')) return message.channel.send('The bot is missing the **Use External Emoji** permission, which is required to function properly.');
+    if (!message.guild.me!.permissionsIn(<GuildChannelResolvable>message.channel).has('USE_EXTERNAL_EMOJIS')) return message.channel.send('The bot is missing the **Use External Emoji** permission, which is required to function properly.');
     const permissions = checkPermissions(client, message, command);
     if (permissions.code) return;
     

@@ -1,7 +1,7 @@
 import { Message } from 'discord.js';
 import util from 'util';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
+import { Args } from '../events/messageCreate.js';
 
 export function run(client: Bot, message: Message, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} No arguments detected.`);

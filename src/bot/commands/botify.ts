@@ -1,6 +1,6 @@
 import { Message, NewsChannel, TextChannel } from 'discord.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
+import { Args } from '../events/messageCreate.js';
 
 export async function run(client: Bot, message: Message, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} Cannot send empty message.`);
@@ -13,7 +13,7 @@ export async function run(client: Bot, message: Message, argsx: Args) {
             reason: `User ${message.author.tag} ran "botify" command.`
         });
         message.delete();
-        await webhook.send(webhookText, { disableMentions: 'everyone' });
+        await webhook.send({ content: webhookText, allowedMentions: { parse: ['users'] } });
         return webhook.delete();
     } catch (err) {
         console.error(err);

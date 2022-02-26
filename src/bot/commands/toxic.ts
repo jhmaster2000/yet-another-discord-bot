@@ -1,7 +1,7 @@
 import Discord, { Message } from 'discord.js';
 import got from 'got';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
+import { Args } from '../events/messageCreate.js';
 
 export async function run(client: Bot, message: Message, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} Missing input.`);
@@ -38,7 +38,7 @@ export async function run(client: Bot, message: Message, argsx: Args) {
             .setDescription(RegExp.escapeMarkdown(args))
             .setFooter(`Requested by ${message.author.tag}`, message.author.displayAvatarURL({ dynamic: true, format: 'png' }))
             .setTimestamp();
-        return await message.channel.send(toxicEmbed);
+        return await message.channel.send({ embeds: [toxicEmbed] });
     } catch (err) {
         if (!process.env.PERSPECTIVE_APIKEY) console.warn('[MISSING_APIKEY] The PERSPECTIVE_APIKEY is missing!');
         return await message.channel.send(`${client.em.xmark} An unexpected error occured. Try again later.`);

@@ -3,7 +3,7 @@ import got from 'got';
 import fs from 'fs';
 import { join } from 'path';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
+import { Args } from '../events/messageCreate.js';
 const assets = JSON.parse(fs.readFileSync(join(process.env.workdir!, './bot/assets/random.json')).toString());
 const items = ['cat', 'dog', 'bench'] as const;
 
@@ -29,7 +29,7 @@ const random = {
             const catEmbed = new Discord.MessageEmbed()
                 .setTitle('Here\'s your random cat! 🐱')
                 .setImage(body.file);
-            return message.channel.send(catEmbed);
+            return message.channel.send({ embeds: [catEmbed] });
         });
     },
     dog: (message: Message) => {
@@ -37,14 +37,14 @@ const random = {
         const dogEmbed = new Discord.MessageEmbed()
             .setTitle('Here\'s your random dog! 🐶')
             .setImage(`https://random.dog/${selected}`);
-        return message.channel.send(dogEmbed);
+        return message.channel.send({ embeds: [dogEmbed] });
     },
     bench: (message: Message) => {
         const selected = assets.benches[Math.floor(Math.random() * assets.benches.length)];
         const benchEmbed = new Discord.MessageEmbed()
             .setTitle('Here\'s your random bench! 🪑')
             .setImage(selected);
-        return message.channel.send(benchEmbed);
+        return message.channel.send({ embeds: [benchEmbed] });
     }
 }
 

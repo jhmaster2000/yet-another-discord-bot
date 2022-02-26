@@ -1,6 +1,6 @@
 import Discord, { Message } from 'discord.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
+import { Args } from '../events/messageCreate.js';
 
 const icons = {
     grass_block: '1',
@@ -61,7 +61,7 @@ export function run(client: Bot, message: Message, args: Args) {
     const achievement = new Discord.MessageEmbed()
         .setColor('RANDOM')
         .setImage(img);
-    return message.channel.send(achievement);
+    return message.channel.send({ embeds: [achievement] });
 }
 
 export const config = {

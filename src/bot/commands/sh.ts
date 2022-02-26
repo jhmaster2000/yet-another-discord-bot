@@ -2,8 +2,8 @@ import { exec } from 'child_process';
 import util from 'util';
 import ps from 'ps-node';
 import Bot from '../Bot.js';
-import { Message } from 'discord.js';
-import { Args } from '../events/message.js';
+import { Message, Util } from 'discord.js';
+import { Args } from '../events/messageCreate.js';
 process.env.RUNNING_EXEC_PIDS = '[]';
 
 function killRunningSubprocesses(message: Message): void {
@@ -41,9 +41,11 @@ export function run(client: Bot, message: Message, argsx: Args) {
             output.push('```');
             if (error?.code === null) output.push(`\`⚠️ Command timed out.\``);
             if (error?.code !== undefined) output.push(`\`Command exited with code ${error?.code}\``);
-            msg.edit(output.join('\n')).catch(err => {
+            msg.edit(output.join('\n')).catch(async err => {
                 msg.delete();
-                message.channel.send(output.join('\n'), { split: { prepend: '```xl\n', append: '```' } });
+                for (const m of Util.splitMessage(output.join('\n'), { char: /\n|./, prepend: '```ansi\n', append: '```' })) {
+                    await message.channel.send(m);
+                };
             });
         });
         let runningExecPIDs = JSON.parse(process.env.RUNNING_EXEC_PIDS!);

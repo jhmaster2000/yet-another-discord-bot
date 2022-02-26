@@ -1,9 +1,15 @@
 import Bot from './Bot.js';
-
+const ALL_INTENTS = 32767 as const;
 Error.stackTraceLimit = Number(process.env.STACKTRACE_LIMIT);
 
 /* Client Setup */
-const client = new Bot({ disableMentions: 'everyone', allowedMentions: { parse: ['users'] } });
+const client = new Bot({
+    intents: ALL_INTENTS,
+    allowedMentions: {
+        parse: ['users'],
+        repliedUser: false
+    }
+});
 
 import loadCustomEmojis from './loadCustomEmojis.js'; loadCustomEmojis(client);
 import loadCommands from './loadCommands.js'; loadCommands(client);

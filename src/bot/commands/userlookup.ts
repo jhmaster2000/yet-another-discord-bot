@@ -1,6 +1,6 @@
-import Discord, { Message } from 'discord.js';
+import Discord, { Message, UserFlags } from 'discord.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
+import { Args } from '../events/messageCreate.js';
 
 export async function run(client: Bot, message: Message, argsx: Args) {
     const args = argsx.basic.map(arg => arg.raw);
@@ -24,11 +24,10 @@ export async function run(client: Bot, message: Message, argsx: Args) {
     let badges = [];
     if (user.flags) {
         const flags = user.flags.serialize();
-        (<any>flags).DISCORD_CERTIFIED_MODERATOR = user.flags.has(1 << 18);
-        if ((<any>flags).DISCORD_CERTIFIED_MODERATOR) badges.push(client.em.discord_mod);
+        if (flags.DISCORD_CERTIFIED_MODERATOR) badges.push(client.em.discord_mod);
         if (flags.DISCORD_EMPLOYEE) badges.push(client.em.discord_staff);
-        if (flags.DISCORD_PARTNER || flags.PARTNERED_SERVER_OWNER) badges.push(client.em.partner_owner);
-        if (flags.VERIFIED_DEVELOPER || (<any>flags).EARLY_VERIFIED_BOT_DEVELOPER) badges.push(client.em.bot_dev);
+        if (flags.PARTNERED_SERVER_OWNER) badges.push(client.em.partner_owner);
+        if (flags.EARLY_VERIFIED_BOT_DEVELOPER) badges.push(client.em.bot_dev);
         if (flags.EARLY_SUPPORTER) badges.push(client.em.early_supporter);
         if (flags.HYPESQUAD_EVENTS) badges.push(client.em.hs_events);
         if (flags.HOUSE_BRAVERY) badges.push(client.em.hs_bravery);
@@ -37,6 +36,8 @@ export async function run(client: Bot, message: Message, argsx: Args) {
         if (flags.BUGHUNTER_LEVEL_1) badges.push(client.em.bughunter);
         if (flags.BUGHUNTER_LEVEL_2) badges.push(client.em.goldbughunter);
         if (flags.VERIFIED_BOT) badges.push(client.em.verified);
+        // TODO: flags.BOT_HTTP_INTERACTIONS
+        // TODO: flags.TEAM_USER
     }
 
     let userdata = [];
@@ -46,11 +47,11 @@ export async function run(client: Bot, message: Message, argsx: Args) {
 
     const userEmbed = new Discord.MessageEmbed()
         .setColor(0x00FF00)
-        .setAuthor(`Info for account ${await user.id}`, bot ? bot : undefined)
+        .setAuthor(`Info for account ${user.id}`, bot ? bot : undefined)
         .setDescription(userdata.join('\n'))
-        .setThumbnail(await user.displayAvatarURL({ dynamic: true, format: 'png' }))
-        .setFooter(`Registered on: ${await user.createdAt.toUTCString()}`);
-    return message.channel.send(userEmbed);
+        .setThumbnail(user.displayAvatarURL({ dynamic: true, format: 'png' }))
+        .setFooter(`Registered on: ${user.createdAt.toUTCString()}`);
+    return message.channel.send({ embeds: [userEmbed] });
 }
 
 export const config = {

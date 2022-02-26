@@ -2,7 +2,7 @@ import Discord, { Message } from 'discord.js';
 import { striptags } from 'striptags';
 import got from 'got';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
+import { Args } from '../events/messageCreate.js';
 
 export async function run(client: Bot, message: Message, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} You must provide something to search!`);
@@ -31,7 +31,7 @@ export async function run(client: Bot, message: Message, argsx: Args) {
         .setURL(mainDef.wordnikUrl)
         .setDescription(definitions.join('\n'))
         .setFooter(`F${mainDef.attributionText.slice(1)}`, 'https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png');
-    return await message.channel.send(definitionEmbed);
+    return await message.channel.send({ embeds: [definitionEmbed] });
 }
 
 export const config = {

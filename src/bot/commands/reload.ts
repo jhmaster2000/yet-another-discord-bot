@@ -2,7 +2,7 @@ import { Message } from 'discord.js';
 import { join } from 'path';
 import { pathToFileURL } from 'url';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
+import { Args } from '../events/messageCreate.js';
 
 export async function run(client: Bot, message: Message, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} No command to reload was given.`);

@@ -1,12 +1,12 @@
-import { Message, User } from 'discord.js';
+import { Message, MessageReaction, User } from 'discord.js';
 import Bot from './Bot.js';
 
 export default function loadReactionListener(client: Bot): void {
     client.promptYesNo = (from: User, msg: Message, callback: (answer: boolean | null) => void, timeout?: number, reactions?: any): void => {
         msg.react(reactions?.no || client.re.xmark).then(() => msg.react(reactions?.yes || client.re.check));
 
-        const filter = (reaction: string, user: User) => user.id === from.id;
-        const collector = msg.createReactionCollector(filter, { idle: timeout || 10000 });
+        const filter = (reaction: MessageReaction, user: User) => user.id === from.id;
+        const collector = msg.createReactionCollector({ filter, idle: timeout || 10000 });
 
         collector.on('collect', (reaction, thisCollector) => {
             if (reaction.emoji.id === (reactions?.yes || client.re.check)) collector.stop('true');

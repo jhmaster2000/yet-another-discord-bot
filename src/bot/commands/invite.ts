@@ -1,6 +1,6 @@
 import Discord, { Message } from 'discord.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
+import { Args } from '../events/messageCreate.js';
 
 const cdnurl = 'https://cdn.discordapp.com/' as const;
 const cdn = {
@@ -49,7 +49,7 @@ export async function run(client: Bot, message: Message, argsx: Args) {
             inviteEmbed.setImage(cdn[inviteImageType!](inv.guild!.id, inviteImage));
         if (inv.guild!.description)
             inviteEmbed.setDescription(inv.guild!.description);
-        return await message.channel.send(inviteEmbed);
+        return await message.channel.send({ embeds: [inviteEmbed] });
     } catch (err) {
         return await message.channel.send(`${client.em.xmark} Invalid Discord invite link!`);
     }

@@ -1,7 +1,7 @@
 import Discord, { Message } from 'discord.js';
 import got from 'got';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
+import { Args } from '../events/messageCreate.js';
 
 const enum Types {
     article = 'A',
@@ -44,7 +44,7 @@ export function run(client: Bot, message: Message, argsx: Args) {
                 });
                 ddgEmbed.addField('Related results', related.join('\n'));
             }
-            return message.channel.send(ddgEmbed);
+            return message.channel.send({ embeds: [ddgEmbed] });
         } else if (data.Answer) {
             if (data.AnswerType === 'ip' || data.AnswerType === 'iploc') return message.channel.send(`${client.em.xmark} No results found!`);
             if (data.AnswerType === 'color_code') {
@@ -55,15 +55,15 @@ export function run(client: Bot, message: Message, argsx: Args) {
                     .setFooter(`Result type: color`)
                     .setThumbnail(`https://color.aero.bot/color?color=${colorHex}`)
                     .setColor(colorHex);
-                return message.channel.send(ddgEmbed);
+                return message.channel.send({ embeds: [ddgEmbed] });
             }
 
             const ddgEmbed = new Discord.MessageEmbed()
                 .setAuthor('DuckDuckGo QuickSearch Results:', 'https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png')
                 .setDescription(`${data.Answer}`)
                 .setFooter(`Result type: ${data.AnswerType.replace(/_/g, ' ') || '-'}`)
-                .setColor('CYAN');
-            return message.channel.send(ddgEmbed);
+                .setColor('DARK_AQUA');
+            return message.channel.send({ embeds: [ddgEmbed] });
         }
         return;
     }).catch(err => {

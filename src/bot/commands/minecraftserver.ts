@@ -1,7 +1,7 @@
 import Discord, { Message } from 'discord.js';
 import got from 'got';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
+import { Args } from '../events/messageCreate.js';
 
 interface MOTDObject {
     text: string;
@@ -46,7 +46,7 @@ export function run(client: Bot, message: Message, args: Args) {
                 .setColor(0xFF0000)
                 .setTitle(ipAddress + ':' + port)
                 .setDescription('`Server is offline.`');
-            return message.channel.send(embed);
+            return message.channel.send({ embeds: [embed] });
         }
 
         const embed = new Discord.MessageEmbed()
@@ -58,11 +58,13 @@ export function run(client: Bot, message: Message, args: Args) {
             .addField('Protocol', server.server.protocol || '`Unknown`', true)
             .setFooter(`Last Updated ${new Date(server.last_updated * 1000).toUTCString()}`, message.author.avatarURL() ?? undefined);
 
+        let files: Discord.MessageAttachment[] = [];
         if (server.favicon) {
             const faviconData = Buffer.from(server.favicon.split(',').slice(1).join(','), 'base64');
-            embed.attachFiles([new Discord.MessageAttachment(faviconData, 'favicon.png')]).setThumbnail("attachment://favicon.png");
+            files.push(new Discord.MessageAttachment(faviconData, 'favicon.png'));
+            embed.setThumbnail("attachment://favicon.png");
         }
-        return message.channel.send(embed);
+        return message.channel.send({ embeds: [embed], files });
     }).catch(err => {
         console.error(err);
         message.channel.send(`${client.em.xmark} An unexpected error occured trying to fetch server data, try again later.`);

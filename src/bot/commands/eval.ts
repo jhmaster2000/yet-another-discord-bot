@@ -1,8 +1,8 @@
 import util from 'util';
 import * as lexure from 'lexure';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
-import { Message } from 'discord.js';
+import { Args } from '../events/messageCreate.js';
+import { Message, Util } from 'discord.js';
 
 /* Quick Access Modules */
 import Discord from 'discord.js';
@@ -10,7 +10,7 @@ import got from 'got';
 import fs from 'fs';
 import os from 'os';
 
-export function run(client: Bot, message: Message, args: Args) {
+export async function run(client: Bot, message: Message, args: Args) {
     const split = args.flags.has('split') || args.flags.has('s');
     const async = args.flags.has('async') || args.flags.has('a');
     const promises = args.flags.has('promises') || args.flags.has('p');
@@ -30,15 +30,29 @@ export function run(client: Bot, message: Message, args: Args) {
                 await eval(`(async () => { ${code} } )().then(p => asyncEvaled = p);`);
                 if (asyncEvaled === undefined) asyncEvaled = '⚠️ No return value.';
                 if (typeof asyncEvaled !== 'string') asyncEvaled = util.inspect(asyncEvaled, false, depth, false);
-                return message.channel.send(clean(asyncEvaled), { code: 'js', split: split }).catch(e => {
-                    message.channel.send('⚠️ AsyncOutput is too long, check console for details! (or use `--split` flag)');
-                    console.info(`[ASYNCEVAL_STDOUT] ${asyncEvaled}`);
-                });
+                if (split) {
+                    for (const m of Util.splitMessage('```js\n'+clean(asyncEvaled)+'\n```', { char: /\n|./, prepend: '```js\n', append: '```' })) {
+                        await message.channel.send(m);
+                    };
+                    return;
+                } else {
+                    return message.channel.send('```js\n'+clean(asyncEvaled)+'\n```').catch(e => {
+                        message.channel.send('⚠️ AsyncOutput is too long, check console for details! (or use `--split` flag)');
+                        console.info(`[ASYNCEVAL_STDOUT] ${asyncEvaled}`);
+                    });
+                }
             } catch(err) {
-                return message.channel.send(`${client.em.xmark} **AsyncError:**\n\`\`\`js\n${clean(err)}\n\`\`\``, { split: split }).catch(e => {
-                    message.channel.send('⚠️ AsyncError is too long, check console for details! (or use `--split` flag)');
-                    console.info(`[ASYNCEVAL_STDERR] ${err}`);
-                });
+                if (split) {
+                    for (const m of Util.splitMessage(`${client.em.xmark} **AsyncError:**\n\`\`\`js\n${clean(err)}\n\`\`\``, { char: /\n|./, prepend: '```js\n', append: '```' })) {
+                        await message.channel.send(m);
+                    };
+                    return;
+                } else {
+                    return message.channel.send(`${client.em.xmark} **AsyncError:**\n\`\`\`js\n${clean(err)}\n\`\`\``).catch(e => {
+                        message.channel.send('⚠️ AsyncError is too long, check console for details! (or use `--split` flag)');
+                        console.info(`[ASYNCEVAL_STDERR] ${err}`);
+                    });
+                }
             }
         }
 
@@ -49,15 +63,29 @@ export function run(client: Bot, message: Message, args: Args) {
         }
         if (typeof evaled !== 'string') evaled = util.inspect(evaled, false, depth, false);
 
-        return message.channel.send(clean(evaled), { code: 'js', split: split }).catch(e => {
-            message.channel.send('⚠️ Output is too long, check console for details! (or use `--split` flag)');
-            return console.info(`[EVAL_STDOUT] ${evaled}`);
-        });
+        if (split) {
+            for (const m of Util.splitMessage('```js\n'+clean(evaled)+'\n```', { char: /\n|./, prepend: '```js\n', append: '```' })) {
+                await message.channel.send(m);
+            };
+            return;
+        } else {
+            return message.channel.send('```js\n'+clean(evaled)+'\n```').catch(e => {
+                message.channel.send('⚠️ Output is too long, check console for details! (or use `--split` flag)');
+                return console.info(`[EVAL_STDOUT] ${evaled}`);
+            });
+        }
     } catch (err) {
-        return message.channel.send(`${client.em.xmark} **Error:**\n\`\`\`js\n${clean(err)}\n\`\`\``, { split: split }).catch(e => {
-            message.channel.send('⚠️ Error is too long, check console for details! (or use `--split` flag)');
-            return console.info(`[EVAL_STDERR] ${err}`);
-        });
+        if (split) {
+            for (const m of Util.splitMessage(`${client.em.xmark} **Error:**\n\`\`\`js\n${clean(err)}\n\`\`\``, { char: /\n|./, prepend: '```js\n', append: '```' })) {
+                await message.channel.send(m);
+            };
+            return;
+        } else {
+            return message.channel.send(`${client.em.xmark} **Error:**\n\`\`\`js\n${clean(err)}\n\`\`\``).catch(e => {
+                message.channel.send('⚠️ Error is too long, check console for details! (or use `--split` flag)');
+                return console.info(`[EVAL_STDERR] ${err}`);
+            });
+        }
     }
 }
 

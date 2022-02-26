@@ -1,6 +1,6 @@
 import { Message, Role } from 'discord.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
+import { Args } from '../events/messageCreate.js';
 
 export async function run(client: Bot, message: Message, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} Please provide a mention or ID of at least one role.`);
@@ -32,7 +32,7 @@ export async function run(client: Bot, message: Message, args: Args) {
     s = notEditableBySelf.length === 1 ? '' : 's';
     if (notEditableBySelf.length) issues.push(`⚠️ Unable to delete the **${notEditableBySelf.length}** role${s} listed below because they are above or equal to the bot's highest role, or are protected by Discord:\n${notEditableBySelf.join(' | ')}`);
     
-    if (message.guild!.owner!.id !== message.author.id) {
+    if ((await message.guild!.fetchOwner()).id !== message.author.id) {
         let notEditableByUser: Role[] = [];
         roles.filter(role => message.member!.roles.highest.comparePositionTo(role) <= 0).forEach(role => {
             notEditableByUser.push(role);

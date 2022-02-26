@@ -1,7 +1,7 @@
 import Discord, { Message } from 'discord.js';
 import figlet from 'figlet';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
+import { Args } from '../events/messageCreate.js';
 
 export function run(client: Bot, message: Message, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} You need to provide some text.`);
@@ -20,7 +20,7 @@ export function run(client: Bot, message: Message, args: Args) {
         }
 
         const file = new Discord.MessageAttachment(Buffer.from(data!), 'ascii.txt');
-        return message.channel.send(file);
+        return message.channel.send({ files: [file] });
     });
 }
 

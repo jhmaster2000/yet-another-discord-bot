@@ -1,6 +1,6 @@
 import Discord, { Message } from 'discord.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
+import { Args } from '../events/messageCreate.js';
 
 export function run(client: Bot, message: Message, args: Args) {
     let rolesData: string[] = [];
@@ -12,7 +12,7 @@ export function run(client: Bot, message: Message, args: Args) {
         .setColor(0x00FF00)
         .setTitle(`Roles in this server: (${rolesData.length})`)
         .setDescription(rolesData.join('\n'));
-    return message.channel.send(rolesEmbed);
+    return message.channel.send({ embeds: [rolesEmbed] });
 }
 
 function simpleRoles(rolesList: Discord.Collection<string, Discord.Role>, message: Message) {
@@ -25,7 +25,7 @@ function simpleRoles(rolesList: Discord.Collection<string, Discord.Role>, messag
         .setTitle(`Roles in this server: (${simpleRolesData.length})`)
         .setDescription(simpleRolesData.join(', '))
         .setFooter('⚠️ This server has too many roles to display full roles data.');
-    return message.channel.send(simpleRolesEmbed);
+    return message.channel.send({ embeds: [simpleRolesEmbed] });
 }
 
 function tooManyRoles(rolesCount: number, message: Discord.Message): Promise<Discord.Message> {
@@ -33,7 +33,7 @@ function tooManyRoles(rolesCount: number, message: Discord.Message): Promise<Dis
         .setColor(0xFF0000)
         .setTitle(`Roles in this server: (${rolesCount})`)
         .setFooter('❌ This server has too many roles to display.');
-    return message.channel.send(tooManyRolesEmbed);
+    return message.channel.send({ embeds: [tooManyRolesEmbed] });
 }
 
 export const config = {

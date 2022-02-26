@@ -1,6 +1,6 @@
 import Discord, { Message } from 'discord.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
+import { Args } from '../events/messageCreate.js';
 
 export function run(client: Bot, message: Message, args: Args) {
     message.guild!.members.fetch();
@@ -13,11 +13,10 @@ export function run(client: Bot, message: Message, args: Args) {
         if (member.premiumSince) badges.push(client.em.booster);
         if (member.user.flags) {
             const flags = member.user.flags.serialize();
-            (<any>flags).DISCORD_CERTIFIED_MODERATOR = member.user.flags.has(1 << 18);
-            if ((<any>flags).DISCORD_CERTIFIED_MODERATOR) badges.push(client.em.discord_mod);
+            if (flags.DISCORD_CERTIFIED_MODERATOR) badges.push(client.em.discord_mod);
             if (flags.DISCORD_EMPLOYEE) badges.push(client.em.discord_staff);
-            if (flags.DISCORD_PARTNER || flags.PARTNERED_SERVER_OWNER) badges.push(client.em.partner_owner);
-            if (flags.VERIFIED_DEVELOPER || (<any>flags).EARLY_VERIFIED_BOT_DEVELOPER) badges.push(client.em.bot_dev);
+            if (flags.PARTNERED_SERVER_OWNER) badges.push(client.em.partner_owner);
+            if (flags.EARLY_VERIFIED_BOT_DEVELOPER) badges.push(client.em.bot_dev);
             if (flags.EARLY_SUPPORTER) badges.push(client.em.early_supporter);
             if (flags.HYPESQUAD_EVENTS) badges.push(client.em.hs_events);
             if (flags.HOUSE_BRAVERY) badges.push(client.em.hs_bravery);
@@ -26,6 +25,8 @@ export function run(client: Bot, message: Message, args: Args) {
             if (flags.BUGHUNTER_LEVEL_1) badges.push(client.em.bughunter);
             if (flags.BUGHUNTER_LEVEL_2) badges.push(client.em.goldbughunter);
             if (flags.VERIFIED_BOT) badges.push(client.em.verified);
+            // TODO: flags.BOT_HTTP_INTERACTIONS
+            // TODO: flags.TEAM_USER
         }
         const badgesStr = badges.length ? badges.join(' ') + ' ' : '';
 

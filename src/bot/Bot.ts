@@ -1,7 +1,7 @@
 import { Client, ClientOptions, Collection, Message, User } from 'discord.js';
 
 export default class Bot extends Client {
-    constructor(options?: ClientOptions) {
+    constructor(options: ClientOptions) {
         super(options);
 
         this.prefixes.push('plz');

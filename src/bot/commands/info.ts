@@ -2,7 +2,7 @@ import Discord, { Message } from 'discord.js';
 import crypto from 'crypto';
 import os from 'os';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
+import { Args } from '../events/messageCreate.js';
 
 export function run(client: Bot, message: Message, args: Args) {
     const memory = `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(1)}/${(os.totalmem() / 1024 / 1024).toFixed(1)} MB`;
@@ -37,7 +37,7 @@ export function run(client: Bot, message: Message, args: Args) {
             .addField('OS', `\`${process.platform} (${process.arch})\``, true)
             .addField('CPU Usage', `\`${cpuUsage}%\``, true)
             .addField('Memory Usage', `\`${memory}\``, true)
-        return message.channel.send(infoEmbed);
+        return message.channel.send({ embeds: [infoEmbed] });
     }, 250);
 }
 

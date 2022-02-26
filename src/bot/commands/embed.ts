@@ -1,6 +1,6 @@
 import Discord, { Message } from 'discord.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
+import { Args } from '../events/messageCreate.js';
 const ZWS = '​' as const;
 
 export async function run(client: Bot, message: Message, args: Args): Promise<Discord.Message | undefined> {
@@ -17,9 +17,9 @@ export async function run(client: Bot, message: Message, args: Args): Promise<Di
     const thumb = opts.get('thumb') ? opts.get('thumb') : null;
 
     const embed = new Discord.MessageEmbed()
-        .setAuthor(author, message.author.displayAvatarURL({ dynamic: true, format: 'png' }))
+        .setAuthor(author!, message.author.displayAvatarURL({ dynamic: true, format: 'png' }))
         .setDescription(description)
-        .setColor(color!)
+        .setColor(color as any)
         .setTimestamp();
     if (title) embed.setTitle(title);
     if (footer) embed.setFooter(footer);
@@ -29,7 +29,7 @@ export async function run(client: Bot, message: Message, args: Args): Promise<Di
 
     message.delete();
     try {
-        return message.channel.send(embed);
+        return message.channel.send({ embeds: [embed] });
     } catch (err: any) {
         if (err.code === 50035) {
             let errlist: string[] = [];

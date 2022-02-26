@@ -1,6 +1,6 @@
 import { Message, NewsChannel, TextChannel } from 'discord.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/message.js';
+import { Args } from '../events/messageCreate.js';
 
 export function run(client: Bot, message: Message, argsx: Args): any {
     const args = argsx.ordered.map(arg => arg.value);
