@@ -1,5 +1,6 @@
 import Discord, { Message, UserFlags } from 'discord.js';
 import Bot from '../Bot.js';
+import Utils from '../../utils.js';
 import { Args } from '../events/messageCreate.js';
 
 export async function run(client: Bot, message: Message, argsx: Args) {
@@ -41,16 +42,15 @@ export async function run(client: Bot, message: Message, argsx: Args) {
     }
 
     let userdata = [];
-    //@ts-ignore // TODO: Refer to sideloadUtils.ts
-    userdata.push(`**User Tag:** \`\`${await RegExp.escapeBacktick(await user.tag)}\`\``);
+    userdata.push(`**User Tag:** \`\`${Utils.escapeBacktick(user.tag, true)}\`\``);
     userdata.push(`**Badges:** ${badges.length ? badges.join(' ') : 'None'}`);
 
     const userEmbed = new Discord.MessageEmbed()
         .setColor(0x00FF00)
-        .setAuthor(`Info for account ${user.id}`, bot ? bot : undefined)
+        .setAuthor({ name: `Info for account ${user.id}`, iconURL: bot ? bot : undefined as any })
         .setDescription(userdata.join('\n'))
         .setThumbnail(user.displayAvatarURL({ dynamic: true, format: 'png' }))
-        .setFooter(`Registered on: ${user.createdAt.toUTCString()}`);
+        .setFooter({ text: `Registered on: ${user.createdAt.toUTCString()}` });
     return message.channel.send({ embeds: [userEmbed] });
 }
 

@@ -1,5 +1,6 @@
 import Discord, { Message } from 'discord.js';
 import got from 'got';
+import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
 
@@ -34,9 +35,8 @@ export async function run(client: Bot, message: Message, argsx: Args) {
         const toxicEmbed = new Discord.MessageEmbed()
             .setColor(color)
             .setTitle(`${label} (${percentFormat(score)}%)`)
-            //@ts-ignore // TODO: Refer to sideloadUtils.ts
-            .setDescription(RegExp.escapeMarkdown(args))
-            .setFooter(`Requested by ${message.author.tag}`, message.author.displayAvatarURL({ dynamic: true, format: 'png' }))
+            .setDescription(Utils.escapeMarkdown(args))
+            .setFooter({ text: `Requested by ${message.author.tag}`, iconURL: message.author.displayAvatarURL({ dynamic: true, format: 'png' }) })
             .setTimestamp();
         return await message.channel.send({ embeds: [toxicEmbed] });
     } catch (err) {

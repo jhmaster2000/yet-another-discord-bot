@@ -1,4 +1,5 @@
 import { Message } from 'discord.js';
+import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
 
@@ -24,8 +25,7 @@ export async function run(client: Bot, message: Message, args: Args) {
             if (index <= 2 - argOffset) return;
             if (possibleRoleID.trim().match(/^<@&[0-9]{17,20}>$/g)) return;
             const possibleRole = message.guild!.roles.cache.get(possibleRoleID);
-            //@ts-ignore // TODO: Refer to sideloadUtils.ts
-            if (!possibleRole) return invalidRoles.push(RegExp.escapeBacktick(possibleRoleID));
+            if (!possibleRole) return invalidRoles.push(Utils.escapeBacktick(possibleRoleID, true));
             else return roles.set(possibleRole.id, possibleRole);
         });
         let s = invalidRoles.length === 1 ? '' : 's';

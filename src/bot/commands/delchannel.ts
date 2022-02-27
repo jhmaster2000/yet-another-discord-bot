@@ -1,4 +1,5 @@
 import { Collection, GuildChannel, GuildChannelResolvable, Message, TextBasedChannel } from 'discord.js';
+import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
 
@@ -12,8 +13,7 @@ export async function run(client: Bot, message: Message, args: Args) {
     argsr.forEach(possibleChannelID => {
         if (possibleChannelID.trim().match(/^<#[0-9]{17,20}>$/g)) return;
         const possibleChannel = message.guild!.channels.cache.get(possibleChannelID) as TextBasedChannel | undefined;
-        //@ts-ignore // TODO: Refer to sideloadUtils.ts
-        if (!possibleChannel) return invalidChannels.push(RegExp.escapeBacktick(possibleChannelID));
+        if (!possibleChannel) return invalidChannels.push(Utils.escapeBacktick(possibleChannelID, true));
         else return channels.set(possibleChannel.id, possibleChannel);
     });
     if (!channels.size) return message.channel.send(`${client.em.xmark} Could not resolve any valid channels from your input.`);

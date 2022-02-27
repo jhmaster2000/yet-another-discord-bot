@@ -1,6 +1,7 @@
 import { spawn } from 'child_process';
-import { Message, Util } from 'discord.js';
+import { Message } from 'discord.js';
 import ps from 'ps-node';
+import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
 
@@ -77,7 +78,7 @@ export function run(client: Bot, message: Message, argsx: Args) {
                 if (reason === 'timeout') output.push(`\`⚠️ Command timed out.\``);
                 msg.edit(output.join('\n')).catch(async err => {
                     msg.delete();
-                    for (const m of Util.splitMessage(output.join('\n'), { char: /\n|./, prepend: '```ansi\n', append: '```' })) {
+                    for (const m of Utils.splitMessage(output.join('\n'), { char: /\n|./, prepend: '```ansi\n', append: '```' })) {
                         await message.channel.send(m);
                     };
                 });

@@ -1,4 +1,5 @@
 import Discord, { Message } from 'discord.js';
+import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
 
@@ -35,15 +36,13 @@ export function run(client: Bot, message: Message, args: Args) {
 
         const memberEmbed = new Discord.MessageEmbed()
             .setColor(member.displayHexColor)
-            //@ts-ignore // TODO: Refer to sideloadUtils.ts
-            .setTitle(`${badgesStr}${RegExp.escapeMarkdown(member.user.tag)}`)
+            .setTitle(`${badgesStr}${Utils.escapeMarkdown(member.user.tag)}`)
             .addField('Roles', member.roles.cache.sort((roleA, roleB) => roleB.position - roleA.position).map(role => role).join(', '))
             .addField('Permissions', `\`${member.permissions.toArray().join('`, `')}\``)
             .addField('Joined on', `${member.joinedAt!.toUTCString()}`, true)
             .addField('Registered on', `${member.user.createdAt.toUTCString()}`, true)
             .setThumbnail(member.user.displayAvatarURL({ dynamic: true, format: 'png' }));
-            //@ts-ignore // TODO: Refer to sideloadUtils.ts
-        if (nickname) memberEmbed.setTitle(`${badgesStr}${RegExp.escapeMarkdown(member.user.tag)} (__AKA:__ ${nickname})`);
+        if (nickname) memberEmbed.setTitle(`${badgesStr}${Utils.escapeMarkdown(member.user.tag)} (__AKA:__ ${nickname})`);
         members.push(memberEmbed);
     });
 

@@ -8,18 +8,15 @@ export function run(client: Bot, message: Message, argsx: Args): any {
 
     if (isNaN(msgcount) || (msgcount < 1 || msgcount > 99)) return message.channel.send(`${client.em.xmark} Please provide a number from 1 to 99 as argument!`);
 
-    //@ts-ignore
-    (message.channel as TextChannel | NewsChannel).bulkDelete(msgcount + 1, true).then(deleted => {
+    (message.channel as TextChannel | NewsChannel).bulkDelete(msgcount + 1, true).then(async deleted => {
         let notDeleted = '';
         const diffcount = msgcount + 1 - deleted.size;
         if (deleted.size === 0) return message.channel.send(`${client.em.xmark} No messages deleted due to all messages on this channel being older than 2 weeks.`);
         if (diffcount !== 0) notDeleted = `\n⚠️ \`${diffcount}\` were not deleted due to being older than 2 weeks.`
-        return message.channel.send(`${client.em.check} Successfully deleted \`${deleted.size - 1}\` messages.${notDeleted}`).then(msg => {
-            setTimeout(() => {
-                msg.delete();
-            }, 4500);
-        });
-    }).catch(err => {
+        const msg = await message.channel.send(`${client.em.check} Successfully deleted \`${deleted.size - 1}\` messages.${notDeleted}`);
+        setTimeout(() => msg.delete(), 4500);
+        return msg;
+    }).catch(() => {
         return message.channel.send(`${client.em.xmark} Failed to delete messages. (Note: Messages older than 2 weeks can't be deleted!)`);
     });
 }

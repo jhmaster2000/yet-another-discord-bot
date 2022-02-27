@@ -2,29 +2,44 @@ import { ChannelResolvable, Message } from 'discord.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
 
+const ChannelTypes = {
+    GUILD_TEXT: 0,
+    DM: 1,
+    GUILD_VOICE: 2,
+    GROUP_DM: 3,
+    GUILD_CATEGORY: 4,
+    GUILD_NEWS: 5,
+    GUILD_STORE: 6,
+    UNKNOWN: 7,
+    GUILD_NEWS_THREAD: 10,
+    GUILD_PUBLIC_THREAD: 11,
+    GUILD_PRIVATE_THREAD: 12,
+    GUILD_STAGE_VOICE: 13
+} as const;
+
 export function run(client: Bot, message: Message, args: Args): any {
     if (!args.ordered.length) return message.channel.send(`${client.em.xmark} A channel name is required!`);
     const argsv = args.ordered.map(arg => arg.raw);
 
-    const type = (args.flags.has('voice') || args.flags.has('vc')) ? 'voice' : (args.flags.has('category') || args.flags.has('cat')) ? 'category' : 'text';
+    const type = (args.flags.has('voice') || args.flags.has('vc')) ? ChannelTypes.GUILD_VOICE : (args.flags.has('category') || args.flags.has('cat')) ? ChannelTypes.GUILD_CATEGORY : ChannelTypes.GUILD_TEXT;
     const position = Number(args.options.get('position') || args.options.get('pos')) || null;
     const category = args.options.get('category') || args.options.get('cat');
     const nsfw = args.flags.has('nsfw');
     const slowmode = parseSlowmode(client, message, args.options.get('slowmode') || args.options.get('slow') || '0');
     const topic = args.options.get('topic')?.slice(0, 1024) || args.options.get('t')?.slice(0, 1024);
-    const name = type === 'text' ? argsv.join('-').slice(0, 100) : argsv.join(' ').slice(0, 100);
+    const name = type === ChannelTypes.GUILD_TEXT ? argsv.join('-').slice(0, 100) : argsv.join(' ').slice(0, 100);
 
-    if (type === 'text' && isNaN(<any>slowmode)) return; // Response on parseSlowmode() function
+    if (type === ChannelTypes.GUILD_TEXT && isNaN(<any>slowmode)) return; // Response on parseSlowmode() function
 
     const categorychannel = message.guild!.channels.cache.get(category!);
-    if (type !== 'category' && category) {
+    if (type !== ChannelTypes.GUILD_CATEGORY && category) {
         if (!categorychannel) return message.channel.send(`${client.em.xmark} Failed to parse the **category** option into a valid category channel.`);
         if (categorychannel.type !== 'GUILD_CATEGORY') return message.channel.send(`${client.em.xmark} ${categorychannel} is not a category!`);
     }
 
     const vc_bitrate = Number(args.options.get('bitrate') || args.options.get('kbps'));
     const vc_userlimit = Number(args.options.get('userlimit') || args.options.get('users'));
-    if (type === 'voice') {
+    if (type === ChannelTypes.GUILD_VOICE) {
         if (message.guild!.premiumTier === 'NONE' && (vc_bitrate < 8 || vc_bitrate > 96)) return message.channel.send(`${client.em.xmark} The bitrate must be between \`8\` and \`96\` (in kbps)`);
         if (message.guild!.premiumTier === 'TIER_1' && (vc_bitrate < 8 || vc_bitrate > 128)) return message.channel.send(`${client.em.xmark} The bitrate must be between \`8\` and \`128\` (in kbps)`);
         if (message.guild!.premiumTier === 'TIER_2' && (vc_bitrate < 8 || vc_bitrate > 256)) return message.channel.send(`${client.em.xmark} The bitrate must be between \`8\` and \`96\` (in kbps)`);
@@ -36,18 +51,17 @@ export function run(client: Bot, message: Message, args: Args): any {
     if (position !== null && (position < 1 || position > 2147483648)) return message.channel.send(`${client.em.xmark} The position must be between \`1\` and \`2147483648\``);
 
     message.guild!.channels.create(name, {
-        type: type as any, // text
+        type: type, // GUILD_TEXT
         //position: undefined, // this is actually rawPosition and not position, so position must be set afterwards
-        parent: type !== 'category' && category ? category as any : undefined as unknown as ChannelResolvable, // No category
-        nsfw: type === 'text' && nsfw ? nsfw : false, // false
-        topic: type === 'text' && topic ? topic : '', // blank
-        rateLimitPerUser: type === 'text' && slowmode ? Math.round(<number>slowmode) : 0, // 0 (seconds)
-        bitrate: type === 'voice' && vc_bitrate ? Math.round(vc_bitrate * 1000) : 64000, // 64000 (64kbps)
-        userLimit: type === 'voice' && vc_userlimit ? Math.round(vc_userlimit) : 0, // 0 (No Limit)
+        parent: type !== ChannelTypes.GUILD_CATEGORY && category ? category as any : undefined as unknown as ChannelResolvable, // No category
+        nsfw: type === ChannelTypes.GUILD_TEXT && nsfw ? nsfw : false, // false
+        topic: type === ChannelTypes.GUILD_TEXT && topic ? topic : '', // blank
+        rateLimitPerUser: type === ChannelTypes.GUILD_TEXT && slowmode ? Math.round(<number>slowmode) : 0, // 0 (seconds)
+        bitrate: type === ChannelTypes.GUILD_VOICE && vc_bitrate ? Math.round(vc_bitrate * 1000) : 64000, // 64000 (64kbps)
+        userLimit: type === ChannelTypes.GUILD_VOICE && vc_userlimit ? Math.round(vc_userlimit) : 0, // 0 (No Limit)
         reason: `Requested by user: ${message.author.tag}`
     }).then(channel => {
         if (position) channel.setPosition(Math.round(position) - 1);
-        //@ts-ignore // TODO: Fix this?
         if (channel.type !== 'GUILD_CATEGORY') return message.channel.send(`${client.em.check} Successfully created new ${type} channel **${channel}** at position \`${Math.round(position!) || channel.position}\` on category **${channel.parent?.name || 'Default'}**`);
         else return message.channel.send(`${client.em.check} Successfully created new category **${channel.name}** at position \`${Math.round(position!) || channel.position}\``);
     }).catch(console.error);

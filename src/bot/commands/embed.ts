@@ -1,13 +1,12 @@
 import Discord, { Message } from 'discord.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
-const ZWS = '​' as const;
 
 export async function run(client: Bot, message: Message, args: Args): Promise<Discord.Message | undefined> {
     const argsr = args.ordered.map(arg => arg.raw + arg.trailing);
     const opts = args.options;
 
-    const description = argsr.join('') || ZWS;
+    const description = argsr.join('') || '\u200B';
     const title = opts.get('title') ? opts.get('title') : null;
     const url = opts.get('url') ? opts.get('url') : null;
     const author = opts.get('author') ? opts.get('author') : message.author.username;

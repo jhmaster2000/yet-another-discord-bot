@@ -1,4 +1,5 @@
 import Discord, { Message } from 'discord.js';
+import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
 
@@ -33,8 +34,7 @@ export async function run(client: Bot, message: Message, argsx: Args) {
         const inviteEmbed = new Discord.MessageEmbed()
             .setColor(3092790)
             .setThumbnail(cdn.icon(inv.guild!.id, inv.guild!.icon))
-            //@ts-ignore // TODO: Refer to sideloadUtils.ts
-            .setTitle(`${partnerBadge}${verifiedBadge}${boostBadge}Invite to: ${RegExp.escapeMarkdown(inv.guild!.name)} (Click to join)`)
+            .setTitle(`${partnerBadge}${verifiedBadge}${boostBadge}Invite to: ${Utils.escapeMarkdown(inv.guild!.name)} (Click to join)`)
             .setURL(`https://discord.gg/${inv.code}`)
             .addField('Code', `\`${inv.code}\``, true)
             .addField('Channel', `**\`#${inv.channel.name}\`**`, true)

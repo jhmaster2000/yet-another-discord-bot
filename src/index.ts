@@ -13,6 +13,6 @@ console.info(
     `Logging level: ${process.env.LOGLEVEL} | Stacktrace limit: ${process.env.STACKTRACE_LIMIT}`
 );
 
-import('./sideloadUtils.js');
+import('./utils.js');
 import('./bot/core.js');
 import('./webserver.js');

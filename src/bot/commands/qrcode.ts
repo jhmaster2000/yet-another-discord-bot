@@ -1,5 +1,6 @@
 import Discord, { Message } from 'discord.js';
 import got from 'got';
+import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
 
@@ -27,8 +28,7 @@ export function run(client: Bot, message: Message, args: Args) {
         return message.channel.send(`${client.em.loadingfast} **Scanning QR Code...**`).then(msg => {
             return got.get(`https://api.qrserver.com/v1/read-qr-code/?fileurl=${encodeURIComponent(qrLink)}`, { timeout: { request: 15000 }, retry: { limit: 0 } }).then(response => {
                 const scanned = JSON.parse(response.body)[0].symbol[0];
-                //@ts-ignore // TODO: Refer to sideloadUtils.ts
-                let result = `${client.em.check} **QR Scan Result:**\n${RegExp.escapeMarkdown(scanned.data)}`;
+                let result = `${client.em.check} **QR Scan Result:**\n${Utils.escapeMarkdown(scanned.data)}`;
 
                 if (!scanned.data) result = `${client.em.xmark} **QR Scan Error:** \`\`\`js\n${scanned.error}\`\`\``;
                 if (scanned.error?.includes('download error')) result = `${client.em.xmark} That is not a valid image URL. (Download error)`;

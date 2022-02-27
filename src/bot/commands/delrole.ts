@@ -1,4 +1,5 @@
 import { Message, Role } from 'discord.js';
+import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
 
@@ -13,8 +14,7 @@ export async function run(client: Bot, message: Message, args: Args) {
     argsr.forEach(possibleRoleID => {
         if (possibleRoleID.trim().match(/^<@&[0-9]{17,20}>$/g)) return;
         const possibleRole = message.guild!.roles.cache.get(possibleRoleID);
-        //@ts-ignore // TODO: Refer to sideloadUtils.ts
-        if (!possibleRole) return invalidRoles.push(RegExp.escapeBacktick(possibleRoleID));
+        if (!possibleRole) return invalidRoles.push(Utils.escapeBacktick(possibleRoleID, true));
         else return roles.set(possibleRole.id, possibleRole);
     });
     if (!roles.size) return message.channel.send(`${client.em.xmark} Could not resolve any valid roles from your input.`);
