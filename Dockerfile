@@ -12,4 +12,4 @@ COPY . .
 RUN npm install --save
 
 # Start app
-CMD neofetch && npm start
+CMD neofetch && npm run js
