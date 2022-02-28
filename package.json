@@ -1,6 +1,6 @@
 {
   "name": "yet-another-discord-bot",
-  "version": "2.0.0",
+  "version": "6.0.0",
   "main": "dist/index.js",
   "author": "jhmaster (https://github.com/jhmaster2000)",
   "license": "Apache-2.0",
