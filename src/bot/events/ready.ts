@@ -2,7 +2,7 @@ import Bot from '../Bot.js';
 
 export function run(client: Bot) {
     if (process.env.PRODUCTION) setInterval(() => {
-        let presences = [
+        const presences = [
             `${client.prefixes[0]} help | ${client.guilds.cache.size} Servers!`,
             `${client.prefixes[0]} help | ${client.channels.cache.size} Channels!`,
             `${client.prefixes[0]} help | ${client.users.cache.size} Users!`

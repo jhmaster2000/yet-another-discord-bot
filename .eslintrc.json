@@ -2,10 +2,13 @@
     "root": true,
     "reportUnusedDisableDirectives": true,
     "parser": "@typescript-eslint/parser",
+    "env": { "node": true, "es6": true },
     "parserOptions": {
         "tsconfigRootDir": "./",
         "project": ["./tsconfig.json"],
-        "ecmaVersion": 2022
+        "sourceType": "module",
+        "ecmaVersion": 2022,
+        "ecmaFeatures": { "impliedStrict": true }
     },
     "plugins": [
         "@typescript-eslint"
@@ -17,6 +20,8 @@
     ],
     "rules": {
         "@typescript-eslint/no-non-null-assertion": "off",
-        "@typescript-eslint/no-inferrable-types": ["warn", { "ignoreParameters": true, "ignoreProperties": true }]
+        "@typescript-eslint/no-inferrable-types": ["warn", { "ignoreParameters": true, "ignoreProperties": true }],
+        "@typescript-eslint/no-unused-vars": ["warn", { "vars": "all", "args": "none", "ignoreRestSiblings": false }],
+        "@typescript-eslint/no-misused-promises": ["error", { "checksVoidReturn": false }]
     }
 }

@@ -10,7 +10,7 @@ process.env.workdir = dirname(fileURLToPath(import.meta.url));
 
 console.info(
     `Running as ${process.env.PRODUCTION ? 'PRODUCTION' : 'LOCAL'} environment on ${process.platform}\n` +
-    `Logging level: ${process.env.LOGLEVEL} | Stacktrace limit: ${process.env.STACKTRACE_LIMIT}`
+    `Logging level: ${process.env.LOGLEVEL!} | Stacktrace limit: ${process.env.STACKTRACE_LIMIT!}`
 );
 
 import('./utils.js');

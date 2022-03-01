@@ -1,4 +1,6 @@
-import { Client, ClientOptions, Collection, Message, User } from 'discord.js';
+import { Client, ClientOptions, Collection, Message, MessageEmbed, User } from 'discord.js';
+import Command from './Command.js';
+import { CustomReactions } from './reactionListener.js';
 
 export default class Bot extends Client {
     constructor(options: ClientOptions) {
@@ -12,11 +14,14 @@ export default class Bot extends Client {
     prefixes: string[] = [];
     em: { [emojiName: string]: string } = {};
     re: { [emojiName: string]: string } = {};
-    commands: Collection<string, any> = new Collection();
-    commandAliases: Collection<string, any> = new Collection();
-    readonly events: { [eventName: string]: any | any[] } = (<any>this)._events;
+    commands: Collection<string, Command> = new Collection();
+    commandAliases: Collection<string, string> = new Collection();
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any
+    readonly events: EventStorage = (<any>this)._events as EventStorage;
     readonly isWin: boolean = process.platform === 'win32';
 
-    paginate!: (message: Message, pages: any[], pagesCount: number, timeout?: number, startPage?: number) => void;
-    promptYesNo!: (from: User, msg: Message, callback: (answer: boolean | null) => void, timeout?: number, reactions?: any) => void;
+    paginate!: (message: Message, pages: MessageEmbed[], pagesCount: number, timeout?: number, startPage?: number) => void;
+    promptYesNo!: (from: User, msg: Message, callback: (answer: boolean | null) => void, timeout?: number, reactions?: CustomReactions) => void;
 }
+
+type EventStorage = { [eventName: string]: ((...args: unknown[]) => void) | ((...args: unknown[]) => void)[] };

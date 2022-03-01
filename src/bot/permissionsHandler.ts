@@ -1,5 +1,6 @@
-import { Message, PermissionString } from 'discord.js';
+import { GuildChannelResolvable, Message, PermissionString } from 'discord.js';
 import Bot from './Bot.js';
+import Command from './Command.js';
 
 enum PermissionCode {
     NO_REQUIREMENTS = NaN,
@@ -8,26 +9,27 @@ enum PermissionCode {
     SELF_MISSING    = 1,
     USER_MISSING    = 2,
     BOTH_MISSING    = 3,
-};
+}
 
 interface PermissionData {
     code: PermissionCode;
     perms?: { user: PermissionString[], self: PermissionString[] };
 }
 
-export function checkPermissions(client: Bot, message: Message, cmd: any, helpCmd: boolean = false): PermissionData {
-    const self = message.guild!.me!.permissionsIn(message.channel as any);
-    const user = message.member!.permissionsIn(message.channel as any);
-    let selfPerms = cmd.config.selfperms || [];
+export function checkPermissions(client: Bot, message: Message, cmd: Command, helpCmd: boolean = false): PermissionData {
+    const self = message.guild!.me!.permissionsIn(message.channel as GuildChannelResolvable);
+    const user = message.member!.permissionsIn(message.channel as GuildChannelResolvable);
+    const selfPerms = cmd.config.selfperms || [];
     let userPerms = cmd.config.userperms || [];
-    let selfMiss: PermissionString[] = [];
-    let userMiss: PermissionString[] = [];
+    const selfMiss: PermissionString[] = [];
+    const userMiss: PermissionString[] = [];
 
     if (!selfPerms.length && !userPerms.length) return { code: NaN };
 
+    //@ts-expect-error - Temp fix.
     if (userPerms.includes('SPECIAL:OWNER')) {
         if (message.author.id !== client.owner.id) {
-            if (!helpCmd) message.channel.send('🔒 This is a bot owner only command.');
+            if (!helpCmd) void message.channel.send('🔒 This is a bot owner only command.');
             return { code: -1 };
         }
         userPerms = [];
@@ -52,21 +54,21 @@ export function checkPermissions(client: Bot, message: Message, cmd: any, helpCm
     ////////////////
 
     function selfMissing(): PermissionData {
-        let msg = `❌ The bot is missing the following permissions to do this:\n\`\`${selfMiss.join('``, ``')}`;
-        if (!helpCmd) message.channel.send(`${msg}\`\``);
+        const msg = `❌ The bot is missing the following permissions to do this:\n\`\`${selfMiss.join('``, ``')}`;
+        if (!helpCmd) void message.channel.send(`${msg}\`\``);
         return { code: 1, perms: { user: [], self: selfMiss } };
     }
 
     function userMissing(): PermissionData {
-        let msg = `❌ You are missing the following permissions to use this:\n\`\`${userMiss.join('``, ``')}`;
-        if (!helpCmd) message.channel.send(`${msg}\`\``);
+        const msg = `❌ You are missing the following permissions to use this:\n\`\`${userMiss.join('``, ``')}`;
+        if (!helpCmd) void message.channel.send(`${msg}\`\``);
         return { code: 2, perms: { user: userMiss, self: [] } };
     }
 
     function bothMissing(): PermissionData {
-        let msg = `❌ Both you and the bot are missing permissions to use this:\n`
+        const msg = `❌ Both you and the bot are missing permissions to use this:\n`
                 + `**You:** \`\`${userMiss.join('``, ``')}\`\`\n**Bot:** \`\`${selfMiss.join('``, ``')}`;
-        if (!helpCmd) message.channel.send(`${msg}\`\``);
+        if (!helpCmd) void message.channel.send(`${msg}\`\``);
         return { code: 3, perms: { user: userMiss, self: selfMiss } };
     }
 }

@@ -4,14 +4,14 @@ import Bot from './Bot.js';
 export default function loadPaginator(client: Bot): void {
     client.paginate = (message: Message, pages: MessageEmbed[], pagesCount: number, timeout?: number, startPage?: number): void => {
         const authorAvatar = message.author.displayAvatarURL({ dynamic: true, format: 'png' });
-        message.channel.send({ embeds: [pages[startPage || 0].setFooter({ text: `${(startPage || 0) + 1}/${pagesCount}`, iconURL: authorAvatar })] }).then((msg: Message): void => {
-            msg.react('⏮').then(() => {
-                msg.react('⏪').then(() => {
-                    msg.react('⬅').then(() => {
-                        msg.react('🛑').then(() => {
-                            msg.react('➡').then(() => {
-                                msg.react('⏩').then(() => {
-                                    msg.react('⏭');
+        void message.channel.send({ embeds: [pages[startPage || 0].setFooter({ text: `${(startPage || 0) + 1}/${pagesCount}`, iconURL: authorAvatar })] }).then((msg: Message): void => {
+            void msg.react('⏮').then(() => {
+                void msg.react('⏪').then(() => {
+                    void msg.react('⬅').then(() => {
+                        void msg.react('🛑').then(() => {
+                            void msg.react('➡').then(() => {
+                                void msg.react('⏩').then(() => {
+                                    void msg.react('⏭');
                                 });
                             });
                         });
@@ -25,40 +25,40 @@ export default function loadPaginator(client: Bot): void {
 
             collector.on('collect', (reaction, thisCollector) => {
                 if (reaction.emoji.name === '➡') {
-                    msg.reactions.cache.get('➡')!.users.remove(message.author.id);
+                    void msg.reactions.cache.get('➡')!.users.remove(message.author.id);
                     if (currentPage === pagesCount - 1) currentPage = 0;
                     else currentPage += 1;
-                    msg.edit({ embeds: [pages[currentPage].setFooter(`${currentPage + 1}/${pagesCount}`, authorAvatar)] });
+                    void msg.edit({ embeds: [pages[currentPage].setFooter(`${currentPage + 1}/${pagesCount}`, authorAvatar)] });
                 }
                 if (reaction.emoji.name === '⬅') {
-                    msg.reactions.cache.get('⬅')!.users.remove(message.author.id);
+                    void msg.reactions.cache.get('⬅')!.users.remove(message.author.id);
                     if (currentPage === 0) currentPage = pagesCount - 1;
                     else currentPage -= 1;
-                    msg.edit({ embeds: [pages[currentPage].setFooter(`${currentPage + 1}/${pagesCount}`, authorAvatar)] });
+                    void msg.edit({ embeds: [pages[currentPage].setFooter(`${currentPage + 1}/${pagesCount}`, authorAvatar)] });
                 }
                 if (reaction.emoji.name === '⏩') {
-                    msg.reactions.cache.get('⏩')!.users.remove(message.author.id);
+                    void msg.reactions.cache.get('⏩')!.users.remove(message.author.id);
                     if (currentPage + 10 > pagesCount - 1) currentPage = (currentPage + 10) - pagesCount;
                     else currentPage += 10;
-                    msg.edit({ embeds: [pages[currentPage].setFooter(`${currentPage + 1}/${pagesCount}`, authorAvatar)] });
+                    void msg.edit({ embeds: [pages[currentPage].setFooter(`${currentPage + 1}/${pagesCount}`, authorAvatar)] });
                 }
                 if (reaction.emoji.name === '⏪') {
-                    msg.reactions.cache.get('⏪')!.users.remove(message.author.id);
+                    void msg.reactions.cache.get('⏪')!.users.remove(message.author.id);
                     if (currentPage - 10 < 0) currentPage = (currentPage - 10) + pagesCount;
                     else currentPage -= 10;
-                    msg.edit({ embeds: [pages[currentPage].setFooter(`${currentPage + 1}/${pagesCount}`, authorAvatar)] });
+                    void msg.edit({ embeds: [pages[currentPage].setFooter(`${currentPage + 1}/${pagesCount}`, authorAvatar)] });
                 }
                 if (reaction.emoji.name === '⏭') {
-                    msg.reactions.cache.get('⏭')!.users.remove(message.author.id);
+                    void msg.reactions.cache.get('⏭')!.users.remove(message.author.id);
                     if (currentPage + 50 > pagesCount - 1) currentPage = (currentPage + 50) - pagesCount;
                     else currentPage += 50;
-                    msg.edit({ embeds: [pages[currentPage].setFooter(`${currentPage + 1}/${pagesCount}`, authorAvatar)] });
+                    void msg.edit({ embeds: [pages[currentPage].setFooter(`${currentPage + 1}/${pagesCount}`, authorAvatar)] });
                 }
                 if (reaction.emoji.name === '⏮') {
-                    msg.reactions.cache.get('⏮')!.users.remove(message.author.id);
+                    void msg.reactions.cache.get('⏮')!.users.remove(message.author.id);
                     if (currentPage - 50 < 0) currentPage = (currentPage - 50) + pagesCount;
                     else currentPage -= 50;
-                    msg.edit({ embeds: [pages[currentPage].setFooter(`${currentPage + 1}/${pagesCount}`, authorAvatar)] });
+                    void  msg.edit({ embeds: [pages[currentPage].setFooter(`${currentPage + 1}/${pagesCount}`, authorAvatar)] });
                 }
                 if (reaction.emoji.name === '🛑') collector.stop();
             });
@@ -66,8 +66,8 @@ export default function loadPaginator(client: Bot): void {
             collector.on('end', (collected, reason) => {
                 if (reason === 'idle' || reason === 'time') reason = 'Paginator timed out.';
                 else reason = 'Paginator terminated by user.';
-                msg.edit({ embeds: [pages[currentPage].setFooter(reason, message.author.displayAvatarURL({ dynamic: true, format: 'png' }))] });
-                msg.reactions.removeAll();
+                void msg.edit({ embeds: [pages[currentPage].setFooter(reason, message.author.displayAvatarURL({ dynamic: true, format: 'png' }))] });
+                void msg.reactions.removeAll();
             });
         });
     }

@@ -15,7 +15,7 @@ export async function run(client: Bot, message: Message) {
     if (!message.guild) return message.reply(`${client.em.xmark} Commands can't be used on DMs.`);
     if (!message.guild.me!.permissionsIn(<GuildChannelResolvable>message.channel).has('SEND_MESSAGES')) return;
 
-    let prefix: string = '';
+    let prefix = '';
     for (const thisPrefix of client.prefixes) {
         if (message.content.toLowerCase().startsWith(thisPrefix)) prefix = thisPrefix;
     }
@@ -23,7 +23,7 @@ export async function run(client: Bot, message: Message) {
 
     const input = message.content.slice(prefix.length).trim().split(/ +/g);
     const cmdName = input.shift()!.toLowerCase();
-    const command = client.commands.get(cmdName) || client.commands.get(client.commandAliases.get(cmdName));
+    const command = client.commands.get(cmdName) || client.commands.get(client.commandAliases.get(cmdName)!);
     if (!command) return;
 
     if (command.config.disabled) return message.channel.send(`${client.em.xmark} This command is currently disabled.`);
@@ -48,10 +48,10 @@ export async function run(client: Bot, message: Message) {
         Error.stackTraceLimit = Number(process.env.STACKTRACE_LIMIT);
         return await command.run(client, message, args);
     } catch (err) {
-        if (Number(process.env.LOGLEVEL) >= 2) message.react(client.re.critical);
-        if (Number(process.env.LOGLEVEL) >= 3) message.channel.send(
+        if (Number(process.env.LOGLEVEL) >= 2) void message.react(client.re.critical);
+        if (Number(process.env.LOGLEVEL) >= 3) void message.channel.send(
             `${client.em.critical} An unexpected error occured trying to run this command:` +
-            `\n\`\`\`xl\n${err}\n\`\`\`(This did not crash the bot)`
+            `\n\`\`\`xl\n${String(err)}\n\`\`\`(This did not crash the bot)`
         );
         return console.error(`[FAILED_COMMAND] Command: ${message.content}\nStacktrace:`, err);
     }

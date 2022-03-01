@@ -95,6 +95,7 @@ function clean(text: unknown): unknown {
     else return text;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function createArgs(input: string | any[] | undefined): Args {
     if (Array.isArray(input)) input = input.join(' ');
     const createdlexer = new lexure.Lexer(input).setQuotes([[`"`,`"`],[`'`,`'`],['```','```']]).lex();

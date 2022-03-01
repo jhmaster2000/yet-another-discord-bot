@@ -3,6 +3,7 @@ import { pathToFileURL } from 'url';
 import { readdir } from 'fs';
 import { join } from 'path';
 import Bot from './Bot.js';
+import Command from './Command.js';
 
 export default function loadCommands(client: Bot): void {
     client.commands = new Discord.Collection();
@@ -17,7 +18,7 @@ export default function loadCommands(client: Bot): void {
             let command;
             try {
                 Error.stackTraceLimit = 0;
-                command = await import(pathToFileURL(join(process.env.workdir!, `./bot/commands/${file}`)).href);
+                command = await import(pathToFileURL(join(process.env.workdir!, `./bot/commands/${file}`)).href) as Command;
             } catch (err) {
                 return console.error(`COMMAND_LOADER > FAILED TO LOAD: ${commandName}`, err);
             }
