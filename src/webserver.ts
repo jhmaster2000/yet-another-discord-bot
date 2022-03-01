@@ -9,9 +9,9 @@ app.get('/', (request, response): void => {
 });
 
 app.listen(process.env.PORT);
-if (process.env.LOG_WEBSERVER) console.info(`[WEBSERVER] Listening on PORT ${process.env.PORT}`);
+if (process.env.LOG_WEBSERVER) console.info(`[WEBSERVER] Listening on PORT ${process.env.PORT!}`);
 
-function logRequest(req: Request<{}, any, any, ParsedQs, Record<string, any>>): void {
+function logRequest(req: Request<object, unknown, unknown, ParsedQs, Record<string, unknown>>): void {
     const date = new Date().toISOString();
     return console.log(`[WEBSERVER-${date}] ${req.method} > ${req.hostname}${req.url}`);
-};
+}

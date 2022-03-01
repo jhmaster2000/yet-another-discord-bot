@@ -18,7 +18,10 @@
         "deploy": "cross-env RUNNING_JS=1 node -r dotenv/config dist/index.js",
         "build": "tsc --build .",
         "js": "npm run build && npm run deploy",
-        "ts": "npm start"
+        "ts": "npm start",
+        "test": "jest --coverage",
+        "lint": "npx eslint . --ext .ts",
+        "lintfix": "npx eslint . --ext .ts --fix"
     },
     "dependencies": {
         "cross-env": "^7.0.3",
@@ -38,7 +41,10 @@
         "@types/figlet": "^1.5.4",
         "@types/got": "^9.6.12",
         "@types/ps-node": "^0.1.1",
+        "@typescript-eslint/eslint-plugin": "^5.13.0",
+        "@typescript-eslint/parser": "^5.13.0",
+        "eslint": "^8.10.0",
         "ts-node": "^10.4.0",
-        "typescript": "^4.5.2"
+        "typescript": "^4.5.5"
     }
 }
