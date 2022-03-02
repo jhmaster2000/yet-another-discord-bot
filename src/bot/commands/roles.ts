@@ -5,7 +5,7 @@ import { Args } from '../events/messageCreate.js';
 export function run(client: Bot, message: Message, args: Args) {
     let rolesData: string[] = [];
     let rolesList = message.guild!.roles.cache.sort((roleA, roleB) => roleB.position - roleA.position);
-    rolesList.forEach(role => rolesData.push(`${role} (${role.members.size} members)`));
+    rolesList.forEach(role => rolesData.push(`${role.toString()} (${role.members.size} members)`));
 
     if (rolesData.join('\n').length > 2048) return simpleRoles(rolesList, message);
     const rolesEmbed = new Discord.MessageEmbed()

@@ -46,13 +46,13 @@ const icons = {
 
 export function run(client: Bot, message: Message, args: Args) {
     const argsr = args.ordered.map(arg => arg.raw);
-    let achName = encodeURIComponent(argsr.join(' ')).replace(/\'/g, '%27').replace(/\%2f/gi, '+');
+    let achName = encodeURIComponent(argsr.join(' ')).replace(/'/g, '%27').replace(/%2f/gi, '+');
     if (!argsr.length) achName = '+';
     if (argsr.join(' ').length > 24) return message.channel.send(`${client.em.xmark} Achievement is too long! Maximum is 24 characters.`);
 
     let title = args.options.get('title') || 'Achievement Get!';
     if (title.length > 24) return message.channel.send(`${client.em.xmark} Title is too long! Maximum is 24 characters.`);
-    title = encodeURIComponent(title).replace(/\'/g, '%27').replace(/\%2f/gi, '+');
+    title = encodeURIComponent(title).replace(/'/g, '%27').replace(/%2f/gi, '+');
 
     let icon = args.options.get('icon') || '1';
     if (isNaN(Number(icon))) icon = icons[icon as keyof typeof icons] || '1';

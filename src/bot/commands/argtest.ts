@@ -7,8 +7,8 @@ export function run(client: Bot, message: Message, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} No arguments detected.`);
     console.info(args);
 
-    let argsv = args.ordered.map(arg => arg.value);
-    let argsr = args.ordered.map(arg => arg.raw);
+    //let argsv = args.ordered.map(arg => arg.value);
+    //let argsr = args.ordered.map(arg => arg.raw);
     let m = ['__**Argument #N: ** value `||` raw `||` trailing__'];
     let x = 0;
     args.ordered.forEach(arg => {
@@ -16,7 +16,7 @@ export function run(client: Bot, message: Message, args: Args) {
         x++;
     });
 
-    if (args.flags.size) m.push(`\n**Parsed Flags: ** \`${[...args.flags].join('\` , \`')}\``);
+    if (args.flags.size) m.push(`\n**Parsed Flags: ** \`${[...args.flags].join('` , `')}\``);
     
     if (args.options.size) {
         let opts: string[] = [];

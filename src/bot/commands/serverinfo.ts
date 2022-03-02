@@ -5,7 +5,7 @@ import { Args } from '../events/messageCreate.js';
 
 export async function run(client: Bot, message: Message, args: Args) {
     const guild = message.guild!;
-    guild.members.fetch();
+    await guild.members.fetch();
     const isDiscoverable = guild.features.includes('DISCOVERABLE');
     const isCommunity = guild.features.includes('COMMUNITY');
     const verifiedBadge = guild.verified ? client.em.verified + ' ' : '';
@@ -28,7 +28,7 @@ export async function run(client: Bot, message: Message, args: Args) {
         .addField(`${client.em.settings} Features:`, `${isCommunity ? client.em.check : client.em.xmark} Community\n${isDiscoverable ? client.em.check : client.em.xmark} Discovery`, true)
         .addField(`${client.em.roles} Roles: \`${guild.roles.cache.size}\``, '\u200B', true)
         .addField(`${client.em.emojis} Emojis: \`${guild.emojis.cache.size}\``, '\u200B', true)
-        .addField(`${client.em.boost} Boosts: \`${guild.premiumSubscriptionCount}\``, '\u200B', true)
+        .addField(`${client.em.boost} Boosts: \`${guild.premiumSubscriptionCount ?? '???'}\``, '\u200B', true)
         .setThumbnail(guild.iconURL()!)
         .setFooter({ text: `Server ID: ${guild.id} • Created on: ${guild.createdAt.toUTCString()}`, iconURL: message.author.displayAvatarURL({ dynamic: true, format: 'png' }) });
     if (guild.description) serverEmbed.setDescription(guild.description);

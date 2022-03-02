@@ -4,28 +4,34 @@ import fs from 'fs';
 import { join } from 'path';
 import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
-const assets = JSON.parse(fs.readFileSync(join(process.env.workdir!, './bot/assets/random.json')).toString());
+const assets = JSON.parse(fs.readFileSync(join(process.env.workdir!, './bot/assets/random.json')).toString()) as RandomAssets;
 const items = ['cat', 'dog', 'bench'] as const;
 
-got.get('https://random.dog/doggos').then(response => {
-    assets.dogs = JSON.parse(response.body).filter((dog: string) => !dog.endsWith('.mp4'));
+interface RandomAssets {
+    readonly benches: string[];
+    dogs: string[];
+    cats: string[];
+}
+
+void got.get('https://random.dog/doggos').then(response => {
+    assets.dogs = (<string[]>JSON.parse(response.body)).filter((dog: string) => !dog.endsWith('.mp4'));
 });
 
 export function run(client: Bot, message: Message, argsx: Args) {
     if (!argsx.basic.length) return invalidArguments(client.em.xmark, message);
     const args = argsx.basic.map(arg => arg.raw);
-    if (items.includes(<any>args[0].toLowerCase())) return random[<keyof typeof random>args[0]](message);
+    if (items.includes(<'cat' | 'dog' | 'bench'>args[0].toLowerCase())) return random[<keyof typeof random>args[0]](message);
     else return invalidArguments(client.em.xmark, message);
 }
 
 function invalidArguments(xmark: string, message: Message) {
-    return message.channel.send(`${xmark} You need to tell me what to get a random of!\nValid options: \`${items.join('\`, \`')}\``);
+    return message.channel.send(`${xmark} You need to tell me what to get a random of!\nValid options: \`${items.join('`, `')}\``);
 }
 
 const random = {
     cat: (message: Message) => {
-        got.get('http://aws.random.cat/meow').then(response => {
-            const body = JSON.parse(response.body);
+        void got.get('http://aws.random.cat/meow').then(response => {
+            const body = JSON.parse(response.body) as { file: string };
             const catEmbed = new Discord.MessageEmbed()
                 .setTitle('Here\'s your random cat! 🐱')
                 .setImage(body.file);

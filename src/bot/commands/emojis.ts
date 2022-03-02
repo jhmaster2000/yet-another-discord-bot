@@ -10,7 +10,7 @@ export async function run(client: Bot, message: Message, args: Args) {
         { char: ' ', prepend: '\u200B' })
     ) {
         await message.channel.send(m);
-    };
+    }
 }
 
 export const config = {

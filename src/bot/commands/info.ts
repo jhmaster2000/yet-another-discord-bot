@@ -31,7 +31,7 @@ export function run(client: Bot, message: Message, args: Args) {
             .setAuthor('Bot Information', client.user!.displayAvatarURL({ dynamic: true, format: 'png' }))
             .setFooter(`Developed by ${client.owner.tag}`)
             .setTimestamp()
-            .addField('Version', `\`${process.env.npm_package_version}-${versionHash}\``, true)
+            .addField('Version', `\`${process.env.npm_package_version!}-${versionHash}\``, true)
             .addField('NodeJS', `\`v${process.versions.node}\``, true)
             .addField('Library', `\`discord.js@${Discord.version}\``, true)
             .addField('OS', `\`${process.platform} (${process.arch})\``, true)

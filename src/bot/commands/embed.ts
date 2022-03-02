@@ -1,4 +1,4 @@
-import Discord, { Message } from 'discord.js';
+import Discord, { ColorResolvable, DiscordAPIError, Message } from 'discord.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
 
@@ -18,7 +18,7 @@ export async function run(client: Bot, message: Message, args: Args): Promise<Di
     const embed = new Discord.MessageEmbed()
         .setAuthor(author!, message.author.displayAvatarURL({ dynamic: true, format: 'png' }))
         .setDescription(description)
-        .setColor(color as any)
+        .setColor(color as ColorResolvable)
         .setTimestamp();
     if (title) embed.setTitle(title);
     if (footer) embed.setFooter(footer);
@@ -26,10 +26,11 @@ export async function run(client: Bot, message: Message, args: Args): Promise<Di
     if (image) embed.setImage(image);
     if (thumb) embed.setThumbnail(thumb);
 
-    message.delete();
+    void message.delete();
     try {
         return message.channel.send({ embeds: [embed] });
-    } catch (err: any) {
+    } catch (e: unknown) {
+        const err = e as DiscordAPIError;
         if (err.code === 50035) {
             let errlist: string[] = [];
             let errmsgs: string[] = err.message.split('\n');

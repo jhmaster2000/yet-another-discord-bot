@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { ColorResolvable, Message } from 'discord.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
 
@@ -9,7 +9,7 @@ export async function run(client: Bot, message: Message, args: Args) {
     const roledata = {
         name: argsr.join(' '),
         reason: `Requested by user: ${message.author.tag}`,
-        color: args.options.get('color')?.toUpperCase() as any || 'DEFAULT',
+        color: args.options.get('color')?.toUpperCase() as ColorResolvable || 'DEFAULT',
         hoist: args.flags.has('hoisted') || args.flags.has('hoist'),
         mentionable: args.flags.has('mentionable') || args.flags.has('mention') || args.flags.has('ping'),
     }
@@ -20,7 +20,7 @@ export async function run(client: Bot, message: Message, args: Args) {
         const role = await message.guild!.roles.create(roledata);
         return await message.channel.send(`${client.em.check} Successfully created role ${role.toString()} (\`Hoisted?\` ${hoisted} | \`Mentionable?\` ${mention})`);
     } catch (e) {
-        return await message.channel.send(`${client.em.xmark} Role name is too long. (\`${roledata.name.length}\` characters out of \`100\` maximum)`).then(<any>console.error(e));
+        return await message.channel.send(`${client.em.xmark} Role name is too long. (\`${roledata.name.length}\` characters out of \`100\` maximum)`).then(void console.error(e));
     }
 }
 

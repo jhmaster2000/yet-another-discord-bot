@@ -28,12 +28,12 @@ export async function run(client: Bot, message: Message, argsx: Args) {
     s2 = s ? 'these' : 'this';
     const msg = await message.channel.send(`${protectedWarning}\n\n⁉️ Are you sure you want to __permanently__ delete ${s2} **${emojis.length}** custom emoji${s}?: ${emojis.join(' ')}`);
     return client.promptYesNo(message.author, msg, (answer) => {
-        msg.reactions.removeAll();
+        void msg.reactions.removeAll();
         const timedout = answer === null ? '(Timed out)' : '';
         if (!answer)
             return msg.edit(`${client.em.neutral} Cancelled deletion of **${emojis.length}** custom emoji${s}. ${timedout}`);
 
-        emojis.forEach(emoji_3 => emoji_3.delete(`Requested by user: ${message.author.tag}`).catch(error => message.channel.send(`bruh error:\n${error}`)));
+        emojis.forEach(emoji_3 => emoji_3.delete(`Requested by user: ${message.author.tag}`).catch((error: string) => message.channel.send(`bruh error:\n${error}`)));
         return msg.edit(`${client.em.check} Successfully deleted **${emojis.length}** custom emoji${s}: \`:${emojis.map(e => e.name).join(':` `:')}:\``);
     });
 }

@@ -8,7 +8,7 @@ import Utils from '../../utils.js';
 process.env.RUNNING_EXEC_PIDS = '[]';
 
 function killRunningSubprocesses(message: Message): void {
-    const runningExecPIDs = JSON.parse(process.env.RUNNING_EXEC_PIDS!);
+    const runningExecPIDs = JSON.parse(process.env.RUNNING_EXEC_PIDS!) as number[];
     if (runningExecPIDs.length === 0) return void message.channel.send('`No running commands to kill.`');
     return runningExecPIDs.forEach((pid: number) => {
         ps.lookup({ ppid: pid }, (err, resultList) => {
@@ -27,10 +27,10 @@ export function run(client: Bot, message: Message, argsx: Args) {
     const args = argsx.basic.map(arg => arg.raw);
     if (args[0] === '^C') return killRunningSubprocesses(message);
 
-    message.channel.send(`${client.em.loadingfast} Output:\n\`\`\`xl\n \`\`\``).then(msg => {
+    void message.channel.send(`${client.em.loadingfast} Output:\n\`\`\`xl\n \`\`\``).then(msg => {
         const output = [`${client.em.loadingfast} Output:`, '```xl'];
         const cmd = exec(args.join(' '), { timeout: 30000 }, (error, stdout, stderr) => {
-            const runningExecPIDs = JSON.parse(process.env.RUNNING_EXEC_PIDS!);
+            const runningExecPIDs = JSON.parse(process.env.RUNNING_EXEC_PIDS!) as number[];
             process.env.RUNNING_EXEC_PIDS = util.inspect(runningExecPIDs.filter((pid: number): boolean => pid !== cmd.pid));
             let exitstate = client.em.xmark;
             if (!error) exitstate = client.em.check;
@@ -43,14 +43,14 @@ export function run(client: Bot, message: Message, argsx: Args) {
             if (error?.code === null) output.push(`\`⚠️ Command timed out.\``);
             if (error?.code !== undefined) output.push(`\`Command exited with code ${error?.code}\``);
             msg.edit(output.join('\n')).catch(async err => {
-                msg.delete();
+                await msg.delete();
                 for (const m of Utils.splitMessage(output.join('\n'), { char: /\n|./, prepend: '```ansi\n', append: '```' })) {
                     await message.channel.send(m);
-                };
+                }
             });
         });
-        let runningExecPIDs = JSON.parse(process.env.RUNNING_EXEC_PIDS!);
-        runningExecPIDs.push(cmd.pid);
+        let runningExecPIDs = JSON.parse(process.env.RUNNING_EXEC_PIDS!) as number[];
+        runningExecPIDs.push(cmd.pid!);
         process.env.RUNNING_EXEC_PIDS = util.inspect(runningExecPIDs);
     });
 }

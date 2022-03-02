@@ -15,7 +15,7 @@ export function run(client: Bot, message: Message, args: Args) {
 
     return figlet.text(text, opts, (err, data) => {
         if (err) {
-            message.channel.send(`${client.em.critical} Something went wrong...`);
+            void message.channel.send(`${client.em.critical} Something went wrong...`);
             return console.error(err);
         }
 

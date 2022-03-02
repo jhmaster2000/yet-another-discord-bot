@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import util from 'util';
 import * as lexure from 'lexure';
 import Bot from '../Bot.js';
@@ -25,6 +26,7 @@ export async function run(client: Bot, message: Message, args: Args) {
         }).filter(Boolean).join('');
 
         if (async) return asyncEval(code);
+        // eslint-disable-next-line no-inner-declarations
         async function asyncEval(code: string) {
             try {
                 let asyncEvaled = '⚠️ Failed to set async return value.';
@@ -34,69 +36,69 @@ export async function run(client: Bot, message: Message, args: Args) {
                 if (split) {
                     for (const m of Utils.splitMessage('```js\n'+clean(asyncEvaled)+'\n```', { char: /\n|./, prepend: '```js\n', append: '```' })) {
                         await message.channel.send(m);
-                    };
+                    }
                     return;
                 } else {
-                    return message.channel.send('```js\n'+clean(asyncEvaled)+'\n```').catch(e => {
-                        message.channel.send('⚠️ AsyncOutput is too long, check console for details! (or use `--split` flag)');
+                    return message.channel.send('```js\n'+clean(asyncEvaled)+'\n```').catch(() => {
+                        void message.channel.send('⚠️ AsyncOutput is too long, check console for details! (or use `--split` flag)');
                         console.info(`[ASYNCEVAL_STDOUT] ${asyncEvaled}`);
                     });
                 }
-            } catch(err) {
+            } catch(e) {
+                const err = e as Error;
                 if (split) {
                     for (const m of Utils.splitMessage(`${client.em.xmark} **AsyncError:**\n\`\`\`js\n${clean(err)}\n\`\`\``, { char: /\n|./, prepend: '```js\n', append: '```' })) {
                         await message.channel.send(m);
-                    };
+                    }
                     return;
                 } else {
-                    return message.channel.send(`${client.em.xmark} **AsyncError:**\n\`\`\`js\n${clean(err)}\n\`\`\``).catch(e => {
-                        message.channel.send('⚠️ AsyncError is too long, check console for details! (or use `--split` flag)');
-                        console.info(`[ASYNCEVAL_STDERR] ${err}`);
+                    return message.channel.send(`${client.em.xmark} **AsyncError:**\n\`\`\`js\n${clean(err)}\n\`\`\``).catch(__e => {
+                        void message.channel.send('⚠️ AsyncError is too long, check console for details! (or use `--split` flag)');
+                        console.info(`[ASYNCEVAL_STDERR] ${err.toString()}`);
                     });
                 }
             }
         }
 
-        let evaled = eval(code);
+        let evaled: unknown = eval(code);
         if (evaled instanceof Promise && !promises) {
             evaled = util.inspect(evaled, false, depth, false);
-            if (evaled.includes('<pending>') || evaled.includes('{ undefined }')) return;
+            if ((<string>evaled).includes('<pending>') || (<string>evaled).includes('{ undefined }')) return;
         }
         if (typeof evaled !== 'string') evaled = util.inspect(evaled, false, depth, false);
 
         if (split) {
             for (const m of Utils.splitMessage('```js\n'+clean(evaled)+'\n```', { char: /\n|./, prepend: '```js\n', append: '```' })) {
                 await message.channel.send(m);
-            };
+            }
             return;
         } else {
             return message.channel.send('```js\n'+clean(evaled)+'\n```').catch(e => {
-                message.channel.send('⚠️ Output is too long, check console for details! (or use `--split` flag)');
-                return console.info(`[EVAL_STDOUT] ${evaled}`);
+                void message.channel.send('⚠️ Output is too long, check console for details! (or use `--split` flag)');
+                return console.info(`[EVAL_STDOUT] ${evaled as string}`);
             });
         }
     } catch (err) {
         if (split) {
             for (const m of Utils.splitMessage(`${client.em.xmark} **Error:**\n\`\`\`js\n${clean(err)}\n\`\`\``, { char: /\n|./, prepend: '```js\n', append: '```' })) {
                 await message.channel.send(m);
-            };
+            }
             return;
         } else {
             return message.channel.send(`${client.em.xmark} **Error:**\n\`\`\`js\n${clean(err)}\n\`\`\``).catch(e => {
-                message.channel.send('⚠️ Error is too long, check console for details! (or use `--split` flag)');
-                return console.info(`[EVAL_STDERR] ${err}`);
+                void message.channel.send('⚠️ Error is too long, check console for details! (or use `--split` flag)');
+                return console.info(`[EVAL_STDERR] ${err as string}`);
             });
         }
     }
 }
 
-function clean(text: unknown): unknown {
+function clean(text: unknown): string {
     if (typeof text === 'string') return text.replace(/`/g, '`' + String.fromCharCode(8203)).replace(/@/g, '@' + String.fromCharCode(8203));
-    else return text;
+    else return String(text);
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-function createArgs(input: string | any[] | undefined): Args {
+function createArgs(input: string | string[] | undefined): Args {
     if (Array.isArray(input)) input = input.join(' ');
     const createdlexer = new lexure.Lexer(input).setQuotes([[`"`,`"`],[`'`,`'`],['```','```']]).lex();
     const createdargs = new lexure.Parser(createdlexer).setUnorderedStrategy(lexure.prefixedStrategy(['--'], ['='])).parse() as unknown as Args;

@@ -1,4 +1,4 @@
-import { ChannelResolvable, Message } from 'discord.js';
+import { CategoryChannelResolvable, Message } from 'discord.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
 
@@ -17,7 +17,7 @@ const ChannelTypes = {
     GUILD_STAGE_VOICE: 13
 } as const;
 
-export function run(client: Bot, message: Message, args: Args): any {
+export function run(client: Bot, message: Message, args: Args) {
     if (!args.ordered.length) return message.channel.send(`${client.em.xmark} A channel name is required!`);
     const argsv = args.ordered.map(arg => arg.raw);
 
@@ -29,12 +29,12 @@ export function run(client: Bot, message: Message, args: Args): any {
     const topic = args.options.get('topic')?.slice(0, 1024) || args.options.get('t')?.slice(0, 1024);
     const name = type === ChannelTypes.GUILD_TEXT ? argsv.join('-').slice(0, 100) : argsv.join(' ').slice(0, 100);
 
-    if (type === ChannelTypes.GUILD_TEXT && isNaN(<any>slowmode)) return; // Response on parseSlowmode() function
+    if (type === ChannelTypes.GUILD_TEXT && isNaN(slowmode!)) return; // Response on parseSlowmode() function
 
     const categorychannel = message.guild!.channels.cache.get(category!);
     if (type !== ChannelTypes.GUILD_CATEGORY && category) {
         if (!categorychannel) return message.channel.send(`${client.em.xmark} Failed to parse the **category** option into a valid category channel.`);
-        if (categorychannel.type !== 'GUILD_CATEGORY') return message.channel.send(`${client.em.xmark} ${categorychannel} is not a category!`);
+        if (categorychannel.type !== 'GUILD_CATEGORY') return message.channel.send(`${client.em.xmark} ${categorychannel.toString()} is not a category!`);
     }
 
     const vc_bitrate = Number(args.options.get('bitrate') || args.options.get('kbps'));
@@ -50,48 +50,48 @@ export function run(client: Bot, message: Message, args: Args): any {
     if (position !== null && isNaN(position)) return message.channel.send(`${client.em.xmark} Failed to parse the **position** option into a valid number.`);
     if (position !== null && (position < 1 || position > 2147483648)) return message.channel.send(`${client.em.xmark} The position must be between \`1\` and \`2147483648\``);
 
-    message.guild!.channels.create(name, {
+    return message.guild!.channels.create(name, {
         type: type, // GUILD_TEXT
         //position: undefined, // this is actually rawPosition and not position, so position must be set afterwards
-        parent: type !== ChannelTypes.GUILD_CATEGORY && category ? category as any : undefined as unknown as ChannelResolvable, // No category
+        parent: type !== ChannelTypes.GUILD_CATEGORY && category ? category as CategoryChannelResolvable : undefined as unknown as CategoryChannelResolvable, // No category
         nsfw: type === ChannelTypes.GUILD_TEXT && nsfw ? nsfw : false, // false
         topic: type === ChannelTypes.GUILD_TEXT && topic ? topic : '', // blank
-        rateLimitPerUser: type === ChannelTypes.GUILD_TEXT && slowmode ? Math.round(<number>slowmode) : 0, // 0 (seconds)
+        rateLimitPerUser: type === ChannelTypes.GUILD_TEXT && slowmode ? Math.round(slowmode) : 0, // 0 (seconds)
         bitrate: type === ChannelTypes.GUILD_VOICE && vc_bitrate ? Math.round(vc_bitrate * 1000) : 64000, // 64000 (64kbps)
         userLimit: type === ChannelTypes.GUILD_VOICE && vc_userlimit ? Math.round(vc_userlimit) : 0, // 0 (No Limit)
         reason: `Requested by user: ${message.author.tag}`
     }).then(channel => {
-        if (position) channel.setPosition(Math.round(position) - 1);
-        if (channel.type !== 'GUILD_CATEGORY') return message.channel.send(`${client.em.check} Successfully created new ${type} channel **${channel}** at position \`${Math.round(position!) || channel.position}\` on category **${channel.parent?.name || 'Default'}**`);
+        if (position) void channel.setPosition(Math.round(position) - 1);
+        if (channel.type !== 'GUILD_CATEGORY') return message.channel.send(`${client.em.check} Successfully created new ${type} channel **${channel.toString()}** at position \`${Math.round(position!) || channel.position}\` on category **${channel.parent?.name || 'Default'}**`);
         else return message.channel.send(`${client.em.check} Successfully created new category **${channel.name}** at position \`${Math.round(position!) || channel.position}\``);
     }).catch(console.error);
 }
 
-function parseSlowmode(client: Bot, message: Message, slowmode: string): number | Promise<Message> {
+function parseSlowmode(client: Bot, message: Message, slowmode: string): number | undefined {
     if (!isNaN(Number(slowmode))) {
-        if (Number(slowmode) < 0 || Number(slowmode) > 21600) return message.channel.send(`${client.em.xmark} The slowmode must be between \`0\` and \`21600\` seconds`);
+        if (Number(slowmode) < 0 || Number(slowmode) > 21600) return void message.channel.send(`${client.em.xmark} The slowmode must be between \`0\` and \`21600\` seconds`);
         else return Number(slowmode);
     }
     if (!isNaN(Number(slowmode.slice(0, -1)))) {
         const unit = slowmode.slice(-1);
         slowmode = slowmode.slice(0, -1);
         if (unit === 's') {
-            if (Number(slowmode) < 0 || Number(slowmode) > 21600) return message.channel.send(`${client.em.xmark} The slowmode must be between \`0\` and \`21600\` seconds`);
+            if (Number(slowmode) < 0 || Number(slowmode) > 21600) return void message.channel.send(`${client.em.xmark} The slowmode must be between \`0\` and \`21600\` seconds`);
             else return Number(slowmode);
-        };
+        }
         if (unit === 'm') {
             slowmode = String(Number(slowmode) * 60);
-            if (Number(slowmode) < 0 || Number(slowmode) > 21600) return message.channel.send(`${client.em.xmark} The slowmode must be between \`0\` and \`360\` minutes`);
+            if (Number(slowmode) < 0 || Number(slowmode) > 21600) return void message.channel.send(`${client.em.xmark} The slowmode must be between \`0\` and \`360\` minutes`);
             else return Number(slowmode);
-        };
+        }
         if (unit === 'h') {
             slowmode = String(Number(slowmode) * 60 * 60);
-            if (Number(slowmode) < 0 || Number(slowmode) > 21600) return message.channel.send(`${client.em.xmark} The slowmode must be between \`0\` and \`6\` hours`);
+            if (Number(slowmode) < 0 || Number(slowmode) > 21600) return void message.channel.send(`${client.em.xmark} The slowmode must be between \`0\` and \`6\` hours`);
             else return Number(slowmode);
-        };
-        return message.channel.send(`${client.em.xmark} \`${unit}\` is not a valid time unit for slowmode. Please use \`h\`, \`m\` or \`s\` (default)`);
+        }
+        return void message.channel.send(`${client.em.xmark} \`${unit}\` is not a valid time unit for slowmode. Please use \`h\`, \`m\` or \`s\` (default)`);
     }
-    return message.channel.send(`${client.em.xmark} Failed to parse the **slowmode** option into a valid time unit. (Try: \`5s\` or \`2m\`)`);
+    return void message.channel.send(`${client.em.xmark} Failed to parse the **slowmode** option into a valid time unit. (Try: \`5s\` or \`2m\`)`);
 }
 
 export const config = {

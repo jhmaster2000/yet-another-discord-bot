@@ -1,4 +1,4 @@
-import Discord, { Message, UserFlags } from 'discord.js';
+import Discord, { DiscordAPIError, Message } from 'discord.js';
 import Bot from '../Bot.js';
 import Utils from '../../utils.js';
 import { Args } from '../events/messageCreate.js';
@@ -14,7 +14,8 @@ export async function run(client: Bot, message: Message, argsx: Args) {
     let user;
     try {
         user = await client.users.fetch(id);
-    } catch(err: any) {
+    } catch(e: unknown) {
+        const err = e as DiscordAPIError;
         if (err.code === 10013) return message.channel.send(`${client.em.xmark} User does not exist.`);
         else return message.channel.send(`${client.em.xmark} That is not a valid user ID or mention.`);
     }
@@ -47,7 +48,7 @@ export async function run(client: Bot, message: Message, argsx: Args) {
 
     const userEmbed = new Discord.MessageEmbed()
         .setColor(0x00FF00)
-        .setAuthor({ name: `Info for account ${user.id}`, iconURL: bot ? bot : undefined as any })
+        .setAuthor({ name: `Info for account ${user.id}`, iconURL: bot ? bot : undefined })
         .setDescription(userdata.join('\n'))
         .setThumbnail(user.displayAvatarURL({ dynamic: true, format: 'png' }))
         .setFooter({ text: `Registered on: ${user.createdAt.toUTCString()}` });

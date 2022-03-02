@@ -5,9 +5,9 @@ import { Args } from '../events/messageCreate.js';
 
 const cdnurl = 'https://cdn.discordapp.com/' as const;
 const cdn = {
-    icon: (guild: any, id: any) => { return `${cdnurl}icons/${guild}/${id}.png?size=4096` },
-    banner: (guild: any, id: any) => { return `${cdnurl}banners/${guild}/${id}.png?size=4096` },
-    splash: (guild: any, id: any) => { return `${cdnurl}splashes/${guild}/${id}.png?size=4096` }
+    icon: (guild: string, id: string) => { return `${cdnurl}icons/${guild}/${id}.png?size=4096` },
+    banner: (guild: string, id: string) => { return `${cdnurl}banners/${guild}/${id}.png?size=4096` },
+    splash: (guild: string, id: string) => { return `${cdnurl}splashes/${guild}/${id}.png?size=4096` }
 };
 
 export async function run(client: Bot, message: Message, argsx: Args) {
@@ -33,16 +33,16 @@ export async function run(client: Bot, message: Message, argsx: Args) {
         const inviteImageType = inv.guild!.splash ? 'splash' : (inv.guild!.banner ? 'banner' : null);
         const inviteEmbed = new Discord.MessageEmbed()
             .setColor(3092790)
-            .setThumbnail(cdn.icon(inv.guild!.id, inv.guild!.icon))
+            .setThumbnail(cdn.icon(inv.guild!.id, inv.guild!.icon!))
             .setTitle(`${partnerBadge}${verifiedBadge}${boostBadge}Invite to: ${Utils.escapeMarkdown(inv.guild!.name)} (Click to join)`)
             .setURL(`https://discord.gg/${inv.code}`)
             .addField('Code', `\`${inv.code}\``, true)
-            .addField('Channel', `**\`#${inv.channel.name}\`**`, true)
+            .addField('Channel', `**\`#${inv.channel.name!}\`**`, true)
             .addField('Verification Level', `\`${inv.guild!.verificationLevel.replace(/_/g, ' ')}\``, true)
             .addField('Inviter', `\`${inviter}\``, true)
             .addField('Members', `${client.em.offline} **\`${inv.memberCount}\`**`, true)
             .addField('Online', `${client.em.online} **\`${inv.presenceCount}\`**`, true)
-            .addField('Vanity', `${isVanity ? client.em.check : (hasVanity ? `[discord.gg/${inv.guild!.vanityURLCode}](https://discord.gg/${inv.guild!.vanityURLCode})` : client.em.xmark)}`, true)
+            .addField('Vanity', `${isVanity ? client.em.check : (hasVanity ? `[discord.gg/${inv.guild!.vanityURLCode!}](https://discord.gg/${inv.guild!.vanityURLCode!})` : client.em.xmark)}`, true)
             .addField('Community', `${isCommunity ? client.em.check : client.em.xmark}`, true)
             .addField('Discoverable', `${isDiscoverable ? client.em.check : client.em.xmark}`, true);
         if (inviteImage !== null)

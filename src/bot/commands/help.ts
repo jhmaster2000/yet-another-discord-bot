@@ -1,5 +1,6 @@
 import Discord, { Message, MessageEmbed } from 'discord.js';
 import Bot from '../Bot.js';
+import Command from '../Command.js';
 import { Args } from '../events/messageCreate.js';
 import { checkPermissions } from '../permissionsHandler.js';
 
@@ -18,7 +19,7 @@ export function run(client: Bot, message: Message, args: Args) {
     }
     if (!commands.has(command) && !client.commandAliases.has(command)) return message.channel.send(`${client.em.xmark} \`\`${command}\`\` is not a valid command. (Try **\`\`${client.prefixes[0]} help\`\`** for a list of valid commands)`);
     
-    const cmd = commands.get(command) || commands.get(client.commandAliases.get(command));
+    const cmd = commands.get(command) || commands.get(client.commandAliases.get(command)!)!;
     const helpDescription = [], helpUsage = [], helpRequirements = [];
 
                                    helpDescription.push(`**Description:** ${cmd.config.description || 'No description'}`);
@@ -57,20 +58,20 @@ export function run(client: Bot, message: Message, args: Args) {
     function sendHelp(embed: MessageEmbed) { return message.channel.send({ embeds: [embed] }); }
 }
 
-function helpFlags(cmd: { config: { usage: { flags: { [x: string]: any; }; }; }; }): string {
+function helpFlags(cmd: Command): string {
     let flags = [];
-    for (const flag in cmd.config.usage.flags) {
-        const flagInfo = cmd.config.usage.flags[flag];
+    for (const flag in cmd.config.usage!.flags) {
+        const flagInfo = cmd.config.usage!.flags[flag];
         flags.push(`• \`--${flag}\`: ${flagInfo}`);
     }
     return flags.join('\n');
 }
 
-function helpOptions(cmd: { config: { usage: { options: { [x: string]: { value: any; info: any }; }; }; }; }): string {
+function helpOptions(cmd: Command): string {
     let options = [];
-    for (const option in cmd.config.usage.options) {
-        const optionInfo = cmd.config.usage.options[option].info;
-        const optionValue = cmd.config.usage.options[option].value;
+    for (const option in cmd.config.usage!.options) {
+        const optionInfo = cmd.config.usage!.options[option].info;
+        const optionValue = cmd.config.usage!.options[option].value;
         options.push(`• \`--${option}=${optionValue}\`: ${optionInfo}`);
     }
     return options.join('\n');

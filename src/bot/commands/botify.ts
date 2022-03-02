@@ -12,7 +12,7 @@ export async function run(client: Bot, message: Message, argsx: Args) {
             avatar: message.author.displayAvatarURL({ dynamic: true, format: 'png' }),
             reason: `User ${message.author.tag} ran "botify" command.`
         });
-        message.delete();
+        await message.delete();
         await webhook.send({ content: webhookText, allowedMentions: { parse: ['users'] } });
         return webhook.delete();
     } catch (err) {

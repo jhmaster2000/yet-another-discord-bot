@@ -1,12 +1,12 @@
-import Discord, { Message } from 'discord.js';
+import Discord, { Message, MessageEmbed } from 'discord.js';
 import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
 
 export function run(client: Bot, message: Message, args: Args) {
-    message.guild!.members.fetch();
+    void message.guild!.members.fetch();
     const pagesCount = message.guild!.members.cache.size;
-    let members: any[] = [];
+    let members: MessageEmbed[] = [];
 
     message.guild!.members.cache.forEach(member => {
         let badges = [];

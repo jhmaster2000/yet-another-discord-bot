@@ -3,12 +3,12 @@ import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
 
 export function run(client: Bot, message: Message, args: Args) {
-    message.channel.send(`${client.em.loadingfast} Pinging...`).then(msg => {
+    void message.channel.send(`${client.em.loadingfast} Pinging...`).then(msg => {
         const ping = msg.createdTimestamp - message.createdTimestamp;
         const result = new Discord.MessageEmbed()
             .setColor(0x00FF00)
             .setDescription(`🏓 **Ping:** ${ping}ms\n💓 **Heartbeat:** ${client.ws.ping}ms`);
-        msg.delete();
+        void msg.delete();
         return message.channel.send({ embeds: [result] });
     });
 }

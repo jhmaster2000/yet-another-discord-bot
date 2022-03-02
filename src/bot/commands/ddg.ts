@@ -1,4 +1,4 @@
-import Discord, { Message } from 'discord.js';
+import Discord, { ColorResolvable, Message } from 'discord.js';
 import got from 'got';
 import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
@@ -9,7 +9,24 @@ const enum Types {
     category = 'C',
     name = 'N',
     exclusive = 'E'
-};
+}
+
+interface DuckDuckGoResponse {
+    Type?: Types;
+    Redirect?: string;
+    AbstractURL?: string;
+    Heading: string;
+    AbstractSource: string;
+    AbstractText?: string;
+    Image?: string;
+    RelatedTopics: {
+        index: number;
+        topic: string;
+        FirstURL: string;
+    }[];
+    Answer?: string;
+    AnswerType?: string;
+}
 
 export function run(client: Bot, message: Message, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} You must provide something to search!`);
@@ -17,7 +34,7 @@ export function run(client: Bot, message: Message, argsx: Args) {
 
     const query = args.join(' ').toLowerCase();
     return got.get(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1&no_redirect=1`).then(response => {
-        const data = JSON.parse(response.body);
+        const data = JSON.parse(response.body) as DuckDuckGoResponse;
         if (!data.Type || data.Redirect) return message.channel.send(`${client.em.xmark} No results found!`);
 
         if (data.AbstractURL) {
@@ -29,7 +46,7 @@ export function run(client: Bot, message: Message, argsx: Args) {
                 .setURL(data.AbstractURL)
                 .setFooter(`Result type: web`)
                 .setColor('ORANGE');
-            let ellipsis = (data.AbstractText.length > 200) ? '...' : '';
+            let ellipsis = (data.AbstractText!.length > 200) ? '...' : '';
             if (data.AbstractText) ddgEmbed.setDescription(data.AbstractText.slice(0, 200).trim() + ellipsis);
             if (data.Image) ddgEmbed.setThumbnail('https://api.duckduckgo.com' + data.Image);
 
@@ -54,14 +71,14 @@ export function run(client: Bot, message: Message, argsx: Args) {
                     .setDescription(data.Answer.replace(/ ~ /g, '\n').replace(/^([A-Z]+)\((.+)\)/gmi, '$1: $2').replace(/^([A-Z]+:)/gmi, '**$1**'))
                     .setFooter(`Result type: color`)
                     .setThumbnail(`https://color.aero.bot/color?color=${colorHex}`)
-                    .setColor(colorHex);
+                    .setColor(colorHex as ColorResolvable);
                 return message.channel.send({ embeds: [ddgEmbed] });
             }
 
             const ddgEmbed = new Discord.MessageEmbed()
                 .setAuthor('DuckDuckGo QuickSearch Results:', 'https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png')
                 .setDescription(`${data.Answer}`)
-                .setFooter(`Result type: ${data.AnswerType.replace(/_/g, ' ') || '-'}`)
+                .setFooter(`Result type: ${data.AnswerType!.replace(/_/g, ' ') || '-'}`)
                 .setColor('DARK_AQUA');
             return message.channel.send({ embeds: [ddgEmbed] });
         }

@@ -5,7 +5,7 @@ import { Args } from '../events/messageCreate.js';
 
 export async function run(client: Bot, message: Message, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} Please provide a mention or ID of at least one role.`);
-    message.guild!.roles.fetch();
+    await message.guild!.roles.fetch();
 
     const argsr = args.ordered.map(arg => arg.raw);
     const roles = message.mentions.roles;
@@ -46,7 +46,7 @@ export async function run(client: Bot, message: Message, args: Args) {
     s = roles.size === 1 ? '' : 's';
     const msg = await message.channel.send(`${issues.join('\n')}\n\n⁉️ Are you sure you want to __permanently__ delete the **${roles.size}** role${s} listed below?\n${roles.map(r => r).join(' | ')}`);
     return client.promptYesNo(message.author, msg, (answer) => {
-        msg.reactions.removeAll();
+        void msg.reactions.removeAll();
         const timedout = answer === null ? '(Timed out)' : '';
         if (!answer)
             return msg.edit(`${client.em.neutral} Cancelled deletion of **${roles.size}** role${s}. ${timedout}`);

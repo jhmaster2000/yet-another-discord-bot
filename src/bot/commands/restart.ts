@@ -4,7 +4,7 @@ import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
 
 export function run(client: Bot, message: Message, args: Args) {
-    message.channel.send(`${client.em.loadingfast} Restarting...`).then(msg => {
+    void message.channel.send(`${client.em.loadingfast} Restarting...`).then(msg => {
         try {
             const newInstance = spawn('npm', ['start'], {
                 cwd: process.env.workdir,
@@ -14,7 +14,7 @@ export function run(client: Bot, message: Message, args: Args) {
             });
             newInstance.unref();
             console.warn(`[RESTART_SUCCESS] Successfully spawned new instance and self-terminated.`);
-            return msg.edit(`${client.em.check} Restart successful. (\`${process.env.GIT_HASH}\`)`).then(() => process.exit(600));
+            return msg.edit(`${client.em.check} Restart successful. (\`${process.env.GIT_HASH!}\`)`).then(() => process.exit(600));
         } catch(err) {
             console.error('[RESTART_FAILURE]', err);
             return msg.edit(`${client.em.xmark} Failed to restart, shutdown aborted.`);

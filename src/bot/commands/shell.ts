@@ -27,26 +27,26 @@ function killRunningSubprocess(message: Message, graceful: boolean) {
 }
 
 export function run(client: Bot, message: Message, argsx: Args) {
-    if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} No command given. \`[Terminal PID: ${term.pid}]\``);
+    if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} No command given. \`[Terminal PID: ${term.pid!}]\``);
     const args = argsx.basic.map(arg => arg.raw);
     if (args[0] === '^C') return killRunningSubprocess(message, false);
     if (runningCommands !== 0) return message.channel.send(`\`⚠️ A command is still running!\``);
 
     process.env.TERM_KILL_CMD = '0';
     runningCommands++;
-    message.channel.send(`${client.em.loadingfast} Output:\n\`\`\`xl\n \n\`\`\``).then(msg => {
+    void message.channel.send(`${client.em.loadingfast} Output:\n\`\`\`xl\n \n\`\`\``).then(msg => {
         const output = [`${client.em.loadingfast} Output:`, '```xl'];
 
         term.stdout.on('data', out => {
-            output.push(out);
+            output.push(String(out));
         });
         term.stderr.on('data', err => {
-            output.push(err);
+            output.push(String(err));
         });
-        term.on('error', (error) => {
+        term.on('error', error => {
             //clearInterval(timer);
-            msg.delete();
-            return message.channel.send(`${client.em.xmark} Failed to run command: ${error}`);
+            void msg.delete();
+            return message.channel.send(`${client.em.xmark} Failed to run command: ${error.toString()}`);
         });
 
         //term.stdin.setEncoding('utf-8');
@@ -77,10 +77,10 @@ export function run(client: Bot, message: Message, argsx: Args) {
                 output.push('```');
                 if (reason === 'timeout') output.push(`\`⚠️ Command timed out.\``);
                 msg.edit(output.join('\n')).catch(async err => {
-                    msg.delete();
+                    await msg.delete();
                     for (const m of Utils.splitMessage(output.join('\n'), { char: /\n|./, prepend: '```ansi\n', append: '```' })) {
                         await message.channel.send(m);
-                    };
+                    }
                 });
             }
         });

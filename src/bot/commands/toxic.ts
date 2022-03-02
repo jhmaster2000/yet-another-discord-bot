@@ -4,16 +4,24 @@ import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
 
+interface ToxicData {
+    attributeScores: {
+        TOXICITY: {
+            summaryScore: { value: number };
+        };
+    };
+}
+
 export async function run(client: Bot, message: Message, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} Missing input.`);
     const args = argsx.basic.map(arg => arg.raw).join(' ');
 
     try {
-        const response = await got.post(`https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${process.env.PERSPECTIVE_APIKEY}`, {
+        const response = await got.post(`https://commentanalyzer.googleapis.com/v1alpha1/comments:analyze?key=${process.env.PERSPECTIVE_APIKEY!}`, {
             body: `{ comment: { text: '${args}' }, languages: ['en'], requestedAttributes: { TOXICITY:{} } }`,
             headers: { 'Content-Type': 'application/json' }
         });
-        const body = JSON.parse(response.body);
+        const body = JSON.parse(response.body) as ToxicData;
         const score = body.attributeScores.TOXICITY.summaryScore.value;
         let color = 0;
         let label = '';
@@ -45,8 +53,8 @@ export async function run(client: Bot, message: Message, argsx: Args) {
     }
 }
 
-function percentFormat(x: string): string {
-    return (parseFloat(x) * 100).toFixed(1);
+function percentFormat(x: number): string {
+    return (x * 100).toFixed(1);
 }
 
 export const config = {

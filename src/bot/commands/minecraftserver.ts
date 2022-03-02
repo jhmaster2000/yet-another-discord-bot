@@ -39,7 +39,7 @@ export function run(client: Bot, message: Message, args: Args) {
     const ipAddress = ip[0];
     const port = ip[1] || '25565';
     return got.get(`http://mcapi.us/server/status?ip=${ipAddress}&port=${port}`).then(response => {
-        const server = JSON.parse(response.body);
+        const server = JSON.parse(response.body) as Schema;
         if (server.error) return message.channel.send(`${client.em.xmark} Error: ${server.error}`);
         if (!server.online) {
             const embed = new Discord.MessageEmbed()
@@ -55,8 +55,8 @@ export function run(client: Bot, message: Message, args: Args) {
             .setDescription(parseMOTD(server.motd_json, server.motd).replace(/\|/g, '|\u200B'))
             .addField('Players', `${server.players.now}/${server.players.max}`, true)
             .addField('Version', removeColorCodes(server.server.name).replace(/\|/g, '|\u200B') || '`Unknown`', true)
-            .addField('Protocol', server.server.protocol || '`Unknown`', true)
-            .setFooter(`Last Updated ${new Date(server.last_updated * 1000).toUTCString()}`, message.author.avatarURL() ?? undefined);
+            .addField('Protocol', server.server.protocol.toString() || '`Unknown`', true)
+            .setFooter(`Last Updated ${new Date(+server.last_updated * 1000).toUTCString()}`, message.author.avatarURL() ?? undefined);
 
         let files: Discord.MessageAttachment[] = [];
         if (server.favicon) {
@@ -67,7 +67,7 @@ export function run(client: Bot, message: Message, args: Args) {
         return message.channel.send({ embeds: [embed], files });
     }).catch(err => {
         console.error(err);
-        message.channel.send(`${client.em.xmark} An unexpected error occured trying to fetch server data, try again later.`);
+        void message.channel.send(`${client.em.xmark} An unexpected error occured trying to fetch server data, try again later.`);
     });
 }
 
