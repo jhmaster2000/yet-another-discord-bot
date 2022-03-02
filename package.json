@@ -14,7 +14,7 @@
         "node": ">=16.0.0"
     },
     "scripts": {
-        "start": "node --loader ts-node/esm -r dotenv/config src/index.ts",
+        "start": "node --loader ts-node/esm -r dotenv/config --trace-deprecation src/index.ts",
         "deploy": "cross-env RUNNING_JS=1 node -r dotenv/config dist/index.js",
         "build": "tsc --build .",
         "js": "npm run build && npm run deploy",
