@@ -24,7 +24,7 @@ function simpleRoles(rolesList: Discord.Collection<string, Discord.Role>, messag
         .setColor(0xFFFF00)
         .setTitle(`Roles in this server: (${simpleRolesData.length})`)
         .setDescription(simpleRolesData.join(', '))
-        .setFooter('⚠️ This server has too many roles to display full roles data.');
+        .setFooter({ text: '⚠️ This server has too many roles to display full roles data.' });
     return message.channel.send({ embeds: [simpleRolesEmbed] });
 }
 
@@ -32,7 +32,7 @@ function tooManyRoles(rolesCount: number, message: Discord.Message): Promise<Dis
     const tooManyRolesEmbed = new Discord.MessageEmbed()
         .setColor(0xFF0000)
         .setTitle(`Roles in this server: (${rolesCount})`)
-        .setFooter('❌ This server has too many roles to display.');
+        .setFooter({ text: '❌ This server has too many roles to display.' });
     return message.channel.send({ embeds: [tooManyRolesEmbed] });
 }
 

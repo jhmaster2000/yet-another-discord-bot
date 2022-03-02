@@ -56,7 +56,7 @@ export function run(client: Bot, message: Message, args: Args) {
             .addField('Players', `${server.players.now}/${server.players.max}`, true)
             .addField('Version', removeColorCodes(server.server.name).replace(/\|/g, '|\u200B') || '`Unknown`', true)
             .addField('Protocol', server.server.protocol.toString() || '`Unknown`', true)
-            .setFooter(`Last Updated ${new Date(+server.last_updated * 1000).toUTCString()}`, message.author.avatarURL() ?? undefined);
+            .setFooter({ text: `Last Updated ${new Date(+server.last_updated * 1000).toUTCString()}`, iconURL: message.author.avatarURL() ?? undefined });
 
         let files: Discord.MessageAttachment[] = [];
         if (server.favicon) {

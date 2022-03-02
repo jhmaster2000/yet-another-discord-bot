@@ -16,7 +16,7 @@ export function run(client: Bot, message: Message, args: Args) {
     
     const embed = new Discord.MessageEmbed()
         .setImage(`https://dummyimage.com/4000x1000/36393e/ffffff&text=${xltextStr}`)
-        .setFooter(`If no image appears, you've used an invalid character.`);
+        .setFooter({ text: `If no image appears, you've used an invalid character.` });
     return message.channel.send({ embeds: [embed] });
 }
 

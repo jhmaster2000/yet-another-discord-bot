@@ -37,7 +37,7 @@ export async function run(client: Bot, message: Message, argsx: Args) {
         .setTitle(`Definitions for "${mainDef.word}"`)
         .setURL(mainDef.wordnikUrl)
         .setDescription(definitions.join('\n'))
-        .setFooter(`F${mainDef.attributionText.slice(1)}`, 'https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png');
+        .setFooter({ text: `F${mainDef.attributionText.slice(1)}`, iconURL: 'https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png' });
     return await message.channel.send({ embeds: [definitionEmbed] });
 }
 

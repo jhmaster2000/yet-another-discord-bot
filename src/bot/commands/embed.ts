@@ -16,12 +16,12 @@ export async function run(client: Bot, message: Message, args: Args): Promise<Di
     const thumb = opts.get('thumb') ? opts.get('thumb') : null;
 
     const embed = new Discord.MessageEmbed()
-        .setAuthor(author!, message.author.displayAvatarURL({ dynamic: true, format: 'png' }))
+        .setAuthor({ name: author!, iconURL: message.author.displayAvatarURL({ dynamic: true, format: 'png' }) })
         .setDescription(description)
         .setColor(color as ColorResolvable)
         .setTimestamp();
     if (title) embed.setTitle(title);
-    if (footer) embed.setFooter(footer);
+    if (footer) embed.setFooter({ text: footer });
     if (url) embed.setURL(url);
     if (image) embed.setImage(image);
     if (thumb) embed.setThumbnail(thumb);

@@ -11,7 +11,8 @@
         "ecmaFeatures": { "impliedStrict": true }
     },
     "plugins": [
-        "@typescript-eslint"
+        "@typescript-eslint",
+        "deprecation"
     ],
     "extends": [
         "eslint:recommended",
@@ -19,6 +20,7 @@
         "plugin:@typescript-eslint/recommended-requiring-type-checking"
     ],
     "rules": {
+        "deprecation/deprecation": "warn",
         "prefer-const": "off",
         "@typescript-eslint/no-non-null-assertion": "off",
         "@typescript-eslint/no-inferrable-types": ["warn", { "ignoreParameters": true, "ignoreProperties": true }],

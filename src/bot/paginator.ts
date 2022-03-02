@@ -28,37 +28,37 @@ export default function loadPaginator(client: Bot): void {
                     void msg.reactions.cache.get('➡')!.users.remove(message.author.id);
                     if (currentPage === pagesCount - 1) currentPage = 0;
                     else currentPage += 1;
-                    void msg.edit({ embeds: [pages[currentPage].setFooter(`${currentPage + 1}/${pagesCount}`, authorAvatar)] });
+                    void msg.edit({ embeds: [pages[currentPage].setFooter({ text: `${currentPage + 1}/${pagesCount}`, iconURL: authorAvatar })] });
                 }
                 if (reaction.emoji.name === '⬅') {
                     void msg.reactions.cache.get('⬅')!.users.remove(message.author.id);
                     if (currentPage === 0) currentPage = pagesCount - 1;
                     else currentPage -= 1;
-                    void msg.edit({ embeds: [pages[currentPage].setFooter(`${currentPage + 1}/${pagesCount}`, authorAvatar)] });
+                    void msg.edit({ embeds: [pages[currentPage].setFooter({ text: `${currentPage + 1}/${pagesCount}`, iconURL: authorAvatar })] });
                 }
                 if (reaction.emoji.name === '⏩') {
                     void msg.reactions.cache.get('⏩')!.users.remove(message.author.id);
                     if (currentPage + 10 > pagesCount - 1) currentPage = (currentPage + 10) - pagesCount;
                     else currentPage += 10;
-                    void msg.edit({ embeds: [pages[currentPage].setFooter(`${currentPage + 1}/${pagesCount}`, authorAvatar)] });
+                    void msg.edit({ embeds: [pages[currentPage].setFooter({ text: `${currentPage + 1}/${pagesCount}`, iconURL: authorAvatar })] });
                 }
                 if (reaction.emoji.name === '⏪') {
                     void msg.reactions.cache.get('⏪')!.users.remove(message.author.id);
                     if (currentPage - 10 < 0) currentPage = (currentPage - 10) + pagesCount;
                     else currentPage -= 10;
-                    void msg.edit({ embeds: [pages[currentPage].setFooter(`${currentPage + 1}/${pagesCount}`, authorAvatar)] });
+                    void msg.edit({ embeds: [pages[currentPage].setFooter({ text: `${currentPage + 1}/${pagesCount}`, iconURL: authorAvatar })] });
                 }
                 if (reaction.emoji.name === '⏭') {
                     void msg.reactions.cache.get('⏭')!.users.remove(message.author.id);
                     if (currentPage + 50 > pagesCount - 1) currentPage = (currentPage + 50) - pagesCount;
                     else currentPage += 50;
-                    void msg.edit({ embeds: [pages[currentPage].setFooter(`${currentPage + 1}/${pagesCount}`, authorAvatar)] });
+                    void msg.edit({ embeds: [pages[currentPage].setFooter({ text: `${currentPage + 1}/${pagesCount}`, iconURL: authorAvatar })] });
                 }
                 if (reaction.emoji.name === '⏮') {
                     void msg.reactions.cache.get('⏮')!.users.remove(message.author.id);
                     if (currentPage - 50 < 0) currentPage = (currentPage - 50) + pagesCount;
                     else currentPage -= 50;
-                    void  msg.edit({ embeds: [pages[currentPage].setFooter(`${currentPage + 1}/${pagesCount}`, authorAvatar)] });
+                    void  msg.edit({ embeds: [pages[currentPage].setFooter({ text: `${currentPage + 1}/${pagesCount}`, iconURL: authorAvatar })] });
                 }
                 if (reaction.emoji.name === '🛑') collector.stop();
             });
@@ -66,7 +66,7 @@ export default function loadPaginator(client: Bot): void {
             collector.on('end', (collected, reason) => {
                 if (reason === 'idle' || reason === 'time') reason = 'Paginator timed out.';
                 else reason = 'Paginator terminated by user.';
-                void msg.edit({ embeds: [pages[currentPage].setFooter(reason, message.author.displayAvatarURL({ dynamic: true, format: 'png' }))] });
+                void msg.edit({ embeds: [pages[currentPage].setFooter({ text: reason, iconURL: message.author.displayAvatarURL({ dynamic: true, format: 'png' }) })] });
                 void msg.reactions.removeAll();
             });
         });
