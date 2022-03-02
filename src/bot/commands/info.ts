@@ -26,10 +26,10 @@ export function run(client: Bot, message: Message, args: Args) {
         const cpuUsage = Math.round(cpuUsageTotal / scpus.length) || 0;
         
         const infoEmbed = new Discord.MessageEmbed()
-            .setColor(0x27d11a)
+            .setColor(0x27D11A)
             .setTimestamp()
-            .setAuthor('Bot Information', client.user!.displayAvatarURL({ dynamic: true, format: 'png' }))
-            .setFooter(`Developed by ${client.owner.tag}`)
+            .setAuthor({ name: 'Bot Information', iconURL: client.user!.displayAvatarURL({ dynamic: true, format: 'png' }) })
+            .setFooter({ text: `Developed by ${client.owner.tag}` })
             .setTimestamp()
             .addField('Version', `\`${process.env.npm_package_version!}-${versionHash}\``, true)
             .addField('NodeJS', `\`v${process.versions.node}\``, true)
