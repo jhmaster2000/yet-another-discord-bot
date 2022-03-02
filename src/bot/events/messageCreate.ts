@@ -40,7 +40,7 @@ export async function run(client: Bot, message: Message) {
     args.flags = new Set([...args.flags].filter(Boolean));
     args.options = new Map(
         ([...args.options as unknown as Map<string, string[]>].filter(o => o[0] && o[1].length)
-        .map(o => [o[0], o[1][o[1].length - 1]]) as unknown as [string, string][]).filter(o => o[1])
+        .map(o => [o[0], o[1].at(-1)]) as unknown as [string, string][]).filter(o => o[1])
     );
 
     /* Command Handler */

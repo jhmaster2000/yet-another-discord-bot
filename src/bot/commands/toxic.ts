@@ -47,7 +47,7 @@ export async function run(client: Bot, message: Message, argsx: Args) {
             .setFooter({ text: `Requested by ${message.author.tag}`, iconURL: message.author.displayAvatarURL({ dynamic: true, format: 'png' }) })
             .setTimestamp();
         return await message.channel.send({ embeds: [toxicEmbed] });
-    } catch (err) {
+    } catch {
         if (!process.env.PERSPECTIVE_APIKEY) console.warn('[MISSING_APIKEY] The PERSPECTIVE_APIKEY is missing!');
         return await message.channel.send(`${client.em.xmark} An unexpected error occured. Try again later.`);
     }

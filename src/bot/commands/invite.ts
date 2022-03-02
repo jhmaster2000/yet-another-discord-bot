@@ -50,7 +50,7 @@ export async function run(client: Bot, message: Message, argsx: Args) {
         if (inv.guild!.description)
             inviteEmbed.setDescription(inv.guild!.description);
         return await message.channel.send({ embeds: [inviteEmbed] });
-    } catch (err) {
+    } catch {
         return await message.channel.send(`${client.em.xmark} Invalid Discord invite link!`);
     }
 }

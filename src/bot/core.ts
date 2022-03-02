@@ -18,4 +18,4 @@ import loadPaginator from './paginator.js'; loadPaginator(client);
 import loadReactionListener from './reactionListener.js'; loadReactionListener(client);
 
 /* Client Login */
-client.login(process.env.DISCORD_TOKEN).catch((err: Error) => console.error(`>> DISCORD LOGIN FAILED: ${err.name}: ${err.message}`));
+await client.login(process.env.DISCORD_TOKEN).catch((err: Error) => console.error(`>> DISCORD LOGIN FAILED: ${err.name}: ${err.message}`));

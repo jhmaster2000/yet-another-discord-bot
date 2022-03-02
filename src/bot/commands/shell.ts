@@ -59,7 +59,7 @@ export function run(client: Bot, message: Message, argsx: Args) {
                 time++;
                 try {
                     process.kill(resultList[0].pid, 0);
-                } catch(e) {
+                } catch {
                     return endCommand('ended');
                 }
                 if (process.env.TERM_KILL_CMD !== '0') return endCommand('killed');

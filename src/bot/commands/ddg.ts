@@ -56,7 +56,7 @@ export function run(client: Bot, message: Message, argsx: Args) {
                     if (index >= 5) return;
                     if (!topic.FirstURL) return;
                     let tempArray = topic.FirstURL.split('/');
-                    const topicTitle = decodeURIComponent(tempArray[tempArray.length - 1]).replace(/_/g, ' ');
+                    const topicTitle = decodeURIComponent(tempArray.at(-1)!).replace(/_/g, ' ');
                     related.push(`• [${topicTitle}](${topic.FirstURL})`);
                 });
                 ddgEmbed.addField('Related results', related.join('\n'));

@@ -13,7 +13,7 @@ interface RandomAssets {
     cats: string[];
 }
 
-void got.get('https://random.dog/doggos').then(response => {
+await got.get('https://random.dog/doggos').then(response => {
     assets.dogs = (<string[]>JSON.parse(response.body)).filter((dog: string) => !dog.endsWith('.mp4'));
 });
 

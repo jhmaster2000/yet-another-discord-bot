@@ -106,7 +106,7 @@ function createArgs(input: string | string[] | undefined): Args {
     createdargs.flags = new Set([...createdargs.flags].filter(Boolean));
     createdargs.options = new Map(
         ([...createdargs.options as unknown as Map<string, string[]>].filter(o => o[0] && o[1].length)
-        .map(o => [o[0], o[1][o[1].length - 1]]) as unknown as [string, string][]).filter(o => o[1])
+        .map(o => [o[0], o[1].at(-1)]) as unknown as [string, string][]).filter(o => o[1])
     );
     return createdargs;
 }
