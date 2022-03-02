@@ -1,12 +1,12 @@
 import Discord, { Message } from 'discord.js';
-import got from 'got';
+import got, { HTTPError } from 'got';
 import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { Args } from '../events/messageCreate.js';
 
 type QRApiResponse = {
     symbol: {
-        readonly data: string;
+        readonly data: string | null;
         readonly error: string;
     }[];
 }[];
@@ -35,15 +35,15 @@ export function run(client: Bot, message: Message, args: Args) {
         return message.channel.send(`${client.em.loadingfast} **Scanning QR Code...**`).then(msg => {
             return got.get(`https://api.qrserver.com/v1/read-qr-code/?fileurl=${encodeURIComponent(qrLink)}`, { timeout: { request: 15000 }, retry: { limit: 0 } }).then(response => {
                 const scanned = (<QRApiResponse>JSON.parse(response.body))[0].symbol[0];
-                let result = `${client.em.check} **QR Scan Result:**\n${Utils.escapeMarkdown(scanned.data)}`;
+                let result = `${client.em.check} **QR Scan Result:**\n${Utils.escapeMarkdown(scanned.data ?? '')}`;
 
                 if (!scanned.data) result = `${client.em.xmark} **QR Scan Error:** \`\`\`js\n${scanned.error}\`\`\``;
                 if (scanned.error?.includes('download error')) result = `${client.em.xmark} That is not a valid image URL. (Download error)`;
 
                 return msg.edit(result);
-            }).catch((err: { code: number, statusCode: number }) => {
-                if (<string><unknown>err.code === 'ETIMEDOUT') return msg.edit(`${client.em.xmark} That is not a valid image URL. (Timed out)`);
-                if (err.statusCode === 400) return msg.edit(`${client.em.xmark} That is not a valid image URL.`);
+            }).catch((err: HTTPError) => {
+                if (err.code === 'ETIMEDOUT') return msg.edit(`${client.em.xmark} That is not a valid image URL. (Timed out)`);
+                if (err.response.statusCode === 400) return msg.edit(`${client.em.xmark} That is not a valid image URL.`);
                 console.error(err);
                 return msg.edit(`${client.em.xmark} **QR Scan Fatal Error:** \`\`\`js\n${err.toString()}\`\`\``);
             });
