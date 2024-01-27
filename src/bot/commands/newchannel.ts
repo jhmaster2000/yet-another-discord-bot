@@ -42,8 +42,8 @@ export function run(client: Bot, message: Message, args: Args) {
     if (type === ChannelTypes.GUILD_VOICE) {
         if (message.guild!.premiumTier === 'NONE' && (vc_bitrate < 8 || vc_bitrate > 96)) return message.channel.send(`${client.em.xmark} The bitrate must be between \`8\` and \`96\` (in kbps)`);
         if (message.guild!.premiumTier === 'TIER_1' && (vc_bitrate < 8 || vc_bitrate > 128)) return message.channel.send(`${client.em.xmark} The bitrate must be between \`8\` and \`128\` (in kbps)`);
-        if (message.guild!.premiumTier === 'TIER_2' && (vc_bitrate < 8 || vc_bitrate > 256)) return message.channel.send(`${client.em.xmark} The bitrate must be between \`8\` and \`96\` (in kbps)`);
-        if (message.guild!.premiumTier === 'TIER_3' && (vc_bitrate < 8 || vc_bitrate > 384)) return message.channel.send(`${client.em.xmark} The bitrate must be between \`8\` and \`96\` (in kbps)`);
+        if (message.guild!.premiumTier === 'TIER_2' && (vc_bitrate < 8 || vc_bitrate > 256)) return message.channel.send(`${client.em.xmark} The bitrate must be between \`8\` and \`256\` (in kbps)`);
+        if (message.guild!.premiumTier === 'TIER_3' && (vc_bitrate < 8 || vc_bitrate > 384)) return message.channel.send(`${client.em.xmark} The bitrate must be between \`8\` and \`384\` (in kbps)`);
         if (vc_userlimit < 0 || vc_userlimit > 99) return message.channel.send(`${client.em.xmark} The user limit must be between \`0\` and \`99\``);
     }
 
