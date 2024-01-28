@@ -1,3 +1,4 @@
+import { ActivityType } from 'discord.js';
 import Bot from '../Bot.js';
 
 export function run(client: Bot) {
@@ -8,7 +9,7 @@ export function run(client: Bot) {
             `${client.prefixes[0]} help | ${client.users.cache.size} Users!`
         ];
         client.user!.setActivity(presences[Math.floor(Math.random() * presences.length)], {
-            type: 'WATCHING'
+            type: ActivityType.Watching
         });
     }, 20000);
 

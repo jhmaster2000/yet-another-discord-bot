@@ -3,8 +3,7 @@ import util from 'util';
 import ps from 'ps-node';
 import Bot from '../Bot.js';
 import { Message } from 'discord.js';
-import { Args } from '../events/messageCreate.js';
-import Utils from '../../utils.js';
+import { type Args } from '../events/messageCreate.js';
 process.env.RUNNING_EXEC_PIDS = '[]';
 
 function killRunningSubprocesses(message: Message): void {
@@ -44,9 +43,7 @@ export function run(client: Bot, message: Message, argsx: Args) {
             if (error?.code !== undefined) output.push(`\`Command exited with code ${error?.code}\``);
             msg.edit(output.join('\n')).catch(async err => {
                 await msg.delete();
-                for (const m of Utils.splitMessage(output.join('\n'), { char: /\n|./, prepend: '```ansi\n', append: '```' })) {
-                    await message.channel.send(m);
-                }
+                await message.channel.send('```ansi\n' + output.join('\n') + '```');
             });
         });
         let runningExecPIDs = JSON.parse(process.env.RUNNING_EXEC_PIDS!) as number[];

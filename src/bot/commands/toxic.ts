@@ -2,7 +2,7 @@ import Discord, { Message } from 'discord.js';
 import got from 'got';
 import Utils from '../../utils.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
 interface ToxicData {
     attributeScores: {
@@ -40,11 +40,11 @@ export async function run(client: Bot, message: Message, argsx: Args) {
             label = 'Not toxic';
         }
 
-        const toxicEmbed = new Discord.MessageEmbed()
+        const toxicEmbed = new Discord.EmbedBuilder()
             .setColor(color)
             .setTitle(`${label} (${percentFormat(score)}%)`)
             .setDescription(Utils.escapeMarkdown(args))
-            .setFooter({ text: `Requested by ${message.author.tag}`, iconURL: message.author.displayAvatarURL({ dynamic: true, format: 'png' }) })
+            .setFooter({ text: `Requested by ${message.author.tag}`, iconURL: message.author.displayAvatarURL({ extension: 'png' }) })
             .setTimestamp();
         return await message.channel.send({ embeds: [toxicEmbed] });
     } catch {

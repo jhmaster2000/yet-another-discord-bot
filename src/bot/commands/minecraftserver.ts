@@ -1,7 +1,7 @@
 import Discord, { Message } from 'discord.js';
 import got from 'got';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
 interface MOTDObject {
     text: string;
@@ -40,31 +40,33 @@ export function run(client: Bot, message: Message, args: Args) {
     const port = ip[1] || '25565';
     return got.get(`http://mcapi.us/server/status?ip=${ipAddress}&port=${port}`).then(response => {
         const server = JSON.parse(response.body) as Schema;
-        if (server.error) return message.channel.send(`${client.em.xmark} Error: ${server.error}`);
+        if (server.error) return void message.channel.send(`${client.em.xmark} Error: ${server.error}`);
         if (!server.online) {
-            const embed = new Discord.MessageEmbed()
+            const embed = new Discord.EmbedBuilder()
                 .setColor(0xFF0000)
                 .setTitle(ipAddress + ':' + port)
                 .setDescription('`Server is offline.`');
-            return message.channel.send({ embeds: [embed] });
+            return void message.channel.send({ embeds: [embed] });
         }
 
-        const embed = new Discord.MessageEmbed()
+        const embed = new Discord.EmbedBuilder()
             .setColor(0x00FF21)
             .setTitle(port === '25565' ? ipAddress : `${ipAddress}:${port}`)
             .setDescription(parseMOTD(server.motd_json, server.motd).replace(/\|/g, '|\u200B'))
-            .addField('Players', `${server.players.now}/${server.players.max}`, true)
-            .addField('Version', removeColorCodes(server.server.name).replace(/\|/g, '|\u200B') || '`Unknown`', true)
-            .addField('Protocol', server.server.protocol.toString() || '`Unknown`', true)
+            .addFields(
+                { name: 'Players', value: `${server.players.now}/${server.players.max}`, inline: true },
+                { name: 'Version', value: removeColorCodes(server.server.name).replace(/\|/g, '|\u200B') || '`Unknown`', inline: true },
+                { name: 'Protocol', value: server.server.protocol.toString() || '`Unknown`', inline: true },
+            )
             .setFooter({ text: `Last Updated ${new Date(+server.last_updated * 1000).toUTCString()}`, iconURL: message.author.avatarURL() ?? undefined });
 
-        let files: Discord.MessageAttachment[] = [];
+        let files: Discord.AttachmentBuilder[] = [];
         if (server.favicon) {
             const faviconData = Buffer.from(server.favicon.split(',').slice(1).join(','), 'base64');
-            files.push(new Discord.MessageAttachment(faviconData, 'favicon.png'));
+            files.push(new Discord.AttachmentBuilder(faviconData, { name: 'favicon.png' }));
             embed.setThumbnail("attachment://favicon.png");
         }
-        return message.channel.send({ embeds: [embed], files });
+        return void message.channel.send({ embeds: [embed], files });
     }).catch(err => {
         console.error(err);
         void message.channel.send(`${client.em.xmark} An unexpected error occured trying to fetch server data, try again later.`);

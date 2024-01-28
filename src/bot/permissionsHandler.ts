@@ -1,6 +1,6 @@
-import { GuildChannelResolvable, Message, PermissionString } from 'discord.js';
+import { type GuildChannelResolvable, Message, type PermissionsString } from 'discord.js';
 import Bot from './Bot.js';
-import Command from './Command.js';
+import type Command from './Command.js';
 
 enum PermissionCode {
     NO_REQUIREMENTS = NaN,
@@ -13,16 +13,16 @@ enum PermissionCode {
 
 interface PermissionData {
     code: PermissionCode;
-    perms?: { user: PermissionString[], self: PermissionString[] };
+    perms?: { user: PermissionsString[], self: PermissionsString[] };
 }
 
 export function checkPermissions(client: Bot, message: Message, cmd: Command, helpCmd: boolean = false): PermissionData {
-    const self = message.guild!.me!.permissionsIn(message.channel as GuildChannelResolvable);
+    const self = message.guild!.members.me!.permissionsIn(message.channel as GuildChannelResolvable);
     const user = message.member!.permissionsIn(message.channel as GuildChannelResolvable);
     const selfPerms = cmd.config.selfperms || [];
     let userPerms = cmd.config.userperms || [];
-    const selfMiss: PermissionString[] = [];
-    const userMiss: PermissionString[] = [];
+    const selfMiss: PermissionsString[] = [];
+    const userMiss: PermissionsString[] = [];
 
     if (!selfPerms.length && !userPerms.length) return { code: NaN };
 
@@ -36,12 +36,12 @@ export function checkPermissions(client: Bot, message: Message, cmd: Command, he
     }
 
     if (selfPerms.length) {
-        selfPerms.forEach((perm: PermissionString) => {
+        selfPerms.forEach((perm: PermissionsString) => {
             if (!self.has(perm)) selfMiss.push(perm);
         });
     }
     if (userPerms.length) {
-        userPerms.forEach((perm: PermissionString) => {
+        userPerms.forEach((perm: PermissionsString) => {
             if (!user.has(perm)) userMiss.push(perm);
         });
     }

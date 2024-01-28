@@ -1,13 +1,13 @@
-import { Collection, GuildChannel, GuildChannelResolvable, Message, TextBasedChannel } from 'discord.js';
+import { Collection, GuildChannel, type GuildChannelResolvable, Message, type TextBasedChannel, type Channel } from 'discord.js';
 import Utils from '../../utils.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
 export async function run(client: Bot, message: Message, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} Please provide a mention or ID of at least one channel.`);
 
     const argsr = args.ordered.map(arg => arg.raw);
-    const channels: Collection<string, TextBasedChannel> = message.mentions.channels;
+    const channels: Collection<string, Channel> = message.mentions.channels;
 
     let invalidChannels: string[] = [];
     argsr.forEach(possibleChannelID => {
@@ -23,9 +23,9 @@ export async function run(client: Bot, message: Message, args: Args) {
     let s = invalidChannels.length === 1 ? '' : 's';
     if (invalidChannels.length) issues.push(`⚠️ Failed to resolve **${invalidChannels.length}** argument${s} into valid channels:\n\`\`${invalidChannels.join('``, ``')}\`\``);
 
-    if (!message.member!.permissions.has('ADMINISTRATOR')) {
-        let notEditableByUser: TextBasedChannel[] = [];
-        channels.filter(channel => !message.member!.permissionsIn(channel as GuildChannelResolvable).has('MANAGE_CHANNELS')).forEach(channel => {
+    if (!message.member!.permissions.has('Administrator')) {
+        let notEditableByUser: Channel[] = [];
+        channels.filter(channel => !message.member!.permissionsIn(channel as GuildChannelResolvable).has('ManageChannels')).forEach(channel => {
             notEditableByUser.push(channel);
             channels.delete(channel.id);
         });
@@ -47,7 +47,7 @@ export async function run(client: Bot, message: Message, args: Args) {
                 return results.push(`${client.em.check} Successfully deleted channel: **\`\`${(<GuildChannel>channel_3).name}\`\`**`);
             }).catch(error => {
                 console.error('[DELCHANNEL_ERROR]', error);
-                return results.push(`${client.em.xmark} Failed to delete ${channel_3.toString()}, does the bot have permissions to view and manage it?`);
+                return results.push(`${client.em.xmark} Failed to delete ${String(channel_3)}, does the bot have permissions to view and manage it?`);
             });
         }
         return msg.edit(results.join('\n')).catch(err => {

@@ -2,7 +2,7 @@ import Discord, { Message } from 'discord.js';
 import { striptags } from 'striptags';
 import got from 'got';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
 type Definitions = {
     text?: string;
@@ -32,8 +32,8 @@ export async function run(client: Bot, message: Message, argsx: Args) {
         });
         definitions.push(`• *__\`${def.partOfSpeech || mainDef.partOfSpeech || 'generic'}\`__* ${striptags(def.text)}`);
     });
-    const definitionEmbed = new Discord.MessageEmbed()
-        .setColor('AQUA')
+    const definitionEmbed = new Discord.EmbedBuilder()
+        .setColor('Aqua')
         .setTitle(`Definitions for "${mainDef.word}"`)
         .setURL(mainDef.wordnikUrl)
         .setDescription(definitions.join('\n'))

@@ -3,7 +3,7 @@ import { pathToFileURL } from 'url';
 import { readdir } from 'fs';
 import { join } from 'path';
 import Bot from './Bot.js';
-import Command from './Command.js';
+import type Command from './Command.js';
 
 export default function loadCommands(client: Bot): void {
     client.commands = new Discord.Collection();

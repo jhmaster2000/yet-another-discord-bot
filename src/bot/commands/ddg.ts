@@ -1,7 +1,7 @@
-import Discord, { ColorResolvable, Message } from 'discord.js';
+import Discord, { type ColorResolvable, Message } from 'discord.js';
 import got from 'got';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
 const enum Types {
     article = 'A',
@@ -28,24 +28,24 @@ interface DuckDuckGoResponse {
     AnswerType?: string;
 }
 
-export function run(client: Bot, message: Message, argsx: Args) {
+export async function run(client: Bot, message: Message, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} You must provide something to search!`);
     const args = argsx.basic.map(arg => arg.raw);
 
     const query = args.join(' ').toLowerCase();
     return got.get(`https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1&no_redirect=1`).then(response => {
         const data = JSON.parse(response.body) as DuckDuckGoResponse;
-        if (!data.Type || data.Redirect) return message.channel.send(`${client.em.xmark} No results found!`);
+        if (!data.Type || data.Redirect) return void message.channel.send(`${client.em.xmark} No results found!`);
 
         if (data.AbstractURL) {
             if (data.Type === Types.disambig) data.Heading = data.Heading + ' (disambiguation)';
 
-            const ddgEmbed = new Discord.MessageEmbed()
+            const ddgEmbed = new Discord.EmbedBuilder()
                 .setAuthor({ name: 'DuckDuckGo QuickSearch Results:', iconURL: 'https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png' })
                 .setTitle(`${data.AbstractSource} - ${data.Heading}`)
                 .setURL(data.AbstractURL)
                 .setFooter({ text: `Result type: web` })
-                .setColor('ORANGE');
+                .setColor('Orange');
             let ellipsis = (data.AbstractText!.length > 200) ? '...' : '';
             if (data.AbstractText) ddgEmbed.setDescription(data.AbstractText.slice(0, 200).trim() + ellipsis);
             if (data.Image) ddgEmbed.setThumbnail('https://api.duckduckgo.com' + data.Image);
@@ -59,33 +59,33 @@ export function run(client: Bot, message: Message, argsx: Args) {
                     const topicTitle = decodeURIComponent(tempArray.at(-1)!).replace(/_/g, ' ');
                     related.push(`• [${topicTitle}](${topic.FirstURL})`);
                 });
-                ddgEmbed.addField('Related results', related.join('\n'));
+                ddgEmbed.addFields({ name: 'Related results', value: related.join('\n') });
             }
-            return message.channel.send({ embeds: [ddgEmbed] });
+            return void message.channel.send({ embeds: [ddgEmbed] });
         } else if (data.Answer) {
-            if (data.AnswerType === 'ip' || data.AnswerType === 'iploc') return message.channel.send(`${client.em.xmark} No results found!`);
+            if (data.AnswerType === 'ip' || data.AnswerType === 'iploc') return void message.channel.send(`${client.em.xmark} No results found!`);
             if (data.AnswerType === 'color_code') {
                 const colorHex = data.Answer.slice(6).split(' ~ ')[0].trim();
-                const ddgEmbed = new Discord.MessageEmbed()
+                const ddgEmbed = new Discord.EmbedBuilder()
                     .setAuthor({ name: 'DuckDuckGo QuickSearch Results:', iconURL: 'https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png' })
                     .setDescription(data.Answer.replace(/ ~ /g, '\n').replace(/^([A-Z]+)\((.+)\)/gmi, '$1: $2').replace(/^([A-Z]+:)/gmi, '**$1**'))
                     .setFooter({ text: `Result type: color` })
                     .setThumbnail(`https://color.aero.bot/color?color=${colorHex}`)
                     .setColor(colorHex as ColorResolvable);
-                return message.channel.send({ embeds: [ddgEmbed] });
+                return void message.channel.send({ embeds: [ddgEmbed] });
             }
 
-            const ddgEmbed = new Discord.MessageEmbed()
+            const ddgEmbed = new Discord.EmbedBuilder()
                 .setAuthor({ name: 'DuckDuckGo QuickSearch Results:', iconURL: 'https://duckduckgo.com/assets/icons/meta/DDG-icon_256x256.png' })
                 .setDescription(`${data.Answer}`)
                 .setFooter({ text: `Result type: ${data.AnswerType!.replace(/_/g, ' ') || '-'}` })
-                .setColor('DARK_AQUA');
-            return message.channel.send({ embeds: [ddgEmbed] });
+                .setColor('DarkAqua');
+            return void message.channel.send({ embeds: [ddgEmbed] });
         }
         return;
     }).catch(err => {
         console.error(err);
-        return message.channel.send(`${client.em.xmark} An error occured when trying to search. Try again later.`);
+        void message.channel.send(`${client.em.xmark} An error occured when trying to search. Try again later.`);
     });
 }
 

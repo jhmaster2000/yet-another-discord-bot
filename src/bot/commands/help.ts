@@ -1,20 +1,20 @@
-import Discord, { Message, MessageEmbed } from 'discord.js';
+import Discord, { Message } from 'discord.js';
 import Bot from '../Bot.js';
-import Command from '../Command.js';
-import { Args } from '../events/messageCreate.js';
+import type Command from '../Command.js';
+import { type Args } from '../events/messageCreate.js';
 import { checkPermissions } from '../permissionsHandler.js';
 
 export function run(client: Bot, message: Message, args: Args) {
     const commands = client.commands;
     const command = args.ordered.length ? args.ordered[0].value : null;
-    const helpEmbed = new Discord.MessageEmbed();
+    const helpEmbed = new Discord.EmbedBuilder();
 
     if (!command) {
         const help = [];
         help.push(`\`\`${commands.filter(cmd => !cmd.config.disabled).map(cmd => cmd.config.name).sort().join('``, ``')}\`\``);
         help.push(`\n*Use **\`\`${client.prefixes[0]} help [command]\`\`** to get info on a specific command.*`);
         helpEmbed.setTitle('Here\'s a list of all the commands:').setColor(0x24C0FA).setDescription(help.join('')).setTimestamp()
-                 .setFooter({ text: `Requested by ${message.author.tag}`, iconURL: message.author.displayAvatarURL({ dynamic: true, format: 'png' }) });
+                 .setFooter({ text: `Requested by ${message.author.tag}`, iconURL: message.author.displayAvatarURL({ extension: 'png' }) });
         return sendHelp(helpEmbed);
     }
     if (!commands.has(command) && !client.commandAliases.has(command)) return message.channel.send(`${client.em.xmark} \`\`${command}\`\` is not a valid command. (Try **\`\`${client.prefixes[0]} help\`\`** for a list of valid commands)`);
@@ -49,13 +49,13 @@ export function run(client: Bot, message: Message, args: Args) {
     }
 
     helpEmbed.setTitle(`Command Help: \`${cmd.config.name}\``).setColor(helpColor).setTimestamp();
-    helpEmbed.setFooter({ text: usableMsg, iconURL: message.author.displayAvatarURL({ dynamic: true, format: 'png' }) });
-    if (helpDescription.length)    helpEmbed.setDescription(helpDescription.join('\n'));
-    if (helpUsage.length)          helpEmbed.addField('**__Usage__**', helpUsage.join('\n'));
-    if (helpRequirements.length)   helpEmbed.addField('**__Requirements__**', helpRequirements.join('\n'));
+    helpEmbed.setFooter({ text: usableMsg, iconURL: message.author.displayAvatarURL({ extension: 'png' }) });
+    if (helpDescription.length)  helpEmbed.setDescription(helpDescription.join('\n'));
+    if (helpUsage.length)        helpEmbed.addFields({ name: '**__Usage__**', value: helpUsage.join('\n') });
+    if (helpRequirements.length) helpEmbed.addFields({ name: '**__Requirements__**', value: helpRequirements.join('\n') });
     return sendHelp(helpEmbed);
 
-    function sendHelp(embed: MessageEmbed) { return message.channel.send({ embeds: [embed] }); }
+    function sendHelp(embed: Discord.EmbedBuilder) { return message.channel.send({ embeds: [embed] }); }
 }
 
 function helpFlags(cmd: Command): string {

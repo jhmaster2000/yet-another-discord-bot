@@ -1,7 +1,7 @@
-import Discord, { Message } from 'discord.js';
+import Discord, { GuildVerificationLevel, Message } from 'discord.js';
 import Utils from '../../utils.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
 const cdnurl = 'https://cdn.discordapp.com/' as const;
 const cdn = {
@@ -31,20 +31,22 @@ export async function run(client: Bot, message: Message, argsx: Args) {
         const inviter = inv.inviter?.tag || (isVanity ? 'System' : 'Unknown');
         const inviteImage = inv.guild!.splash || inv.guild!.banner || null;
         const inviteImageType = inv.guild!.splash ? 'splash' : (inv.guild!.banner ? 'banner' : null);
-        const inviteEmbed = new Discord.MessageEmbed()
+        const inviteEmbed = new Discord.EmbedBuilder()
             .setColor(3092790)
             .setThumbnail(cdn.icon(inv.guild!.id, inv.guild!.icon!))
             .setTitle(`${partnerBadge}${verifiedBadge}${boostBadge}Invite to: ${Utils.escapeMarkdown(inv.guild!.name)} (Click to join)`)
             .setURL(`https://discord.gg/${inv.code}`)
-            .addField('Code', `\`${inv.code}\``, true)
-            .addField('Channel', `**\`#${inv.channel.name!}\`**`, true)
-            .addField('Verification Level', `\`${inv.guild!.verificationLevel.replace(/_/g, ' ')}\``, true)
-            .addField('Inviter', `\`${inviter}\``, true)
-            .addField('Members', `${client.em.offline} **\`${inv.memberCount}\`**`, true)
-            .addField('Online', `${client.em.online} **\`${inv.presenceCount}\`**`, true)
-            .addField('Vanity', `${isVanity ? client.em.check : (hasVanity ? `[discord.gg/${inv.guild!.vanityURLCode!}](https://discord.gg/${inv.guild!.vanityURLCode!})` : client.em.xmark)}`, true)
-            .addField('Community', `${isCommunity ? client.em.check : client.em.xmark}`, true)
-            .addField('Discoverable', `${isDiscoverable ? client.em.check : client.em.xmark}`, true);
+            .addFields(
+                { name: 'Code', value: `\`${inv.code}\``, inline: true },
+                { name: 'Channel', value: `**\`#${inv.channel?.name ?? 'Unknown (?)'}\`**`, inline: true },
+                { name: 'Verification Level', value: `\`${GuildVerificationLevel[inv.guild!.verificationLevel].replace(/_/g, ' ')}\``, inline: true },
+                { name: 'Inviter', value: `\`${inviter}\``, inline: true },
+                { name: 'Members', value: `${client.em.offline} **\`${inv.memberCount}\`**`, inline: true },
+                { name: 'Online', value: `${client.em.online} **\`${inv.presenceCount}\`**`, inline: true },
+                { name: 'Vanity', value: `${isVanity ? client.em.check : (hasVanity ? `[discord.gg/${inv.guild!.vanityURLCode!}](https://discord.gg/${inv.guild!.vanityURLCode!})` : client.em.xmark)}`, inline: true },
+                { name: 'Community', value: `${isCommunity ? client.em.check : client.em.xmark}`, inline: true },
+                { name: 'Discoverable', value: `${isDiscoverable ? client.em.check : client.em.xmark}`, inline: true },
+            );
         if (inviteImage !== null)
             inviteEmbed.setImage(cdn[inviteImageType!](inv.guild!.id, inviteImage));
         if (inv.guild!.description)

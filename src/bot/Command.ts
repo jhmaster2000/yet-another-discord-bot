@@ -1,6 +1,6 @@
-import { Message, PermissionString } from 'discord.js';
+import { Message, type PermissionsString } from 'discord.js';
 import Bot from './Bot.js';
-import { Args } from './events/messageCreate.js';
+import { type Args } from './events/messageCreate.js';
 
 export default interface Command {
     config: CommandConfig;
@@ -10,8 +10,8 @@ export default interface Command {
 export interface CommandConfig {
     name: string;
     description: string,
-    selfperms?: PermissionString[],
-    userperms?: PermissionString[],
+    selfperms?: PermissionsString[],
+    userperms?: PermissionsString[],
     aliases?: string[],
     disabled?: boolean,
     deprecated?: boolean,

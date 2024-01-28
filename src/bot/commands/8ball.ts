@@ -1,6 +1,6 @@
 import { Message } from 'discord.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
 const fortunes = [
     /* Positive answers */

@@ -1,6 +1,6 @@
-import { Client, ClientOptions, Collection, Message, MessageEmbed, User } from 'discord.js';
-import Command from './Command.js';
-import { CustomReactions } from './reactionListener.js';
+import { Client, type ClientOptions, Collection, Message, EmbedBuilder, User } from 'discord.js';
+import type Command from './Command.js';
+import { type CustomReactions } from './reactionListener.js';
 
 export default class Bot extends Client {
     constructor(options: ClientOptions) {
@@ -20,7 +20,7 @@ export default class Bot extends Client {
     readonly events: EventStorage = (<any>this)._events as EventStorage;
     readonly isWin: boolean = process.platform === 'win32';
 
-    paginate!: (message: Message, pages: MessageEmbed[], pagesCount: number, timeout?: number, startPage?: number) => void;
+    paginate!: (message: Message, pages: EmbedBuilder[], pagesCount: number, timeout?: number, startPage?: number) => void;
     promptYesNo!: (from: User, msg: Message, callback: (answer: boolean | null) => void, timeout?: number, reactions?: CustomReactions) => void;
 }
 

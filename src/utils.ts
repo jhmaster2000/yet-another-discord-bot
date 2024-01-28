@@ -1,4 +1,4 @@
-import { EscapeMarkdownOptions, Util } from 'discord.js';
+import { type EscapeMarkdownOptions, escapeCodeBlock, escapeMarkdown as djsEscapeMarkdown } from 'discord.js';
 
 export interface ExtendedEscapeMarkdownOptions extends EscapeMarkdownOptions {
     backslash?: boolean;
@@ -6,8 +6,7 @@ export interface ExtendedEscapeMarkdownOptions extends EscapeMarkdownOptions {
     escapedLink?: boolean;
 }
 
-//@ts-expect-error - Discord.js decided to make Util constructor private for some stupid reason.
-export default class Utils extends Util {
+export default class Utils {
     static escapeRegex(str: string): string {
         return str.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
     }
@@ -23,7 +22,7 @@ export default class Utils extends Util {
     static escapeEscapedLink(text: string): string {
         return text.replace(/</g, '\\<').replace(/>/g, '\\>');
     }
-    static override escapeMarkdown(text: string, options: ExtendedEscapeMarkdownOptions = {}): string {
+    static escapeMarkdown(text: string, options: ExtendedEscapeMarkdownOptions = {}): string {
         if (options.backslash ?? true) text = Utils.escapeBackslash(text);
         if (options.maskedLink ?? true) text = Utils.escapeMaskedLink(text);
         if (options.escapedLink ?? true) text = Utils.escapeEscapedLink(text);
@@ -39,12 +38,12 @@ export default class Utils extends Util {
             codeBlockContent: options.codeBlockContent ??= true,
             inlineCodeContent: options.inlineCodeContent ??= true
         };
-        text = super.escapeMarkdown(text, superoptions);
+        text = djsEscapeMarkdown(text, superoptions);
 
         options.inlineCode ??= true;
         options.codeBlock = options.inlineCode ? false : options.codeBlock ?? true;
 
         if (options.inlineCode) return Utils.escapeBacktick(text);
-        else return options.codeBlock ? this.escapeCodeBlock(text) : text;
+        else return options.codeBlock ? escapeCodeBlock(text) : text;
     }
 }

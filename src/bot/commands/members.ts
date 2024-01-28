@@ -1,12 +1,12 @@
-import Discord, { Message, MessageEmbed } from 'discord.js';
+import Discord, { Message } from 'discord.js';
 import Utils from '../../utils.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
 export function run(client: Bot, message: Message, args: Args) {
     void message.guild!.members.fetch();
     const pagesCount = message.guild!.members.cache.size;
-    let members: MessageEmbed[] = [];
+    let members: Discord.EmbedBuilder[] = [];
 
     message.guild!.members.cache.forEach(member => {
         let badges = [];
@@ -14,18 +14,18 @@ export function run(client: Bot, message: Message, args: Args) {
         if (member.premiumSince) badges.push(client.em.booster);
         if (member.user.flags) {
             const flags = member.user.flags.serialize();
-            if (flags.DISCORD_CERTIFIED_MODERATOR) badges.push(client.em.discord_mod);
-            if (flags.DISCORD_EMPLOYEE) badges.push(client.em.discord_staff);
-            if (flags.PARTNERED_SERVER_OWNER) badges.push(client.em.partner_owner);
-            if (flags.EARLY_VERIFIED_BOT_DEVELOPER) badges.push(client.em.bot_dev);
-            if (flags.EARLY_SUPPORTER) badges.push(client.em.early_supporter);
-            if (flags.HYPESQUAD_EVENTS) badges.push(client.em.hs_events);
-            if (flags.HOUSE_BRAVERY) badges.push(client.em.hs_bravery);
-            if (flags.HOUSE_BALANCE) badges.push(client.em.hs_balance);
-            if (flags.HOUSE_BRILLIANCE) badges.push(client.em.hs_brilliance);
-            if (flags.BUGHUNTER_LEVEL_1) badges.push(client.em.bughunter);
-            if (flags.BUGHUNTER_LEVEL_2) badges.push(client.em.goldbughunter);
-            if (flags.VERIFIED_BOT) badges.push(client.em.verified);
+            if (flags.CertifiedModerator) badges.push(client.em.discord_mod);
+            if (flags.Staff) badges.push(client.em.discord_staff);
+            if (flags.Partner) badges.push(client.em.partner_owner);
+            if (flags.VerifiedDeveloper) badges.push(client.em.bot_dev);
+            if (flags.PremiumEarlySupporter) badges.push(client.em.early_supporter);
+            if (flags.Hypesquad) badges.push(client.em.hs_events);
+            if (flags.HypeSquadOnlineHouse1) badges.push(client.em.hs_bravery);
+            if (flags.HypeSquadOnlineHouse2) badges.push(client.em.hs_brilliance);
+            if (flags.HypeSquadOnlineHouse3) badges.push(client.em.hs_balance);
+            if (flags.BugHunterLevel1) badges.push(client.em.bughunter);
+            if (flags.BugHunterLevel2) badges.push(client.em.goldbughunter);
+            if (flags.VerifiedBot) badges.push(client.em.verified);
             // TODO: flags.BOT_HTTP_INTERACTIONS
             // TODO: flags.TEAM_USER
         }
@@ -34,14 +34,16 @@ export function run(client: Bot, message: Message, args: Args) {
         let nickname = member.displayName;
         if (nickname === member.user.username) nickname = '';
 
-        const memberEmbed = new Discord.MessageEmbed()
+        const memberEmbed = new Discord.EmbedBuilder()
             .setColor(member.displayHexColor)
             .setTitle(`${badgesStr}${Utils.escapeMarkdown(member.user.tag)}`)
-            .addField('Roles', member.roles.cache.sort((roleA, roleB) => roleB.position - roleA.position).map(role => role).join(', '))
-            .addField('Permissions', `\`${member.permissions.toArray().join('`, `')}\``)
-            .addField('Joined on', `${member.joinedAt!.toUTCString()}`, true)
-            .addField('Registered on', `${member.user.createdAt.toUTCString()}`, true)
-            .setThumbnail(member.user.displayAvatarURL({ dynamic: true, format: 'png' }));
+            .addFields(
+                { name: 'Roles', value: member.roles.cache.sort((roleA, roleB) => roleB.position - roleA.position).map(role => role).join(', ') },
+                { name: 'Permissions', value: `\`${member.permissions.toArray().join('`, `')}\`` },
+                { name: 'Joined on', value: `${member.joinedAt!.toUTCString()}`, inline: true },
+                { name: 'Registered on', value: `${member.user.createdAt.toUTCString()}`, inline: true },
+            )
+            .setThumbnail(member.user.displayAvatarURL({ extension: 'png' }));
         if (nickname) memberEmbed.setTitle(`${badgesStr}${Utils.escapeMarkdown(member.user.tag)} (__AKA:__ ${nickname})`);
         members.push(memberEmbed);
     });

@@ -3,7 +3,7 @@ import got from 'got';
 import fs from 'fs';
 import { join } from 'path';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 const assets = JSON.parse(fs.readFileSync(join(process.env.workdir!, './bot/assets/random.json')).toString()) as RandomAssets;
 const items = ['cat', 'dog', 'bench'] as const;
 
@@ -32,22 +32,22 @@ const random = {
     cat: (message: Message) => {
         void got.get('http://aws.random.cat/meow').then(response => {
             const body = JSON.parse(response.body) as { file: string };
-            const catEmbed = new Discord.MessageEmbed()
+            const catEmbed = new Discord.EmbedBuilder()
                 .setTitle('Here\'s your random cat! 🐱')
                 .setImage(body.file);
-            return message.channel.send({ embeds: [catEmbed] });
+            return void message.channel.send({ embeds: [catEmbed] });
         });
     },
     dog: (message: Message) => {
         const selected = assets.dogs[Math.floor(Math.random() * assets.dogs.length)];
-        const dogEmbed = new Discord.MessageEmbed()
+        const dogEmbed = new Discord.EmbedBuilder()
             .setTitle('Here\'s your random dog! 🐶')
             .setImage(`https://random.dog/${selected}`);
         return message.channel.send({ embeds: [dogEmbed] });
     },
     bench: (message: Message) => {
         const selected = assets.benches[Math.floor(Math.random() * assets.benches.length)];
-        const benchEmbed = new Discord.MessageEmbed()
+        const benchEmbed = new Discord.EmbedBuilder()
             .setTitle('Here\'s your random bench! 🪑')
             .setImage(selected);
         return message.channel.send({ embeds: [benchEmbed] });

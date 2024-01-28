@@ -1,6 +1,5 @@
 import express from 'express';
-import { Request } from 'express-serve-static-core';
-import { ParsedQs } from 'qs';
+import { type Request as ESSCRequest } from 'express-serve-static-core';
 const app = express();
 
 app.get('/', (request, response): void => {
@@ -11,7 +10,7 @@ app.get('/', (request, response): void => {
 app.listen(process.env.PORT);
 if (process.env.LOG_WEBSERVER) console.info(`[WEBSERVER] Listening on PORT ${process.env.PORT!}`);
 
-function logRequest(req: Request<object, unknown, unknown, ParsedQs, Record<string, unknown>>): void {
+function logRequest(req: ESSCRequest): void {
     const date = new Date().toISOString();
     return console.log(`[WEBSERVER-${date}] ${req.method} > ${req.hostname}${req.url}`);
 }

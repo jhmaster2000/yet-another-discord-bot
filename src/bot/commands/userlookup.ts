@@ -1,7 +1,7 @@
 import Discord, { DiscordAPIError, Message } from 'discord.js';
 import Bot from '../Bot.js';
 import Utils from '../../utils.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
 export async function run(client: Bot, message: Message, argsx: Args) {
     const args = argsx.basic.map(arg => arg.raw);
@@ -26,18 +26,18 @@ export async function run(client: Bot, message: Message, argsx: Args) {
     let badges = [];
     if (user.flags) {
         const flags = user.flags.serialize();
-        if (flags.DISCORD_CERTIFIED_MODERATOR) badges.push(client.em.discord_mod);
-        if (flags.DISCORD_EMPLOYEE) badges.push(client.em.discord_staff);
-        if (flags.PARTNERED_SERVER_OWNER) badges.push(client.em.partner_owner);
-        if (flags.EARLY_VERIFIED_BOT_DEVELOPER) badges.push(client.em.bot_dev);
-        if (flags.EARLY_SUPPORTER) badges.push(client.em.early_supporter);
-        if (flags.HYPESQUAD_EVENTS) badges.push(client.em.hs_events);
-        if (flags.HOUSE_BRAVERY) badges.push(client.em.hs_bravery);
-        if (flags.HOUSE_BALANCE) badges.push(client.em.hs_balance);
-        if (flags.HOUSE_BRILLIANCE) badges.push(client.em.hs_brilliance);
-        if (flags.BUGHUNTER_LEVEL_1) badges.push(client.em.bughunter);
-        if (flags.BUGHUNTER_LEVEL_2) badges.push(client.em.goldbughunter);
-        if (flags.VERIFIED_BOT) badges.push(client.em.verified);
+        if (flags.CertifiedModerator) badges.push(client.em.discord_mod);
+        if (flags.Staff) badges.push(client.em.discord_staff);
+        if (flags.Partner) badges.push(client.em.partner_owner);
+        if (flags.VerifiedDeveloper) badges.push(client.em.bot_dev);
+        if (flags.PremiumEarlySupporter) badges.push(client.em.early_supporter);
+        if (flags.Hypesquad) badges.push(client.em.hs_events);
+        if (flags.HypeSquadOnlineHouse1) badges.push(client.em.hs_bravery);
+        if (flags.HypeSquadOnlineHouse2) badges.push(client.em.hs_brilliance);
+        if (flags.HypeSquadOnlineHouse3) badges.push(client.em.hs_balance);
+        if (flags.BugHunterLevel1) badges.push(client.em.bughunter);
+        if (flags.BugHunterLevel2) badges.push(client.em.goldbughunter);
+        if (flags.VerifiedBot) badges.push(client.em.verified);
         // TODO: flags.BOT_HTTP_INTERACTIONS
         // TODO: flags.TEAM_USER
     }
@@ -46,11 +46,11 @@ export async function run(client: Bot, message: Message, argsx: Args) {
     userdata.push(`**User Tag:** \`\`${Utils.escapeBacktick(user.tag, true)}\`\``);
     userdata.push(`**Badges:** ${badges.length ? badges.join(' ') : 'None'}`);
 
-    const userEmbed = new Discord.MessageEmbed()
+    const userEmbed = new Discord.EmbedBuilder()
         .setColor(0x00FF00)
         .setAuthor({ name: `Info for account ${user.id}`, iconURL: bot ? bot : undefined })
         .setDescription(userdata.join('\n'))
-        .setThumbnail(user.displayAvatarURL({ dynamic: true, format: 'png' }))
+        .setThumbnail(user.displayAvatarURL({ extension: 'png' }))
         .setFooter({ text: `Registered on: ${user.createdAt.toUTCString()}` });
     return message.channel.send({ embeds: [userEmbed] });
 }

@@ -2,7 +2,7 @@ import { pathToFileURL } from 'url';
 import { readdir } from 'fs';
 import { join } from 'path';
 import Bot from './Bot.js';
-import Event from './Event.js';
+import type Event from './Event.js';
 
 export default function loadEvents(client: Bot): void {
     readdir(join(process.env.workdir!, './bot/events/'), (err, files) => {

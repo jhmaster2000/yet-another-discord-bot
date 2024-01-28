@@ -1,6 +1,6 @@
 import { GuildEmoji, Message } from 'discord.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
 export async function run(client: Bot, message: Message, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} Please provide at least **1** custom emoji to delete.`);
@@ -33,7 +33,7 @@ export async function run(client: Bot, message: Message, argsx: Args) {
         if (!answer)
             return msg.edit(`${client.em.neutral} Cancelled deletion of **${emojis.length}** custom emoji${s}. ${timedout}`);
 
-        emojis.forEach(emoji_3 => emoji_3.delete(`Requested by user: ${message.author.tag}`).catch((error: string) => message.channel.send(`bruh error:\n${error}`)));
+        emojis.forEach(emoji_3 => emoji_3.delete(`Requested by user: ${message.author.tag}`).catch((error: string) => void message.channel.send(`bruh error:\n${error}`)));
         return msg.edit(`${client.em.check} Successfully deleted **${emojis.length}** custom emoji${s}: \`:${emojis.map(e => e.name).join(':` `:')}:\``);
     });
 }

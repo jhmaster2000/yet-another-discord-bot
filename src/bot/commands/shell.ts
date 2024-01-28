@@ -1,9 +1,8 @@
 import { spawn } from 'child_process';
 import { Message } from 'discord.js';
 import ps from 'ps-node';
-import Utils from '../../utils.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
 let runningCommands = 0;
 const term = spawn('sh');
@@ -78,9 +77,7 @@ export function run(client: Bot, message: Message, argsx: Args) {
                 if (reason === 'timeout') output.push(`\`⚠️ Command timed out.\``);
                 msg.edit(output.join('\n')).catch(async err => {
                     await msg.delete();
-                    for (const m of Utils.splitMessage(output.join('\n'), { char: /\n|./, prepend: '```ansi\n', append: '```' })) {
-                        await message.channel.send(m);
-                    }
+                    await message.channel.send('```ansi\n' + output.join('\n') + '```');
                 });
             }
         });

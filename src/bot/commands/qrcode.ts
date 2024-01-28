@@ -1,8 +1,8 @@
 import Discord, { Message } from 'discord.js';
-import got, { HTTPError } from 'got';
+import got from 'got';
 import Utils from '../../utils.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
 type QRApiResponse = {
     symbol: {
@@ -19,7 +19,7 @@ export function run(client: Bot, message: Message, args: Args) {
     if (subcommand === 'create') {
         const qrData = argsr.join('');
         if (!qrData) return message.channel.send(`${client.em.xmark} You need to provide something to put on the QR code.`);
-        const qrEmbed = new Discord.MessageEmbed()
+        const qrEmbed = new Discord.EmbedBuilder()
             .setColor(0x00FF00)
             .setTitle('QR Code generated!')
             .setImage(`https://api.qrserver.com/v1/create-qr-code/?data=${encodeURIComponent(qrData)}&size=256x256`)
@@ -33,19 +33,20 @@ export function run(client: Bot, message: Message, args: Args) {
         if (!qrLink) return message.channel.send(`${client.em.xmark} Please provide an image URL with a QR code on it to be scanned!`);
 
         return message.channel.send(`${client.em.loadingfast} **Scanning QR Code...**`).then(msg => {
-            return got.get(`https://api.qrserver.com/v1/read-qr-code/?fileurl=${encodeURIComponent(qrLink)}`, { timeout: { request: 15000 }, retry: { limit: 0 } }).then(response => {
+            return got.get(`https://api.qrserver.com/v1/read-qr-code/?fileurl=${encodeURIComponent(qrLink)}`, { timeout: { request: 15000 }, retry: 0 }).then(response => {
                 const scanned = (<QRApiResponse>JSON.parse(response.body))[0].symbol[0];
                 let result = `${client.em.check} **QR Scan Result:**\n${Utils.escapeMarkdown(scanned.data ?? '')}`;
 
                 if (!scanned.data) result = `${client.em.xmark} **QR Scan Error:** \`\`\`js\n${scanned.error}\`\`\``;
                 if (scanned.error?.includes('download error')) result = `${client.em.xmark} That is not a valid image URL. (Download error)`;
 
-                return msg.edit(result);
-            }).catch((err: HTTPError) => {
-                if (err.code === 'ETIMEDOUT') return msg.edit(`${client.em.xmark} That is not a valid image URL. (Timed out)`);
-                if (err.response.statusCode === 400) return msg.edit(`${client.em.xmark} That is not a valid image URL.`);
+                return void msg.edit(result);
+            }).catch((err: InstanceType<typeof got.HTTPError>) => {
+                if (err.code === 'ETIMEDOUT') return void msg.edit(`${client.em.xmark} That is not a valid image URL. (Timed out)`);
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+                if (err.response.statusCode === 400) return void msg.edit(`${client.em.xmark} That is not a valid image URL.`);
                 console.error(err);
-                return msg.edit(`${client.em.xmark} **QR Scan Fatal Error:** \`\`\`js\n${err.toString()}\`\`\``);
+                return void msg.edit(`${client.em.xmark} **QR Scan Fatal Error:** \`\`\`js\n${String(err)}\`\`\``);
             });
         });
     }

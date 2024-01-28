@@ -1,6 +1,6 @@
-import Discord, { ColorResolvable, DiscordAPIError, Message } from 'discord.js';
+import Discord, { type ColorResolvable, DiscordAPIError, Message } from 'discord.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
 export async function run(client: Bot, message: Message, args: Args): Promise<Discord.Message | undefined> {
     const argsr = args.ordered.map(arg => arg.raw + arg.trailing);
@@ -15,8 +15,8 @@ export async function run(client: Bot, message: Message, args: Args): Promise<Di
     const image = opts.get('image') ? opts.get('image') : null;
     const thumb = opts.get('thumb') ? opts.get('thumb') : null;
 
-    const embed = new Discord.MessageEmbed()
-        .setAuthor({ name: author!, iconURL: message.author.displayAvatarURL({ dynamic: true, format: 'png' }) })
+    const embed = new Discord.EmbedBuilder()
+        .setAuthor({ name: author!, iconURL: message.author.displayAvatarURL({ extension: 'png' }) })
         .setDescription(description)
         .setColor(color as ColorResolvable)
         .setTimestamp();

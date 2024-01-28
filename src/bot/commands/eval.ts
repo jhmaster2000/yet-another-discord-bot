@@ -2,7 +2,7 @@
 import util from 'util';
 import * as lexure from 'lexure';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 import { Message } from 'discord.js';
 
 /* Quick Access Modules */
@@ -34,9 +34,7 @@ export async function run(client: Bot, message: Message, args: Args) {
                 if (asyncEvaled === undefined) asyncEvaled = '⚠️ No return value.';
                 if (typeof asyncEvaled !== 'string') asyncEvaled = util.inspect(asyncEvaled, false, depth, false);
                 if (split) {
-                    for (const m of Utils.splitMessage('```js\n'+clean(asyncEvaled)+'\n```', { char: /\n|./, prepend: '```js\n', append: '```' })) {
-                        await message.channel.send(m);
-                    }
+                    await message.channel.send('```js\n'+clean(asyncEvaled)+'\n```');
                     return;
                 } else {
                     return message.channel.send('```js\n'+clean(asyncEvaled)+'\n```').catch(() => {
@@ -47,9 +45,7 @@ export async function run(client: Bot, message: Message, args: Args) {
             } catch(e) {
                 const err = e as Error;
                 if (split) {
-                    for (const m of Utils.splitMessage(`${client.em.xmark} **AsyncError:**\n\`\`\`js\n${clean(err)}\n\`\`\``, { char: /\n|./, prepend: '```js\n', append: '```' })) {
-                        await message.channel.send(m);
-                    }
+                    await message.channel.send(`${client.em.xmark} **AsyncError:**\n\`\`\`js\n${clean(err)}\n\`\`\``);
                     return;
                 } else {
                     return message.channel.send(`${client.em.xmark} **AsyncError:**\n\`\`\`js\n${clean(err)}\n\`\`\``).catch(__e => {
@@ -68,9 +64,7 @@ export async function run(client: Bot, message: Message, args: Args) {
         if (typeof evaled !== 'string') evaled = util.inspect(evaled, false, depth, false);
 
         if (split) {
-            for (const m of Utils.splitMessage('```js\n'+clean(evaled)+'\n```', { char: /\n|./, prepend: '```js\n', append: '```' })) {
-                await message.channel.send(m);
-            }
+            await message.channel.send('```js\n'+clean(evaled)+'\n```');
             return;
         } else {
             return message.channel.send('```js\n'+clean(evaled)+'\n```').catch(e => {
@@ -80,9 +74,7 @@ export async function run(client: Bot, message: Message, args: Args) {
         }
     } catch (err) {
         if (split) {
-            for (const m of Utils.splitMessage(`${client.em.xmark} **Error:**\n\`\`\`js\n${clean(err)}\n\`\`\``, { char: /\n|./, prepend: '```js\n', append: '```' })) {
-                await message.channel.send(m);
-            }
+            await message.channel.send(`${client.em.xmark} **Error:**\n\`\`\`js\n${clean(err)}\n\`\`\``);
             return;
         } else {
             return message.channel.send(`${client.em.xmark} **Error:**\n\`\`\`js\n${clean(err)}\n\`\`\``).catch(e => {

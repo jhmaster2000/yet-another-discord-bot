@@ -1,6 +1,6 @@
 import { Message } from 'discord.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
 export function run(client: Bot, message: Message, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`🙄 You have to tell me what you want me to say...`);

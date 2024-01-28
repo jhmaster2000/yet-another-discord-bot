@@ -2,8 +2,8 @@ import { DiscordAPIError, Message } from 'discord.js';
 import { join } from 'path';
 import { pathToFileURL } from 'url';
 import Bot from '../Bot.js';
-import Command from '../Command.js';
-import { Args } from '../events/messageCreate.js';
+import type Command from '../Command.js';
+import { type Args } from '../events/messageCreate.js';
 
 export async function run(client: Bot, message: Message, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} No command to reload was given.`);
@@ -21,7 +21,7 @@ export async function run(client: Bot, message: Message, argsx: Args) {
         const err = e as DiscordAPIError;
         if (<string><unknown>err.code === 'ERR_MODULE_NOT_FOUND') return message.channel.send(`${client.em.xmark} Command not found.`);
         console.error(`RELOAD_COMMAND > Failed to reload '${cmdName}.js'`, err);
-        return message.channel.send(`${client.em.xmark} An unexpected error occured when trying to reload \`${cmdName}.js\`\n\`\`\`xl\n${err.toString()}\n\`\`\``);
+        return message.channel.send(`${client.em.xmark} An unexpected error occured when trying to reload \`${cmdName}.js\`\n\`\`\`xl\n${String(err)}\n\`\`\``);
     }
 }
 

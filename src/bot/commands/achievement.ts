@@ -1,6 +1,6 @@
 import Discord, { Message } from 'discord.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
 const icons = {
     grass_block: '1',
@@ -58,8 +58,8 @@ export function run(client: Bot, message: Message, args: Args) {
     if (isNaN(Number(icon))) icon = icons[icon as keyof typeof icons] || '1';
 
     const img = `https://minecraftskinstealer.com/achievement/${icon}/${title}/${achName}`;
-    const achievement = new Discord.MessageEmbed()
-        .setColor('RANDOM')
+    const achievement = new Discord.EmbedBuilder()
+        .setColor('Random')
         .setImage(img);
     return message.channel.send({ embeds: [achievement] });
 }

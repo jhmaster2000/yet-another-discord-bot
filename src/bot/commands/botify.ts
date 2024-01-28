@@ -1,6 +1,6 @@
 import { Message, NewsChannel, TextChannel } from 'discord.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
 export async function run(client: Bot, message: Message, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} Cannot send empty message.`);
@@ -8,8 +8,9 @@ export async function run(client: Bot, message: Message, argsx: Args) {
     const webhookText = args.join('');
 
     try {
-        const webhook = await (message.channel as TextChannel | NewsChannel).createWebhook(message.member!.displayName, {
-            avatar: message.author.displayAvatarURL({ dynamic: true, format: 'png' }),
+        const webhook = await (message.channel as TextChannel | NewsChannel).createWebhook({
+            name: message.member!.displayName,
+            avatar: message.author.displayAvatarURL({ extension: 'png' }),
             reason: `User ${message.author.tag} ran "botify" command.`
         });
         await message.delete();

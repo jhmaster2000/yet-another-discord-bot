@@ -1,9 +1,9 @@
-import { Message, MessageEmbed, MessageReaction, User } from 'discord.js';
+import { EmbedBuilder, Message, MessageReaction, User } from 'discord.js';
 import Bot from './Bot.js';
 
 export default function loadPaginator(client: Bot): void {
-    client.paginate = (message: Message, pages: MessageEmbed[], pagesCount: number, timeout?: number, startPage?: number): void => {
-        const authorAvatar = message.author.displayAvatarURL({ dynamic: true, format: 'png' });
+    client.paginate = (message: Message, pages: EmbedBuilder[], pagesCount: number, timeout?: number, startPage?: number): void => {
+        const authorAvatar = message.author.displayAvatarURL({ extension: 'png' });
         void message.channel.send({ embeds: [pages[startPage || 0].setFooter({ text: `${(startPage || 0) + 1}/${pagesCount}`, iconURL: authorAvatar })] }).then((msg: Message): void => {
             void msg.react('⏮').then(() => {
                 void msg.react('⏪').then(() => {
@@ -66,7 +66,7 @@ export default function loadPaginator(client: Bot): void {
             collector.on('end', (collected, reason) => {
                 if (reason === 'idle' || reason === 'time') reason = 'Paginator timed out.';
                 else reason = 'Paginator terminated by user.';
-                void msg.edit({ embeds: [pages[currentPage].setFooter({ text: reason, iconURL: message.author.displayAvatarURL({ dynamic: true, format: 'png' }) })] });
+                void msg.edit({ embeds: [pages[currentPage].setFooter({ text: reason, iconURL: message.author.displayAvatarURL({ extension: 'png' }) })] });
                 void msg.reactions.removeAll();
             });
         });

@@ -1,14 +1,14 @@
 import { Message, NewsChannel, TextChannel } from 'discord.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
-export function run(client: Bot, message: Message, argsx: Args): Promise<Message<boolean>> {
+export function run(client: Bot, message: Message, argsx: Args) {
     const args = argsx.ordered.map(arg => arg.value);
     const msgcount = Number(args[0]);
 
     if (isNaN(msgcount) || (msgcount < 1 || msgcount > 99)) return message.channel.send(`${client.em.xmark} Please provide a number from 1 to 99 as argument!`);
 
-    return (message.channel as TextChannel | NewsChannel).bulkDelete(msgcount + 1, true).then(async deleted => {
+    return void (message.channel as TextChannel | NewsChannel).bulkDelete(msgcount + 1, true).then(async deleted => {
         let notDeleted = '';
         const diffcount = msgcount + 1 - deleted.size;
         if (deleted.size === 0) return message.channel.send(`${client.em.xmark} No messages deleted due to all messages on this channel being older than 2 weeks.`);
@@ -17,7 +17,7 @@ export function run(client: Bot, message: Message, argsx: Args): Promise<Message
         setTimeout(() => msg.delete(), 4500);
         return msg;
     }).catch(() => {
-        return message.channel.send(`${client.em.xmark} Failed to delete messages. (Note: Messages older than 2 weeks can't be deleted!)`);
+        return void message.channel.send(`${client.em.xmark} Failed to delete messages. (Note: Messages older than 2 weeks can't be deleted!)`);
     });
 }
 

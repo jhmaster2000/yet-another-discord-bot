@@ -1,6 +1,6 @@
 import Discord, { Message } from 'discord.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
 export function run(client: Bot, message: Message, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} No text given.`);
@@ -14,7 +14,7 @@ export function run(client: Bot, message: Message, args: Args) {
     });
     let xltextStr: string = xltext.join('%2B').replace(/%2B%2B%2B/g, '%E2%80%89').replace(/%7C/g, '%EF%BD%9C').replace(/\./g, '%E2%80%A4');
     
-    const embed = new Discord.MessageEmbed()
+    const embed = new Discord.EmbedBuilder()
         .setImage(`https://dummyimage.com/4000x1000/36393e/ffffff&text=${xltextStr}`)
         .setFooter({ text: `If no image appears, you've used an invalid character.` });
     return message.channel.send({ embeds: [embed] });

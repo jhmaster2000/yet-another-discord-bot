@@ -2,7 +2,7 @@ import Discord, { Message } from 'discord.js';
 import crypto from 'crypto';
 import os from 'os';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
 export function run(client: Bot, message: Message, args: Args) {
     const memory = `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(1)}/${(os.totalmem() / 1024 / 1024).toFixed(1)} MB`;
@@ -25,18 +25,20 @@ export function run(client: Bot, message: Message, args: Args) {
         }
         const cpuUsage = Math.round(cpuUsageTotal / scpus.length) || 0;
         
-        const infoEmbed = new Discord.MessageEmbed()
+        const infoEmbed = new Discord.EmbedBuilder()
             .setColor(0x27D11A)
             .setTimestamp()
-            .setAuthor({ name: 'Bot Information', iconURL: client.user!.displayAvatarURL({ dynamic: true, format: 'png' }) })
+            .setAuthor({ name: 'Bot Information', iconURL: client.user!.displayAvatarURL({ extension: 'png' }) })
             .setFooter({ text: `Developed by ${client.owner.tag}` })
             .setTimestamp()
-            .addField('Version', `\`${process.env.npm_package_version!}-${versionHash}\``, true)
-            .addField('NodeJS', `\`v${process.versions.node}\``, true)
-            .addField('Library', `\`discord.js@${Discord.version}\``, true)
-            .addField('OS', `\`${process.platform} (${process.arch})\``, true)
-            .addField('CPU Usage', `\`${cpuUsage}%\``, true)
-            .addField('Memory Usage', `\`${memory}\``, true)
+            .addFields(
+                { name: 'Version', value: `\`${process.env.npm_package_version!}-${versionHash}\``, inline: true },
+                { name: 'NodeJS', value: `\`v${process.versions.node}\``, inline: true },
+                { name: 'Library', value: `\`discord.js@${Discord.version}\``, inline: true },
+                { name: 'OS', value: `\`${process.platform} (${process.arch})\``, inline: true },
+                { name: 'CPU Usage', value: `\`${cpuUsage}%\``, inline: true },
+                { name: 'Memory Usage', value: `\`${memory}\``, inline: true },
+            );
         return message.channel.send({ embeds: [infoEmbed] });
     }, 250);
 }

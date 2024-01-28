@@ -1,7 +1,7 @@
 import { DiscordAPIError, Message } from 'discord.js';
 import Utils from '../../utils.js';
 import Bot from '../Bot.js';
-import { Args } from '../events/messageCreate.js';
+import { type Args } from '../events/messageCreate.js';
 
 export async function run(client: Bot, message: Message, args: Args) {
     const argsr = args.basic.map(arg => arg.raw);
@@ -36,7 +36,9 @@ export async function run(client: Bot, message: Message, args: Args) {
     if (argsr[2 - argOffset] !== '--roles' && argsr[2 - argOffset] !== '--r') roles.clear();
 
     try {
-        const emoji = await message.guild!.emojis.create(image, name, {
+        const emoji = await message.guild!.emojis.create({
+            attachment: image,
+            name: name,
             roles: roles.size ? roles : [],
             reason: `Requested by user: ${message.author.tag}`
         });
