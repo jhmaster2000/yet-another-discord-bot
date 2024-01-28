@@ -29,8 +29,8 @@ export async function run(client: Bot, message: Message, args: Args) {
         // eslint-disable-next-line no-inner-declarations
         async function asyncEval(code: string) {
             try {
-                let asyncEvaled = '⚠️ Failed to set async return value.';
-                await eval(`(async () => { ${code} } )().then(p => asyncEvaled = p);`);
+                // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+                let asyncEvaled: unknown = await eval(`(async () => { ${code} })`)();
                 if (asyncEvaled === undefined) asyncEvaled = '⚠️ No return value.';
                 if (typeof asyncEvaled !== 'string') asyncEvaled = util.inspect(asyncEvaled, false, depth, false);
                 if (split) {
@@ -39,7 +39,7 @@ export async function run(client: Bot, message: Message, args: Args) {
                 } else {
                     return message.channel.send('```js\n'+clean(asyncEvaled)+'\n```').catch(() => {
                         void message.channel.send('⚠️ AsyncOutput is too long, check console for details! (or use `--split` flag)');
-                        console.info(`[ASYNCEVAL_STDOUT] ${asyncEvaled}`);
+                        console.info(`[ASYNCEVAL_STDOUT] ${String(asyncEvaled)}`);
                     });
                 }
             } catch(e) {
