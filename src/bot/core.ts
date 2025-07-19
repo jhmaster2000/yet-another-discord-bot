@@ -1,6 +1,5 @@
 import Bot from './Bot.js';
 import { GatewayIntentBits } from 'discord.js';
-Error.stackTraceLimit = Number(process.env.STACKTRACE_LIMIT);
 
 /* Client Setup */
 const client = new Bot({

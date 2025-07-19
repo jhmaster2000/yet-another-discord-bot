@@ -45,7 +45,6 @@ export async function run(client: Bot, message: Message) {
 
     /* Command Handler */
     try {
-        Error.stackTraceLimit = Number(process.env.STACKTRACE_LIMIT);
         return await command.run(client, message, args);
     } catch (err) {
         if (Number(process.env.LOGLEVEL) >= 2) void message.react(client.re.critical);

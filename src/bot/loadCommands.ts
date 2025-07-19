@@ -21,7 +21,10 @@ export default function loadCommands(client: Bot): void {
                 command = await import(pathToFileURL(join(process.env.workdir!, `./bot/commands/${file}`)).href) as Command;
             } catch (err) {
                 return console.error(`COMMAND_LOADER > FAILED TO LOAD: ${commandName}`, err);
+            } finally {
+                Error.stackTraceLimit = Number(process.env.STACKTRACE_LIMIT);
             }
+
             command.config.name = commandName;
             client.commands.set(commandName, command);
             console.info(`COMMAND_LOADER > Successfully loaded: ${commandName}`);

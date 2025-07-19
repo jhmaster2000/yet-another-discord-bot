@@ -17,6 +17,8 @@ export default function loadEvents(client: Bot): void {
                 event = await import(pathToFileURL(join(process.env.workdir!, `./bot/events/${file}`)).href) as Event;
             } catch (err) {
                 return console.error(`EVENT_LOADER > FAILED TO LOAD: ${eventName}`, err);
+            } finally {
+                Error.stackTraceLimit = Number(process.env.STACKTRACE_LIMIT);
             }
             client.on(eventName, (...args: unknown[]) => {
                 try {
