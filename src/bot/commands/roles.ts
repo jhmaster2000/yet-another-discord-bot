@@ -38,6 +38,6 @@ function tooManyRoles(rolesCount: number, message: Discord.Message): Promise<Dis
 
 export const config = {
     aliases: ['serverroles', 'roleslist', 'listroles', 'allroles', 'guildroles'],
-    selfperms: ['EMBED_LINKS'],
+    selfperms: ['EmbedLinks'] satisfies Discord.PermissionsString[],
     description: 'Lists all roles in the server.'
 }

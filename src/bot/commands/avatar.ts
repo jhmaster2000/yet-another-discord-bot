@@ -32,7 +32,7 @@ export function run(client: Bot, message: Message, argso: Args) {
 
 export const config = {
     aliases: ['pfp'],
-    selfperms: ['EMBED_LINKS'],
+    selfperms: ['EmbedLinks'] satisfies Discord.PermissionsString[],
     description: 'Gets the avatar of a user.',
     usage: {
         args: '[@user | user_id]',

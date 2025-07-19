@@ -1,4 +1,4 @@
-import { GuildEmoji, Message } from 'discord.js';
+import { GuildEmoji, Message, type PermissionsString } from 'discord.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
@@ -40,8 +40,8 @@ export async function run(client: Bot, message: Message, argsx: Args) {
 
 export const config = {
     aliases: ['deleteemoji', 'deleteemojis', 'delemojis'],
-    userperms: ['MANAGE_EMOJIS'],
-    selfperms: ['MANAGE_EMOJIS', 'ADD_REACTIONS'],
+    userperms: ['ManageEmojisAndStickers'] satisfies PermissionsString[],
+    selfperms: ['ManageEmojisAndStickers', 'AddReactions'] satisfies PermissionsString[],
     description: 'Deletes between 1 to 5 custom server emojis.',
     usage: {
         args: '<...:emoji:>'

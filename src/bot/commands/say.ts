@@ -1,4 +1,4 @@
-import { Message } from 'discord.js';
+import { Message, type PermissionsString } from 'discord.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
@@ -11,8 +11,8 @@ export function run(client: Bot, message: Message, argsx: Args) {
 
 export const config = {
     aliases: ['echo', 'speak'],
-    selfperms: ['MANAGE_MESSAGES'],
-    userperms: ['MANAGE_MESSAGES'],
+    selfperms: ['ManageMessages'] satisfies PermissionsString[],
+    userperms: ['ManageMessages'] satisfies PermissionsString[],
     description: 'Make the bot say something in the current channel.',
     usage: {
         args: '<...text>'

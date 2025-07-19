@@ -59,7 +59,7 @@ export async function run(client: Bot, message: Message, argsx: Args) {
 
 export const config = {
     aliases: ['inv', 'invinfo', 'inviteinfo'],
-    selfperms: ['EMBED_LINKS'],
+    selfperms: ['EmbedLinks'] satisfies Discord.PermissionsString[],
     description: 'Gets information on a Discord invite link/code.',
     usage: {
         args: '<discord_invite>'

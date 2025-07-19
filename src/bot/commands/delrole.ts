@@ -1,4 +1,4 @@
-import { Message, Role } from 'discord.js';
+import { Message, Role, type PermissionsString } from 'discord.js';
 import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
@@ -58,8 +58,8 @@ export async function run(client: Bot, message: Message, args: Args) {
 
 export const config = {
     aliases: ['deleterole', 'deleteroles', 'delroles'],
-    userperms: ['MANAGE_ROLES'],
-    selfperms: ['MANAGE_ROLES', 'ADD_REACTIONS'],
+    userperms: ['ManageRoles'] satisfies PermissionsString[],
+    selfperms: ['ManageRoles', 'AddReactions'] satisfies PermissionsString[],
     description: 'Deletes between 1 to 5 server roles.',
     usage: {
         args: '<...@role | ...role_id>'

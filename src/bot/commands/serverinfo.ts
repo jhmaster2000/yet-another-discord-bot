@@ -39,6 +39,6 @@ export async function run(client: Bot, message: Message, args: Args) {
 
 export const config = {
     aliases: ['sinfo', 'svinfo', 'srvinfo', 'guildinfo', 'ginfo'],
-    selfperms: ['EMBED_LINKS'],
+    selfperms: ['EmbedLinks'] satisfies Discord.PermissionsString[],
     description: 'Displays information about the current server.'
 }

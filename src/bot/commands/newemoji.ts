@@ -1,4 +1,4 @@
-import { DiscordAPIError, Message } from 'discord.js';
+import { DiscordAPIError, Message, type PermissionsString } from 'discord.js';
 import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
@@ -68,8 +68,8 @@ export async function run(client: Bot, message: Message, args: Args) {
 
 export const config = {
     aliases: ['addemoji', 'createemoji', 'makeemoji'],
-    userperms: ['MANAGE_EMOJIS'],
-    selfperms: ['MANAGE_EMOJIS'],
+    userperms: ['ManageEmojisAndStickers'] satisfies PermissionsString[],
+    selfperms: ['ManageEmojisAndStickers'] satisfies PermissionsString[],
     description: 'Creates a new custom emoji in the server.',
     usage: {
         args: '<emoji_name> <image_link | attachment> [--roles] <...@role | ...role_id>',

@@ -45,6 +45,6 @@ export function run(client: Bot, message: Message, args: Args) {
 
 export const config = {
     aliases: ['botinfo', 'stats', 'botstats'],
-    selfperms: ['EMBED_LINKS'],
+    selfperms: ['EmbedLinks'] satisfies Discord.PermissionsString[],
     description: 'Displays information about the bot.'
 }

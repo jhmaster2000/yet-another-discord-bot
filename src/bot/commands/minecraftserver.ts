@@ -99,7 +99,7 @@ function removeColorCodes(str: string): string {
 export const config = {
     aliases: ['mcsv', 'mcs', 'mcserver'],
     description: 'Fetch information on a Minecraft server.',
-    selfperms: ['EMBED_LINKS'],
+    selfperms: ['EmbedLinks'] satisfies Discord.PermissionsString[],
     usage: {
         args: '<server_ip>'
     }

@@ -59,7 +59,7 @@ function percentFormat(x: number): string {
 
 export const config = {
     aliases: ['rude', 'rudeness', 'toxicity'],
-    selfperms: ['EMBED_LINKS'],
+    selfperms: ['EmbedLinks'] satisfies Discord.PermissionsString[],
     description: 'Analyzes a piece of text and rates how toxic (rude) it is.',
     usage: {
         args: '<...text>'

@@ -1,4 +1,4 @@
-import { Collection, GuildChannel, type GuildChannelResolvable, Message, type TextBasedChannel, type Channel } from 'discord.js';
+import { Collection, GuildChannel, type GuildChannelResolvable, Message, type TextBasedChannel, type Channel, type PermissionsString } from 'discord.js';
 import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
@@ -59,8 +59,8 @@ export async function run(client: Bot, message: Message, args: Args) {
 
 export const config = {
     aliases: ['deletechannel', 'deletechannels', 'delchannels'],
-    userperms: ['MANAGE_CHANNELS'],
-    selfperms: ['MANAGE_CHANNELS', 'ADD_REACTIONS'],
+    userperms: ['ManageChannels'] satisfies PermissionsString[],
+    selfperms: ['ManageChannels', 'AddReactions'] satisfies PermissionsString[],
     description: 'Deletes between 1 to 5 server channels.',
     usage: {
         args: '<...#channel | ...channel_id>'

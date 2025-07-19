@@ -15,6 +15,6 @@ export function run(client: Bot, message: Message, args: Args) {
 
 export const config = {
     aliases: ['pong'],
-    selfperms: ['EMBED_LINKS'],
+    selfperms: ['EmbedLinks'] satisfies Discord.PermissionsString[],
     description: 'Pings the bot to see if it\'s online'
 };

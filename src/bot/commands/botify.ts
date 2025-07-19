@@ -1,4 +1,4 @@
-import { Message, NewsChannel, TextChannel } from 'discord.js';
+import { Message, NewsChannel, TextChannel, type PermissionsString } from 'discord.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
@@ -24,8 +24,8 @@ export async function run(client: Bot, message: Message, argsx: Args) {
 
 export const config = {
     aliases: ['hook', 'hookify', 'webhookify'],
-    selfperms: ['MANAGE_MESSAGES', 'MANAGE_WEBHOOKS'],
-    userperms: ['MANAGE_MESSAGES'],
+    selfperms: ['ManageMessages', 'ManageWebhooks'] satisfies PermissionsString[],
+    userperms: ['ManageMessages'] satisfies PermissionsString[],
     description: 'Sends a message as you, but as a bot.',
     usage: {
         args: '<...message>'

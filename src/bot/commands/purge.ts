@@ -1,4 +1,4 @@
-import { Message, NewsChannel, TextChannel } from 'discord.js';
+import { Message, NewsChannel, TextChannel, type PermissionsString } from 'discord.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
@@ -23,8 +23,8 @@ export function run(client: Bot, message: Message, argsx: Args) {
 
 export const config = {
     aliases: ['prune', 'bulkdel', 'bulkdelete', 'clear'],
-    selfperms: ['MANAGE_MESSAGES'],
-    userperms: ['MANAGE_MESSAGES'],
+    selfperms: ['ManageMessages'] satisfies PermissionsString[],
+    userperms: ['ManageMessages'] satisfies PermissionsString[],
     description: 'Mass-deletes multiple messages in the current channel.',
     usage: {
         args: '<number_of_messages_to_delete>'

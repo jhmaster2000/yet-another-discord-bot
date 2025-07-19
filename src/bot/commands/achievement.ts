@@ -66,7 +66,7 @@ export function run(client: Bot, message: Message, args: Args) {
 
 export const config = {
     aliases: ['ach', 'adv', 'advancement'],
-    selfperms: ['EMBED_LINKS'],
+    selfperms: ['EmbedLinks'] satisfies Discord.PermissionsString[],
     description: 'Generate a Minecraft achievement image.',
     usage: {
         args: '[...achievement_name]',

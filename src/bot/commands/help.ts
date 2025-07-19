@@ -78,7 +78,7 @@ function helpOptions(cmd: Command): string {
 }
 
 export const config = {
-    selfperms: ['EMBED_LINKS'],
+    selfperms: ['EmbedLinks'] satisfies Discord.PermissionsString[],
     description: 'Displays a list of all the bot\'s commands or gives detailed information on a specific command.',
     usage: {
         args: '[command]'

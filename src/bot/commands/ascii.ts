@@ -26,7 +26,7 @@ export function run(client: Bot, message: Message, args: Args) {
 
 export const config = {
     aliases: ['asciiart', 'textart'],
-    selfperms: ['ATTACH_FILES', 'EMBED_LINKS'],
+    selfperms: ['AttachFiles', 'EmbedLinks'] satisfies Discord.PermissionsString[],
     description: 'Converts text into ASCII art.',
     usage: {
         args: '<...text>'

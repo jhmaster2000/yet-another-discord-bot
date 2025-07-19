@@ -43,7 +43,7 @@ export async function run(client: Bot, message: Message, argsx: Args) {
 
 export const config = {
     aliases: ['dictionary', 'dict', 'def'],
-    selfperms: ['EMBED_LINKS'],
+    selfperms: ['EmbedLinks'] satisfies Discord.PermissionsString[],
     description: 'Get dictionary definitions of a word or sentence.',
     usage: {
         args: '<...words>'
