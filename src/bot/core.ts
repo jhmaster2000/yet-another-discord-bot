@@ -1,10 +1,30 @@
 import Bot from './Bot.js';
-const ALL_INTENTS = 32767 as const;
+import { GatewayIntentBits } from 'discord.js';
 Error.stackTraceLimit = Number(process.env.STACKTRACE_LIMIT);
 
 /* Client Setup */
 const client = new Bot({
-    intents: ALL_INTENTS,
+    intents: [
+        GatewayIntentBits.AutoModerationConfiguration,
+        GatewayIntentBits.AutoModerationExecution,
+        GatewayIntentBits.DirectMessageReactions,
+        //GatewayIntentBits.DirectMessageTyping,
+        GatewayIntentBits.DirectMessages,
+        GatewayIntentBits.GuildEmojisAndStickers,
+        GatewayIntentBits.GuildIntegrations,
+        GatewayIntentBits.GuildInvites,
+        GatewayIntentBits.GuildMembers,
+        GatewayIntentBits.GuildMessageReactions,
+        //GatewayIntentBits.GuildMessageTyping,
+        GatewayIntentBits.GuildMessages,
+        GatewayIntentBits.GuildModeration,
+        GatewayIntentBits.GuildPresences,
+        GatewayIntentBits.GuildScheduledEvents,
+        GatewayIntentBits.GuildVoiceStates,
+        GatewayIntentBits.GuildWebhooks,
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.MessageContent,
+    ],
     allowedMentions: {
         parse: ['users'],
         repliedUser: false
