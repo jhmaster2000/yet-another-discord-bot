@@ -12,8 +12,8 @@ export interface Args {
 
 export async function run(client: Bot, message: Message) {
     if (message.author.bot) return;
-    if (!message.guild) return message.reply(`${client.em.xmark} Commands can't be used on DMs.`);
-    if (!message.guild.members.me!.permissionsIn(<GuildChannelResolvable>message.channel).has('SendMessages')) return;
+    if (!message.inGuild()) return;
+    if (!message.guild.members.me!.permissionsIn(message.channel).has('SendMessages')) return;
 
     let prefix = '';
     for (const thisPrefix of client.prefixes) {
@@ -40,7 +40,10 @@ export async function run(client: Bot, message: Message) {
     args.flags = new Set([...args.flags].filter(Boolean));
     args.options = new Map(
         ([...args.options as unknown as Map<string, string[]>].filter(o => o[0] && o[1].length)
-        .map(o => [o[0], o[1].at(-1)]) as unknown as [string, string][]).filter(o => o[1])
+        .map(o => [
+            o[0],
+            o[1].at(-1)
+        ]) as unknown as [string, string][]).filter(o => o[1])
     );
 
     /* Command Handler */
