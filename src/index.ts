@@ -15,4 +15,3 @@ console.info(
 
 import('./utils.js');
 import('./bot/core.js');
-import('./webserver.js');
