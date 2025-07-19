@@ -23,26 +23,33 @@ export async function run(client: Bot, message: Message, argsx: Args) {
     let bot = '';
     if (user.bot) bot = 'https://cdn.discordapp.com/emojis/856855630727348246.png?v=1';
 
-    let badges = [];
-    if (user.flags) {
-        const flags = user.flags.serialize();
-        if (flags.CertifiedModerator) badges.push(client.em.discord_mod);
-        if (flags.Staff) badges.push(client.em.discord_staff);
-        if (flags.Partner) badges.push(client.em.partner_owner);
-        if (flags.VerifiedDeveloper) badges.push(client.em.bot_dev);
-        if (flags.PremiumEarlySupporter) badges.push(client.em.early_supporter);
-        if (flags.Hypesquad) badges.push(client.em.hs_events);
-        if (flags.HypeSquadOnlineHouse1) badges.push(client.em.hs_bravery);
-        if (flags.HypeSquadOnlineHouse2) badges.push(client.em.hs_brilliance);
-        if (flags.HypeSquadOnlineHouse3) badges.push(client.em.hs_balance);
-        if (flags.BugHunterLevel1) badges.push(client.em.bughunter);
-        if (flags.BugHunterLevel2) badges.push(client.em.goldbughunter);
-        if (flags.VerifiedBot) badges.push(client.em.verified);
-        // TODO: flags.BOT_HTTP_INTERACTIONS
-        // TODO: flags.TEAM_USER
-    }
+    const badges = [];
+    const flags = (await user.fetchFlags()).serialize();
+    if (flags.CertifiedModerator) badges.push(client.em.discord_mod);
+    if (flags.Staff) badges.push(client.em.discord_staff);
+    if (flags.Partner) badges.push(client.em.partner_owner);
+    if (flags.VerifiedDeveloper) badges.push(client.em.bot_dev);
+    if (flags.PremiumEarlySupporter) badges.push(client.em.early_supporter);
+    if (flags.Hypesquad) badges.push(client.em.hs_events);
+    if (flags.HypeSquadOnlineHouse1) badges.push(client.em.hs_bravery);
+    if (flags.HypeSquadOnlineHouse2) badges.push(client.em.hs_brilliance);
+    if (flags.HypeSquadOnlineHouse3) badges.push(client.em.hs_balance);
+    if (flags.BugHunterLevel1) badges.push(client.em.bughunter);
+    if (flags.BugHunterLevel2) badges.push(client.em.goldbughunter);
+    if (flags.VerifiedBot) badges.push(client.em.verified);
+    if (flags.BotHTTPInteractions) badges.push(client.em.supports_commands);
+    if (flags.ActiveDeveloper) badges.push(client.em.active_developer);
+    if (flags.Collaborator) badges.push('collaborator');
+    if (flags.DisablePremium) badges.push('disable_premium');
+    if (flags.HasUnreadUrgentMessages) badges.push('urgent_messages');
+    if (flags.MFASMS) badges.push('mfa_sms');
+    if (flags.PremiumPromoDismissed) badges.push('premium_promo_dismissed');
+    if (flags.Quarantined) badges.push('quarantined');
+    if (flags.RestrictedCollaborator) badges.push('restricted_collaborator');
+    if (flags.Spammer) badges.push('spammer');
+    if (flags.TeamPseudoUser) badges.push('team_pseudo_user');
 
-    let userdata = [];
+    const userdata = [];
     userdata.push(`**User Tag:** \`\`${Utils.escapeBacktick(user.tag, true)}\`\``);
     userdata.push(`**Badges:** ${badges.length ? badges.join(' ') : 'None'}`);
 
@@ -57,7 +64,7 @@ export async function run(client: Bot, message: Message, argsx: Args) {
 
 export const config = {
     aliases: ['ulookup', 'lookupuser', 'accountinfo', 'accinfo', 'whois'],
-    selfperms: ['EMBED_LINKS'],
+    selfperms: ['EmbedLinks'] satisfies Discord.PermissionsString[],
     description: 'Checks if a user ID exists and displays basic info about the user if so.',
     usage: {
         args: '[@user | user_id]'
