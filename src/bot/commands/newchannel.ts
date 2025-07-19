@@ -1,4 +1,4 @@
-import { type CategoryChannelResolvable, Message, ChannelType, GuildPremiumTier } from 'discord.js';
+import { type CategoryChannelResolvable, Message, ChannelType, GuildPremiumTier, type PermissionsString } from 'discord.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
@@ -16,6 +16,12 @@ const ChannelTypes = {
     GUILD_PRIVATE_THREAD: 12,
     GUILD_STAGE_VOICE: 13
 } as const;
+
+const TempMap = {
+    0: 'Text',
+    2: 'Voice',
+    4: 'Category',
+}
 
 export function run(client: Bot, message: Message, args: Args) {
     if (!args.ordered.length) return message.channel.send(`${client.em.xmark} A channel name is required!`);
@@ -64,7 +70,7 @@ export function run(client: Bot, message: Message, args: Args) {
     }).then(channel => {
         if (position) void channel.setPosition(Math.round(position) - 1);
         // @ts-expect-error TS fail
-        if (channel.type !== ChannelType.GuildCategory) return void message.channel.send(`${client.em.check} Successfully created new ${type} channel **${String(channel)}** at position \`${Math.round(position!) || channel.position}\` on category **${channel.parent?.name || 'Default'}**`);
+        if (channel.type !== ChannelType.GuildCategory) return void message.channel.send(`${client.em.check} Successfully created new ${TempMap[type]} channel **${String(channel)}** at position \`${Math.round(position!) || channel.position}\` on category **${channel.parent?.name || 'Default'}**`);
         else return void message.channel.send(`${client.em.check} Successfully created new category **${channel.name}** at position \`${Math.round(position!) || channel.position}\``);
     }).catch(console.error);
 }
@@ -98,8 +104,8 @@ function parseSlowmode(client: Bot, message: Message, slowmode: string): number 
 
 export const config = {
     aliases: ['addchannel', 'createchannel', 'makechannel'],
-    userperms: ['MANAGE_CHANNELS'],
-    selfperms: ['MANAGE_CHANNELS'],
+    userperms: ['ManageChannels'] satisfies PermissionsString[],
+    selfperms: ['ManageChannels'] satisfies PermissionsString[],
     description: 'Creates a new Discord channel in the server.',
     usage: {
         args: '<...channel_name>',
