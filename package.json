@@ -11,7 +11,7 @@
         "url": "https://github.com/jhmaster2000/yet-another-discord-bot.git"
     },
     "engines": {
-        "node": ">=20.10.0"
+        "node": ">=24.0.0"
     },
     "scripts": {
         "start": "npx tsx -r dotenv/config --trace-deprecation src/index.ts",

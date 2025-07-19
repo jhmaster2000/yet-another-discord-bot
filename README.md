@@ -3,14 +3,14 @@
 
 ~~Because clearly there aren't enough bots out there!~~.
 
-Made with easy and flexible selfhosting in mind. Uses [discord.js](https://discord.js.org/#/) v12 and includes a generic webserver currently not used for anything.
+Made with easy and flexible selfhosting in mind. Uses [discord.js](https://discord.js.org/#/) v14.
 
 Random Commit Hash: `000001`
 
 ## Requirements
 - OS: [Windows or Linux](#differences-between-running-on-windows-or-linux)
-- NodeJS: `14.x` or above
-- NPM: `7.x` or above
+- NodeJS: `24.x` or above
+- NPM: `11.x` or above
 
 ## Setup
 ### Run directly
