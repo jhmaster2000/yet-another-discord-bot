@@ -9,7 +9,7 @@ const term = spawn('sh');
 process.env.TERM_PID = term.pid?.toString();
 process.env.TERM_KILL_CMD = '0';
 
-function killRunningSubprocess(message: Message, graceful: boolean) {
+function killRunningSubprocess(message: Message<true>, graceful: boolean) {
     ps.lookup({ ppid: term.pid }, (err, resultList) => {
         if (err) throw err;
         if (resultList.length === 0 && runningCommands === 0 && !graceful) return message.channel.send('`No running subprocess to kill.`');
@@ -25,7 +25,7 @@ function killRunningSubprocess(message: Message, graceful: boolean) {
     });
 }
 
-export function run(client: Bot, message: Message, argsx: Args) {
+export function run(client: Bot, message: Message<true>, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} No command given. \`[Terminal PID: ${term.pid!}]\``);
     const args = argsx.basic.map(arg => arg.raw);
     if (args[0] === '^C') return killRunningSubprocess(message, false);

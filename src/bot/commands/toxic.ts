@@ -12,7 +12,7 @@ interface ToxicData {
     };
 }
 
-export async function run(client: Bot, message: Message, argsx: Args) {
+export async function run(client: Bot, message: Message<true>, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} Missing input.`);
     const args = argsx.basic.map(arg => arg.raw).join(' ');
 

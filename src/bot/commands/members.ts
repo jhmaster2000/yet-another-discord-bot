@@ -3,12 +3,12 @@ import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export function run(client: Bot, message: Message, args: Args) {
-    void message.guild!.members.fetch();
-    const pagesCount = message.guild!.members.cache.size;
+export function run(client: Bot, message: Message<true>, args: Args) {
+    void message.guild.members.fetch();
+    const pagesCount = message.guild.members.cache.size;
     let members: Discord.EmbedBuilder[] = [];
 
-    message.guild!.members.cache.forEach(member => {
+    message.guild.members.cache.forEach(member => {
         let badges = [];
         if (member.user.bot) badges.push(client.em.bot);
         if (member.premiumSince) badges.push(client.em.booster);

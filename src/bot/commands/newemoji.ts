@@ -3,7 +3,7 @@ import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export async function run(client: Bot, message: Message, args: Args) {
+export async function run(client: Bot, message: Message<true>, args: Args) {
     const argsr = args.basic.map(arg => arg.raw);
     
     const hasAttachment = Boolean(message.attachments.first());
@@ -19,12 +19,12 @@ export async function run(client: Bot, message: Message, args: Args) {
     const roles = message.mentions.roles;
     if (argsr[2 - argOffset] === '--roles' || argsr[2 - argOffset] === '--r') {
         if (!argsr[3 - argOffset]) return message.channel.send(`${client.em.xmark} The \`--roles\` option requires at least **1** role mention or ID.`);
-        await message.guild!.roles.fetch();
+        await message.guild.roles.fetch();
         let invalidRoles: string[] = [];
         argsr.forEach((possibleRoleID, index) => {
             if (index <= 2 - argOffset) return;
             if (possibleRoleID.trim().match(/^<@&[0-9]{17,20}>$/g)) return;
-            const possibleRole = message.guild!.roles.cache.get(possibleRoleID);
+            const possibleRole = message.guild.roles.cache.get(possibleRoleID);
             if (!possibleRole) return invalidRoles.push(Utils.escapeBacktick(possibleRoleID, true));
             else return roles.set(possibleRole.id, possibleRole);
         });
@@ -36,7 +36,7 @@ export async function run(client: Bot, message: Message, args: Args) {
     if (argsr[2 - argOffset] !== '--roles' && argsr[2 - argOffset] !== '--r') roles.clear();
 
     try {
-        const emoji = await message.guild!.emojis.create({
+        const emoji = await message.guild.emojis.create({
             attachment: image,
             name: name,
             roles: roles.size ? roles : [],

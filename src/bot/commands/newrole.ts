@@ -6,7 +6,7 @@ import { keyofEnum } from '../../utils.js';
 type ColorInput = keyof typeof Colors | 'Random' | HexColorString;
 const ColorNames = new Map(keyofEnum(Colors).map(k => [k.toLowerCase(), k]));
 
-export async function run(client: Bot, message: Message, args: Args) {
+export async function run(client: Bot, message: Message<true>, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} Please provide a name for the role.`);
     const argsr = args.ordered.map(arg => arg.raw);
 
@@ -27,7 +27,7 @@ export async function run(client: Bot, message: Message, args: Args) {
     }
 
     try {
-        const role = await message.guild!.roles.create(roledata);
+        const role = await message.guild.roles.create(roledata);
         return await message.channel.send(`${client.em.check} Successfully created role ${role.toString()} (\`Hoisted?\` ${hoisted} | \`Mentionable?\` ${mention})`);
     } catch (e) {
         return await message.channel.send(`${client.em.xmark} Role name is too long. (\`${roledata.name?.length ?? -1}\` characters out of \`100\` maximum)`).then(void console.error(e));

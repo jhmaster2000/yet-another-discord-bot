@@ -1,18 +1,18 @@
-import { Collection, GuildChannel, type GuildChannelResolvable, Message, type TextBasedChannel, type Channel, type PermissionsString } from 'discord.js';
+import { Collection, Message, type PermissionsString, type GuildBasedChannel } from 'discord.js';
 import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export async function run(client: Bot, message: Message, args: Args) {
+export async function run(client: Bot, message: Message<true>, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} Please provide a mention or ID of at least one channel.`);
 
     const argsr = args.ordered.map(arg => arg.raw);
-    const channels: Collection<string, Channel> = message.mentions.channels;
+    const channels: Collection<string, GuildBasedChannel> = message.mentions.channels.filter(c => !c.isDMBased());
 
     let invalidChannels: string[] = [];
     argsr.forEach(possibleChannelID => {
         if (possibleChannelID.trim().match(/^<#[0-9]{17,20}>$/g)) return;
-        const possibleChannel = message.guild!.channels.cache.get(possibleChannelID) as TextBasedChannel | undefined;
+        const possibleChannel = message.guild.channels.cache.get(possibleChannelID);
         if (!possibleChannel) return invalidChannels.push(Utils.escapeBacktick(possibleChannelID, true));
         else return channels.set(possibleChannel.id, possibleChannel);
     });
@@ -24,8 +24,8 @@ export async function run(client: Bot, message: Message, args: Args) {
     if (invalidChannels.length) issues.push(`⚠️ Failed to resolve **${invalidChannels.length}** argument${s} into valid channels:\n\`\`${invalidChannels.join('``, ``')}\`\``);
 
     if (!message.member!.permissions.has('Administrator')) {
-        let notEditableByUser: Channel[] = [];
-        channels.filter(channel => !message.member!.permissionsIn(channel as GuildChannelResolvable).has('ManageChannels')).forEach(channel => {
+        let notEditableByUser: GuildBasedChannel[] = [];
+        channels.filter(channel => !message.member!.permissionsIn(channel).has('ManageChannels')).forEach(channel => {
             notEditableByUser.push(channel);
             channels.delete(channel.id);
         });
@@ -44,7 +44,7 @@ export async function run(client: Bot, message: Message, args: Args) {
         let results: string[] = [];
         for (const channel_3 of channels.map(c_1 => c_1)) {
             await channel_3.delete(`Requested by user: ${message.author.tag}`).then(() => {
-                return results.push(`${client.em.check} Successfully deleted channel: **\`\`${(<GuildChannel>channel_3).name}\`\`**`);
+                return results.push(`${client.em.check} Successfully deleted channel: **\`\`${channel_3.name}\`\`**`);
             }).catch(error => {
                 console.error('[DELCHANNEL_ERROR]', error);
                 return results.push(`${client.em.xmark} Failed to delete ${String(channel_3)}, does the bot have permissions to view and manage it?`);

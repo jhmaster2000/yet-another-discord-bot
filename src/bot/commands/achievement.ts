@@ -44,7 +44,7 @@ const icons = {
     milk_bucket: '39'
 }
 
-export function run(client: Bot, message: Message, args: Args) {
+export function run(client: Bot, message: Message<true>, args: Args) {
     const argsr = args.ordered.map(arg => arg.raw);
     let achName = encodeURIComponent(argsr.join(' ')).replace(/'/g, '%27').replace(/%2f/gi, '+');
     if (!argsr.length) achName = '+';

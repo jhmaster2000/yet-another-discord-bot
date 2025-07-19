@@ -23,7 +23,7 @@ const TempMap = {
     4: 'Category',
 }
 
-export function run(client: Bot, message: Message, args: Args) {
+export function run(client: Bot, message: Message<true>, args: Args) {
     if (!args.ordered.length) return message.channel.send(`${client.em.xmark} A channel name is required!`);
     const argsv = args.ordered.map(arg => arg.raw);
 
@@ -37,7 +37,7 @@ export function run(client: Bot, message: Message, args: Args) {
 
     if (type === ChannelTypes.GUILD_TEXT && isNaN(slowmode!)) return; // Response on parseSlowmode() function
 
-    const categorychannel = message.guild!.channels.cache.get(category!);
+    const categorychannel = message.guild.channels.cache.get(category!);
     if (type !== ChannelTypes.GUILD_CATEGORY && category) {
         if (!categorychannel) return message.channel.send(`${client.em.xmark} Failed to parse the **category** option into a valid category channel.`);
         if (categorychannel.type !== ChannelType.GuildCategory) return message.channel.send(`${client.em.xmark} ${String(categorychannel)} is not a category!`);
@@ -46,17 +46,17 @@ export function run(client: Bot, message: Message, args: Args) {
     const vc_bitrate = Number(args.options.get('bitrate') || args.options.get('kbps'));
     const vc_userlimit = Number(args.options.get('userlimit') || args.options.get('users'));
     if (type === ChannelTypes.GUILD_VOICE) {
-        if (message.guild!.premiumTier === GuildPremiumTier.None  && (vc_bitrate < 8 || vc_bitrate > 96))  return message.channel.send(`${client.em.xmark} The bitrate must be between \`8\` and \`96\` (in kbps)`);
-        if (message.guild!.premiumTier === GuildPremiumTier.Tier1 && (vc_bitrate < 8 || vc_bitrate > 128)) return message.channel.send(`${client.em.xmark} The bitrate must be between \`8\` and \`128\` (in kbps)`);
-        if (message.guild!.premiumTier === GuildPremiumTier.Tier2 && (vc_bitrate < 8 || vc_bitrate > 256)) return message.channel.send(`${client.em.xmark} The bitrate must be between \`8\` and \`256\` (in kbps)`);
-        if (message.guild!.premiumTier === GuildPremiumTier.Tier3 && (vc_bitrate < 8 || vc_bitrate > 384)) return message.channel.send(`${client.em.xmark} The bitrate must be between \`8\` and \`384\` (in kbps)`);
+        if (message.guild.premiumTier === GuildPremiumTier.None  && (vc_bitrate < 8 || vc_bitrate > 96))  return message.channel.send(`${client.em.xmark} The bitrate must be between \`8\` and \`96\` (in kbps)`);
+        if (message.guild.premiumTier === GuildPremiumTier.Tier1 && (vc_bitrate < 8 || vc_bitrate > 128)) return message.channel.send(`${client.em.xmark} The bitrate must be between \`8\` and \`128\` (in kbps)`);
+        if (message.guild.premiumTier === GuildPremiumTier.Tier2 && (vc_bitrate < 8 || vc_bitrate > 256)) return message.channel.send(`${client.em.xmark} The bitrate must be between \`8\` and \`256\` (in kbps)`);
+        if (message.guild.premiumTier === GuildPremiumTier.Tier3 && (vc_bitrate < 8 || vc_bitrate > 384)) return message.channel.send(`${client.em.xmark} The bitrate must be between \`8\` and \`384\` (in kbps)`);
         if (vc_userlimit < 0 || vc_userlimit > 99) return message.channel.send(`${client.em.xmark} The user limit must be between \`0\` and \`99\``);
     }
 
     if (position !== null && isNaN(position)) return message.channel.send(`${client.em.xmark} Failed to parse the **position** option into a valid number.`);
     if (position !== null && (position < 1 || position > 2147483648)) return message.channel.send(`${client.em.xmark} The position must be between \`1\` and \`2147483648\``);
 
-    return message.guild!.channels.create({
+    return message.guild.channels.create({
         name: name, // channel name
         type: type, // GUILD_TEXT
         //position: undefined, // this is actually rawPosition and not position, so position must be set afterwards
@@ -75,7 +75,7 @@ export function run(client: Bot, message: Message, args: Args) {
     }).catch(console.error);
 }
 
-function parseSlowmode(client: Bot, message: Message, slowmode: string): number | undefined {
+function parseSlowmode(client: Bot, message: Message<true>, slowmode: string): number | undefined {
     if (!isNaN(Number(slowmode))) {
         if (Number(slowmode) < 0 || Number(slowmode) > 21600) return void message.channel.send(`${client.em.xmark} The slowmode must be between \`0\` and \`21600\` seconds`);
         else return Number(slowmode);

@@ -3,7 +3,7 @@ import prettyms from 'pretty-ms';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export function run(client: Bot, message: Message, args: Args) {
+export function run(client: Bot, message: Message<true>, args: Args) {
     return message.channel.send(`🕓 **I have been online for** \`${prettyms(client.uptime!)}\`**!**`);
 }
 

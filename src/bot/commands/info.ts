@@ -4,7 +4,7 @@ import os from 'os';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export function run(client: Bot, message: Message, args: Args) {
+export function run(client: Bot, message: Message<true>, args: Args) {
     const memory = `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(1)}/${(os.totalmem() / 1024 / 1024).toFixed(1)} MB`;
     const gitHash = process.env.GIT_HASH || process.env.VERSION_TIMESTAMP;
     const versionHash = crypto.createHash('shake256', { outputLength: 4 }).update(gitHash!).digest('hex').toUpperCase();

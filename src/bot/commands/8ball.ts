@@ -27,7 +27,7 @@ const fortunes = [
     'Now why would you ask that?',
     'Seriously? That\'s your question?',
     'I hate this job...',
-    'That\'s the dumbest question I\'ve heard.',
+    'That\'s the dumbest question I\'ve ever heard.',
 
     /* Negative answers */
     'No.',
@@ -42,7 +42,7 @@ const fortunes = [
     'Lies and myths.'
 ];
 
-export function run(client: Bot, message: Message, args: Args) {
+export function run(client: Bot, message: Message<true>, args: Args) {
     if (!args.basic.length) return message.channel.send(`🤦 You have to ask a question smooth brain.`);
     const answer = fortunes[Math.floor(Math.random() * fortunes.length)];
     return message.channel.send(`🎱 ${answer}`);

@@ -2,7 +2,7 @@ import { Message, NewsChannel, TextChannel, type PermissionsString } from 'disco
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export async function run(client: Bot, message: Message, argsx: Args) {
+export async function run(client: Bot, message: Message<true>, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} Cannot send empty message.`);
     const args = argsx.basic.map(arg => arg.raw + arg.trailing);
     const webhookText = args.join('');

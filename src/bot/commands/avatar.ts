@@ -3,7 +3,7 @@ import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export function run(client: Bot, message: Message, argso: Args) {
+export function run(client: Bot, message: Message<true>, argso: Args) {
     const maxres = argso.flags.has('maxres') ? '?size=4096' : '';
     const args = argso.ordered.map(arg => arg.value);
 

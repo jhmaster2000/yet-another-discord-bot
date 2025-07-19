@@ -8,7 +8,7 @@ import { type Args } from '../events/messageCreate.js';
 const assets = JSON.parse(fs.readFileSync(join(process.env.workdir!, './bot/assets/random.json')).toString()) as RandomAssets;
 const items = ['cat', 'dog', 'bench'] as const;
 type Items = typeof items[number];
-type ItemsClass = { [key in Items]: (message: Message) => void; };
+type ItemsClass = { [key in Items]: (message: Message<true>) => void; };
 let xmark: string;
 
 interface RandomAssets {
@@ -22,19 +22,19 @@ interface CatDogApiResponse {
     height: number,
 }
 
-export async function run(client: Bot, message: Message, argsx: Args) {
+export async function run(client: Bot, message: Message<true>, argsx: Args) {
     xmark ??= client.em.xmark;
     if (!argsx.basic.length) return invalidArguments(message);
     const args = argsx.basic.map(arg => arg.raw);
     if (items.includes(<Items>args[0].toLowerCase())) return Random[args[0] as Items](message);
     else return invalidArguments(message);
 }
-function invalidArguments(message: Message) {
+function invalidArguments(message: Message<true>) {
     return message.channel.send(`${xmark} You need to tell me what to get a random of!\nValid options: \`${items.join('`, `')}\``);
 }
 
 const Random = (class {
-    static async #catOrDog(message: Message, type: 'cat' | 'dog') {
+    static async #catOrDog(message: Message<true>, type: 'cat' | 'dog') {
         const response = await got.get(`https://api.the${type}api.com/v1/images/search?limit=1`)
             .catch(() => void message.channel.send(`${xmark} Failed to get a random ${type}!`));
         if (!response) return;
@@ -44,9 +44,9 @@ const Random = (class {
             .setImage(body[0].url);
         return message.channel.send({ embeds: [embed] });
     }
-    static cat = (message: Message) => void Random.#catOrDog(message, 'cat');
-    static dog = (message: Message) => void Random.#catOrDog(message, 'dog');
-    static bench(message: Message) {
+    static cat = (message: Message<true>) => void Random.#catOrDog(message, 'cat');
+    static dog = (message: Message<true>) => void Random.#catOrDog(message, 'dog');
+    static bench(message: Message<true>) {
         const selected = assets.benches[Math.floor(Math.random() * assets.benches.length)];
         const embed = new Discord.EmbedBuilder()
             .setTitle('Here\'s your random bench! 🪑')

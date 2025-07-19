@@ -6,7 +6,7 @@ import { Message } from 'discord.js';
 import { type Args } from '../events/messageCreate.js';
 process.env.RUNNING_EXEC_PIDS = '[]';
 
-function killRunningSubprocesses(message: Message): void {
+function killRunningSubprocesses(message: Message<true>): void {
     const runningExecPIDs = JSON.parse(process.env.RUNNING_EXEC_PIDS!) as number[];
     if (runningExecPIDs.length === 0) return void message.channel.send('`No running commands to kill.`');
     return runningExecPIDs.forEach((pid: number) => {
@@ -21,7 +21,7 @@ function killRunningSubprocesses(message: Message): void {
     });
 }
 
-export function run(client: Bot, message: Message, argsx: Args) {
+export function run(client: Bot, message: Message<true>, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} No command given.`);
     const args = argsx.basic.map(arg => arg.raw);
     if (args[0] === '^C') return killRunningSubprocesses(message);

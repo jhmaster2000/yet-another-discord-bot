@@ -5,12 +5,12 @@ import { type Args } from '../events/messageCreate.js';
 
 const cdnurl = 'https://cdn.discordapp.com/' as const;
 const cdn = {
-    icon: (guild: string, id: string) => { return `${cdnurl}icons/${guild}/${id}.png?size=4096` },
-    banner: (guild: string, id: string) => { return `${cdnurl}banners/${guild}/${id}.png?size=4096` },
-    splash: (guild: string, id: string) => { return `${cdnurl}splashes/${guild}/${id}.png?size=4096` }
+    icon: (guild: string, id: string) => `${cdnurl}icons/${guild}/${id}.png?size=4096`,
+    banner: (guild: string, id: string) => `${cdnurl}banners/${guild}/${id}.png?size=4096`,
+    splash: (guild: string, id: string) => `${cdnurl}splashes/${guild}/${id}.png?size=4096`,
 };
 
-export async function run(client: Bot, message: Message, argsx: Args) {
+export async function run(client: Bot, message: Message<true>, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} No Discord invite provided.`);
     const args = argsx.basic.map(arg => arg.raw);
     const code = args[0];

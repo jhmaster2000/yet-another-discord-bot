@@ -2,7 +2,7 @@ import { Message, type PermissionsString } from 'discord.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export function run(client: Bot, message: Message, argsx: Args) {
+export function run(client: Bot, message: Message<true>, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`🙄 You have to tell me what you want me to say...`);
     const args = argsx.basic.map(arg => arg.raw + arg.trailing).join('');
     void message.delete();

@@ -3,8 +3,8 @@ import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export async function run(client: Bot, message: Message, args: Args) {
-    const guild = message.guild!;
+export async function run(client: Bot, message: Message<true>, args: Args) {
+    const guild = message.guild;
     await guild.members.fetch();
     const isDiscoverable = guild.features.includes('DISCOVERABLE');
     const isCommunity = guild.features.includes('COMMUNITY');

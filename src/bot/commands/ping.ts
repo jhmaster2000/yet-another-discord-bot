@@ -2,7 +2,7 @@ import Discord, { Message } from 'discord.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export function run(client: Bot, message: Message, args: Args) {
+export function run(client: Bot, message: Message<true>, args: Args) {
     void message.channel.send(`${client.em.loadingfast} Pinging...`).then(msg => {
         const ping = msg.createdTimestamp - message.createdTimestamp;
         const result = new Discord.EmbedBuilder()

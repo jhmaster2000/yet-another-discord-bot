@@ -2,7 +2,7 @@ import { GuildEmoji, Message, type PermissionsString } from 'discord.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export async function run(client: Bot, message: Message, argsx: Args) {
+export async function run(client: Bot, message: Message<true>, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} Please provide at least **1** custom emoji to delete.`);
     let args = argsx.basic.map(arg => arg.raw);
     args = args.join(' ').replace(/<a??:(\w{2,32}):([0-9]{17,20})>/g, match => match + ' ').split(' ');
@@ -11,7 +11,7 @@ export async function run(client: Bot, message: Message, argsx: Args) {
     args.forEach(arg => {
         const parsedEmoji = arg.trim().match(/<a??:(\w{2,32}):([0-9]{17,20})>/);
         if (!parsedEmoji) return;
-        const emoji = message.guild!.emojis.cache.get(parsedEmoji[2]);
+        const emoji = message.guild.emojis.cache.get(parsedEmoji[2]);
         if (emoji) emojis.push(emoji);
     });
     if (!emojis.length) return message.channel.send(`${client.em.xmark} Failed to parse any valid __custom emojis in this server__ from your input.`);
