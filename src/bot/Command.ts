@@ -4,7 +4,7 @@ import { type Args } from './events/messageCreate.js';
 
 export default interface Command {
     config: CommandConfig;
-    run(client: Bot, message: Message, args: Args): unknown;
+    run(client: Bot, message: Message<true>, args: Args): unknown;
 }
 
 export interface CommandConfig {

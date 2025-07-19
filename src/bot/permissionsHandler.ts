@@ -16,8 +16,8 @@ interface PermissionData {
     perms?: { user: PermissionsString[], self: PermissionsString[] };
 }
 
-export function checkPermissions(client: Bot, message: Message, cmd: Command, helpCmd: boolean = false): PermissionData {
-    const self = message.guild!.members.me!.permissionsIn(message.channel as GuildChannelResolvable);
+export function checkPermissions(client: Bot, message: Message<true>, cmd: Command, helpCmd: boolean = false): PermissionData {
+    const self = message.guild.members.me!.permissionsIn(message.channel as GuildChannelResolvable);
     const user = message.member!.permissionsIn(message.channel as GuildChannelResolvable);
     const selfPerms = cmd.config.selfperms || [];
     let userPerms = cmd.config.userperms || [];
