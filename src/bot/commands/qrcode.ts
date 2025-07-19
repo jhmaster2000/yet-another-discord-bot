@@ -33,7 +33,7 @@ export function run(client: Bot, message: Message, args: Args) {
         if (!qrLink) return message.channel.send(`${client.em.xmark} Please provide an image URL with a QR code on it to be scanned!`);
 
         return message.channel.send(`${client.em.loadingfast} **Scanning QR Code...**`).then(msg => {
-            return got.get(`https://api.qrserver.com/v1/read-qr-code/?fileurl=${encodeURIComponent(qrLink)}`, { timeout: { request: 15000 }, retry: 0 }).then(response => {
+            return got.get(`https://api.qrserver.com/v1/read-qr-code/?fileurl=${encodeURIComponent(qrLink)}`, { timeout: { request: 15000 } }).then(response => {
                 const scanned = (<QRApiResponse>JSON.parse(response.body))[0].symbol[0];
                 let result = `${client.em.check} **QR Scan Result:**\n${Utils.escapeMarkdown(scanned.data ?? '')}`;
 
@@ -42,9 +42,9 @@ export function run(client: Bot, message: Message, args: Args) {
 
                 return void msg.edit(result);
             }).catch((err: InstanceType<typeof got.HTTPError>) => {
-                if (err.code === 'ETIMEDOUT') return void msg.edit(`${client.em.xmark} That is not a valid image URL. (Timed out)`);
+                if (err?.code === 'ETIMEDOUT') return void msg.edit(`${client.em.xmark} That is not a valid image URL. (Timed out)`);
                 // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-                if (err.response.statusCode === 400) return void msg.edit(`${client.em.xmark} That is not a valid image URL.`);
+                if (err?.response?.statusCode === 400) return void msg.edit(`${client.em.xmark} That is not a valid image URL.`);
                 console.error(err);
                 return void msg.edit(`${client.em.xmark} **QR Scan Fatal Error:** \`\`\`js\n${String(err)}\`\`\``);
             });
@@ -56,7 +56,7 @@ export function run(client: Bot, message: Message, args: Args) {
 
 export const config = {
     aliases: ['qr'],
-    selfperms: ['EMBED_LINKS'],
+    selfperms: ['EmbedLinks'] satisfies Discord.PermissionsString[],
     description: 'Creates and scans QR code images.',
     usage: {
         args: '<create/scan> (create: <...text> | scan: <image_link>)'
