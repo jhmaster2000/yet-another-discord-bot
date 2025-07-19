@@ -1,5 +1,9 @@
 import { type EscapeMarkdownOptions, escapeCodeBlock, escapeMarkdown as djsEscapeMarkdown } from 'discord.js';
 
+export function keyofEnum<T extends Record<string, number>>(enumObj: T): (keyof T)[] {
+    return Object.entries(enumObj).filter(([k, v]) => typeof v === 'number').map(([k, v]) => k) as (keyof T)[];
+}
+
 export interface ExtendedEscapeMarkdownOptions extends EscapeMarkdownOptions {
     backslash?: boolean;
     maskedLink?: boolean;
