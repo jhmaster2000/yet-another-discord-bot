@@ -9,7 +9,7 @@ const client = new Bot({
         GatewayIntentBits.DirectMessageReactions,
         //GatewayIntentBits.DirectMessageTyping,
         GatewayIntentBits.DirectMessages,
-        GatewayIntentBits.GuildEmojisAndStickers,
+        GatewayIntentBits.GuildExpressions, // Formerly GuildEmojisAndStickers
         GatewayIntentBits.GuildIntegrations,
         GatewayIntentBits.GuildInvites,
         GatewayIntentBits.GuildMembers,
