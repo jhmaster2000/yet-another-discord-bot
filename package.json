@@ -16,7 +16,7 @@
     "scripts": {
         "start": "npx tsx -r dotenv/config --trace-deprecation src/index.ts",
         "deploy": "cross-env RUNNING_JS=1 node -r dotenv/config dist/index.js",
-        "build": "npx tsc --build .",
+        "build": "npx tsc",
         "js": "npm run build && npm run deploy",
         "ts": "npm start",
         "lint": "npx eslint . --ext .ts",
@@ -44,6 +44,6 @@
         "eslint-plugin-deprecation": "^2.0.0",
         "eslint-plugin-unicorn": "^51.0.1",
         "tsx": "^4.20.3",
-        "typescript": "^5.8.3"
+        "typescript": "^5.9.0-beta"
     }
 }
