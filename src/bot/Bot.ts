@@ -20,7 +20,7 @@ export default class Bot extends Client {
     readonly events: EventStorage = (<any>this)._events as EventStorage;
     readonly isWin: boolean = process.platform === 'win32';
 
-    paginate!: (message: Message, pages: EmbedBuilder[], pagesCount: number, timeout?: number, startPage?: number) => void;
+    paginate!: (message: Message<true>, pages: EmbedBuilder[], pagesCount: number, timeout?: number, startPage?: number) => void;
     promptYesNo!: (from: User, msg: Message, callback: (answer: boolean | null) => void, timeout?: number, reactions?: CustomReactions) => void;
 }
 

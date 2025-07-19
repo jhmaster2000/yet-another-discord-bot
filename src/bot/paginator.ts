@@ -2,7 +2,7 @@ import { EmbedBuilder, Message, MessageReaction, User } from 'discord.js';
 import Bot from './Bot.js';
 
 export default function loadPaginator(client: Bot): void {
-    client.paginate = (message: Message, pages: EmbedBuilder[], pagesCount: number, timeout?: number, startPage?: number): void => {
+    client.paginate = (message: Message<true>, pages: EmbedBuilder[], pagesCount: number, timeout?: number, startPage?: number): void => {
         const authorAvatar = message.author.displayAvatarURL({ extension: 'png' });
         void message.channel.send({ embeds: [pages[startPage || 0].setFooter({ text: `${(startPage || 0) + 1}/${pagesCount}`, iconURL: authorAvatar })] }).then((msg: Message): void => {
             void msg.react('⏮').then(() => {
