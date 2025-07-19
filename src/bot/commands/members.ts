@@ -34,13 +34,20 @@ export function run(client: Bot, message: Message, args: Args) {
         let nickname = member.displayName;
         if (nickname === member.user.username) nickname = '';
 
+        let memberRoles = member.roles.cache.sort((roleA, roleB) => roleB.position - roleA.position).map(role => role).join(', ');
+        if (memberRoles.length > 1024) {
+            const trimmedRoles = memberRoles.slice(0, 1008).split(', ').slice(0, -1);
+            const extraRolesCount = member.roles.cache.size - trimmedRoles.length;
+            memberRoles = trimmedRoles.join(', ') + ` **\`(+${extraRolesCount})\`**`;
+        }
+
         const memberEmbed = new Discord.EmbedBuilder()
             .setColor(member.displayHexColor)
             .setTitle(`${badgesStr}${Utils.escapeMarkdown(member.user.tag)}`)
             .addFields(
-                { name: 'Roles', value: member.roles.cache.sort((roleA, roleB) => roleB.position - roleA.position).map(role => role).join(', ') },
+                { name: 'Roles', value: memberRoles },
                 { name: 'Permissions', value: `\`${member.permissions.toArray().join('`, `')}\`` },
-                { name: 'Joined on', value: `${member.joinedAt!.toUTCString()}`, inline: true },
+                { name: 'Joined on', value: `${member.joinedAt?.toUTCString?.() ?? '*Unknown*'}`, inline: true },
                 { name: 'Registered on', value: `${member.user.createdAt.toUTCString()}`, inline: true },
             )
             .setThumbnail(member.user.displayAvatarURL({ extension: 'png' }));
@@ -53,6 +60,6 @@ export function run(client: Bot, message: Message, args: Args) {
 
 export const config = {
     aliases: ['servermembers', 'guildmembers', 'gmembers', 'memberlist', 'listmembers'],
-    selfperms: ['EMBED_LINKS', 'ADD_REACTIONS'],
+    selfperms: ['EmbedLinks', 'AddReactions'] satisfies Discord.PermissionsString[],
     description: 'Displays an interactive list of all members in the server.'
 };
