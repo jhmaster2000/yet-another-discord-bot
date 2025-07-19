@@ -1,70 +1,80 @@
-import Discord, { type ColorResolvable, DiscordAPIError, Message } from 'discord.js';
+import Discord, { Message, Colors, type HexColorString, DiscordAPIError } from 'discord.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
+import { keyofEnum } from '../../utils.js';
 
-export async function run(client: Bot, message: Message, args: Args): Promise<Discord.Message | undefined> {
+type ColorInput = keyof typeof Colors | 'Random' | HexColorString;
+const ColorNames = new Map(keyofEnum(Colors).map(k => [k.toLowerCase(), k]));
+
+export async function run(client: Bot, message: Message, args: Args) {
     const argsr = args.ordered.map(arg => arg.raw + arg.trailing);
     const opts = args.options;
 
     const description = argsr.join('') || '\u200B';
-    const title = opts.get('title') ? opts.get('title') : null;
-    const url = opts.get('url') ? opts.get('url') : null;
-    const author = opts.get('author') ? opts.get('author') : message.author.username;
-    const footer = opts.get('footer') ? opts.get('footer') : null;
-    const color = opts.get('color') ? opts.get('color') : message.member!.displayHexColor;
-    const image = opts.get('image') ? opts.get('image') : null;
-    const thumb = opts.get('thumb') ? opts.get('thumb') : null;
-
-    const embed = new Discord.EmbedBuilder()
-        .setAuthor({ name: author!, iconURL: message.author.displayAvatarURL({ extension: 'png' }) })
-        .setDescription(description)
-        .setColor(color as ColorResolvable)
-        .setTimestamp();
-    if (title) embed.setTitle(title);
-    if (footer) embed.setFooter({ text: footer });
-    if (url) embed.setURL(url);
-    if (image) embed.setImage(image);
-    if (thumb) embed.setThumbnail(thumb);
+    const color = (opts.get('color') ?? message.member!.displayHexColor) as ColorInput;
+    const author = opts.get('author') ?? message.author.username;
+    const url = opts.get('url') ?? null;
+    const title = opts.get('title') ?? null;
+    const footer = opts.get('footer') ?? null;
+    const image = opts.get('image') ?? null;
+    const thumb = opts.get('thumb') ?? null;
 
     void message.delete();
+    const embed = new Discord.EmbedBuilder().setTimestamp();
+    const errors: string[] = [];
+
     try {
-        return message.channel.send({ embeds: [embed] });
-    } catch (e: unknown) {
-        const err = e as DiscordAPIError;
-        if (err.code === 50035) {
-            let errlist: string[] = [];
-            let errmsgs: string[] = err.message.split('\n');
-            errmsgs.shift();
-            errmsgs.forEach(el => {
-                if (el.startsWith('embeds[0].'))
-                    return;
-                let opt = el.split(': ')[0].slice(6).replace('nail.url', '').replace('.url', '').replace('.name', '').replace('.text', '');
-                let optmsg = el;
-                if (opt === 'description')
-                    return errlist.push(`\`description\`: Too long.  ${description.length} characters out of 2048 maximum. (${2048 - description.length})`);
-                if (opt === 'footer')
-                    return errlist.push(`\`--footer\`: Too long.  ${footer!.length} characters out of 2048 maximum. (${2048 - footer!.length})`);
-                if (opt === 'title')
-                    return errlist.push(`\`--title\`: Too long.  ${title!.length} characters out of 256 maximum. (${256 - title!.length})`);
-                if (opt === 'author')
-                    return errlist.push(`\`--author\`: Too long.  ${author!.length} characters out of 256 maximum. (${256 - author!.length})`);
-                if (opt === 'url')
-                    optmsg = 'Not a valid URL.';
-                if (opt === 'image')
-                    optmsg = 'Not a valid URL.';
-                if (opt === 'thumb')
-                    optmsg = 'Not a valid URL.';
-                return errlist.push(`\`--${opt}\`: ${optmsg}`);
-            });
-            return message.channel.send(`${client.em.xmark} **Failed to create embed due to the following issues:**\n${errlist.join('\n')}`);
+        if (color[0] === '#') embed.setColor(color as HexColorString);
+        else {
+            const resolved = ColorNames.get(color.toLowerCase().replaceAll(/[-_\s]+/g, '')) ?? null;
+            if (resolved === null) throw void 0;
+            embed.setColor(resolved);
         }
-        return void console.error(err);
+    } catch {
+        errors.push(`\`--color\`: ${color as string} cannot be resolved to a valid color.`);
+    }
+    try { embed.setDescription(description); } catch {
+        errors.push(`\`description\`: Too long. ${description.length} characters out of 4096 maximum. (${4096 - description.length})`);
+    }
+    try { embed.setAuthor({ name: author, iconURL: message.author.displayAvatarURL({ extension: 'png' }) }); } catch {
+        errors.push(`\`--author\`: Too long. ${author.length} characters out of 256 maximum. (${256 - author.length})`);
+    }
+    if (title) try { embed.setTitle(title); } catch {
+        errors.push(`\`--title\`: Too long. ${title.length} characters out of 256 maximum. (${256 - title.length})`);
+    }
+    if (footer) try { embed.setFooter({ text: footer }); } catch {
+        errors.push(`\`--footer\`: Too long. ${footer.length} characters out of 2048 maximum. (${2048 - footer.length})`);
+    }
+    if (url) try { embed.setURL(url); } catch {
+        errors.push(`\`--url\`: Not a valid URL.`);
+    }
+    if (image) try { embed.setImage(image); } catch {
+        errors.push(`\`--image\`: Not a valid image URL.`);
+    }
+    if (thumb) try { embed.setThumbnail(thumb); } catch {
+        errors.push(`\`--thumb\`: Not a valid image URL.`);
+    }
+    if (errors.length) return message.channel.send(`${client.em.xmark} **Failed to create embed due to the following issues:**\n${errors.join('\n')}`);
+    else try {
+        return await message.channel.send({ embeds: [embed] });
+    } catch (err) {
+        if (err instanceof DiscordAPIError) {
+            if (err.code === 50035) {
+                // Discord.js URL validation doesn't catch http(s)://example/ or http(s)://example.x/ as invalid, but Discord API does.
+                if (err.message.includes('embeds[0].image.')) return message.channel.send(`${client.em.xmark} **Failed to create embed due to invalid \`--image\` URL.**`);
+                else if (err.message.includes('embeds[0].thumbnail.')) return message.channel.send(`${client.em.xmark} **Failed to create embed due to invalid \`--thumb\` URL.**`);
+                else if (err.message.includes('embeds[0].url[')) return message.channel.send(`${client.em.xmark} **Failed to create embed due to invalid \`--url\` URL.**`);
+                else return message.channel.send(`${client.em.xmark} **Failed to create embed due to an unknown issue with the embed's content.**`);
+            }
+            else return message.channel.send(`${client.em.xmark} **Failed to create embed due to an unknown issue with the embed's content.**`);
+        }
+        else return message.channel.send(`${client.em.xmark} **Failed to create embed due to an unknown issue.**`);
     }
 }
 
 export const config = {
-    selfperms: ['MANAGE_MESSAGES', 'EMBED_LINKS'],
-    userperms: ['MANAGE_MESSAGES', 'EMBED_LINKS'],
+    selfperms: ['ManageMessages', 'EmbedLinks'] satisfies Discord.PermissionsString[],
+    userperms: ['ManageMessages', 'EmbedLinks'] satisfies Discord.PermissionsString[],
     description: 'Creates a custom embed for you.',
     usage: {
         args: '[...embed_description]',
