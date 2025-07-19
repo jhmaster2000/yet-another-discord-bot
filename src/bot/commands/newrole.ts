@@ -1,10 +1,10 @@
-import { type ColorResolvable, Message, type RoleCreateOptions } from 'discord.js';
+import { type ColorResolvable, Message, type RoleCreateOptions, type PermissionsString, Colors, type HexColorString } from 'discord.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
+import { keyofEnum } from '../../utils.js';
 
-function upCaseFirst(str: string) {
-    return str[0].toUpperCase() + str.slice(1);
-}
+type ColorInput = keyof typeof Colors | 'Random' | HexColorString;
+const ColorNames = new Map(keyofEnum(Colors).map(k => [k.toLowerCase(), k]));
 
 export async function run(client: Bot, message: Message, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} Please provide a name for the role.`);
@@ -13,12 +13,18 @@ export async function run(client: Bot, message: Message, args: Args) {
     const roledata: RoleCreateOptions = {
         name: argsr.join(' '),
         reason: `Requested by user: ${message.author.tag}`,
-        color: upCaseFirst(args.options.get('color')?.toLowerCase() ?? 'Default') as ColorResolvable,
+        color: 'Default',
         hoist: args.flags.has('hoisted') || args.flags.has('hoist'),
         mentionable: args.flags.has('mentionable') || args.flags.has('mention') || args.flags.has('ping'),
     };
     const hoisted = roledata.hoist ? client.em.check : client.em.xmark;
     const mention = roledata.mentionable ? client.em.check : client.em.xmark;
+    if (args.options.get('color')) {
+        const color = args.options.get('color') as ColorInput;
+        const resolved = ColorNames.get(color.toLowerCase().replaceAll(/[-_\s]+/g, '')) ?? null;
+        if (resolved === null) return await message.channel.send(`${client.em.xmark} Invalid role color name or hex code.`);
+        roledata.color = resolved as ColorResolvable;
+    }
 
     try {
         const role = await message.guild!.roles.create(roledata);
@@ -30,8 +36,8 @@ export async function run(client: Bot, message: Message, args: Args) {
 
 export const config = {
     aliases: ['addrole', 'createrole', 'makerole'],
-    selfperms: ['MANAGE_ROLES'],
-    userperms: ['MANAGE_ROLES'],
+    selfperms: ['ManageRoles'] satisfies PermissionsString[],
+    userperms: ['ManageRoles'] satisfies PermissionsString[],
     description: 'Creates a new role in the server.',
     usage: {
         args: '<...role_name>',
