@@ -14,7 +14,7 @@ type QRApiResponse = {
 export function run(client: Bot<true>, message: Message<true>, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} First argument must be either \`create\` or \`scan\`. Check \`${client.prefixes[0]} help qr\` for reference.`);
     const argsr = args.ordered.map(arg => arg.raw + arg.trailing);
-    const subcommand = argsr.shift()!.trim();
+    const subcommand = argsr.shift()!.trim().toLowerCase();
 
     if (subcommand === 'create') {
         const qrData = argsr.join('');
@@ -36,6 +36,9 @@ export function run(client: Bot<true>, message: Message<true>, args: Args) {
             return got.get(`https://api.qrserver.com/v1/read-qr-code/?fileurl=${encodeURIComponent(qrLink)}`, { timeout: { request: 15000 } }).then(response => {
                 const scanned = (<QRApiResponse>JSON.parse(response.body))[0].symbol[0];
                 let result = `${client.em.check} **QR Scan Result:**\n${Utils.escapeMarkdown(scanned.data ?? '')}`;
+
+                // TODO: Scanning seems broken, always gives download error
+                //console.log(JSON.parse(response.body)[0].symbol);
 
                 if (!scanned.data) result = `${client.em.xmark} **QR Scan Error:** \`\`\`js\n${scanned.error}\`\`\``;
                 if (scanned.error?.includes('download error')) result = `${client.em.xmark} That is not a valid image URL. (Download error)`;
