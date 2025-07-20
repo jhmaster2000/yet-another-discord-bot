@@ -1,5 +1,5 @@
 import Bot from './Bot.js';
 
 export default interface Event {
-    run(client: Bot, ...args: unknown[]): unknown;
+    run(client: Bot<true>, ...args: unknown[]): unknown;
 }

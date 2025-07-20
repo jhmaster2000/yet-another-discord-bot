@@ -2,7 +2,7 @@ import Bot from './Bot.js';
 import { GatewayIntentBits } from 'discord.js';
 
 /* Client Setup */
-const client = new Bot({
+const client = new Bot<false>({
     intents: [
         GatewayIntentBits.AutoModerationConfiguration,
         GatewayIntentBits.AutoModerationExecution,

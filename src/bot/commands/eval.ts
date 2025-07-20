@@ -12,7 +12,7 @@ import fs from 'fs';
 import os from 'os';
 import Utils from '../../utils.js';
 
-export async function run(client: Bot, message: Message<true>, args: Args) {
+export async function run(client: Bot<true>, message: Message<true>, args: Args) {
     const split = args.flags.has('split') || args.flags.has('s');
     const async = args.flags.has('async') || args.flags.has('a');
     const promises = args.flags.has('promises') || args.flags.has('p');

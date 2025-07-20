@@ -3,7 +3,7 @@ import Bot from '../Bot.js';
 import Utils from '../../utils.js';
 import { type Args } from '../events/messageCreate.js';
 
-export async function run(client: Bot, message: Message<true>, argsx: Args) {
+export async function run(client: Bot<true>, message: Message<true>, argsx: Args) {
     const args = argsx.basic.map(arg => arg.raw);
     if (!args[0]) args[0] = message.author.id; 
 

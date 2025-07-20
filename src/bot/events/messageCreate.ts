@@ -10,7 +10,7 @@ export interface Args {
     basic: lexure.Token[];
 }
 
-export async function run(client: Bot, message: Message) {
+export async function run(client: Bot<true>, message: Message) {
     if (message.author.bot) return;
     if (!message.inGuild()) return;
     if (!message.guild.members.me!.permissionsIn(message.channel).has('SendMessages')) return;

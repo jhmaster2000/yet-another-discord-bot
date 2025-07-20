@@ -42,7 +42,7 @@ const fortunes = [
     'Lies and myths.'
 ];
 
-export function run(client: Bot, message: Message<true>, args: Args) {
+export function run(client: Bot<true>, message: Message<true>, args: Args) {
     if (!args.basic.length) return message.channel.send(`🤦 You have to ask a question smooth brain.`);
     const answer = fortunes[Math.floor(Math.random() * fortunes.length)];
     return message.channel.send(`🎱 ${answer}`);

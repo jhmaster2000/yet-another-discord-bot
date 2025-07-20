@@ -2,7 +2,7 @@ import Discord, { Message } from 'discord.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export function run(client: Bot, message: Message<true>, args: Args) {
+export function run(client: Bot<true>, message: Message<true>, args: Args) {
     let rolesData: string[] = [];
     let rolesList = message.guild.roles.cache.sort((roleA, roleB) => roleB.position - roleA.position);
     rolesList.forEach(role => rolesData.push(`${role.toString()} (${role.members.size} members)`));

@@ -21,7 +21,7 @@ function killRunningSubprocesses(message: Message<true>): void {
     });
 }
 
-export function run(client: Bot, message: Message<true>, argsx: Args) {
+export function run(client: Bot<true>, message: Message<true>, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} No command given.`);
     const args = argsx.basic.map(arg => arg.raw);
     if (args[0] === '^C') return killRunningSubprocesses(message);

@@ -11,7 +11,7 @@ type QRApiResponse = {
     }[];
 }[];
 
-export function run(client: Bot, message: Message<true>, args: Args) {
+export function run(client: Bot<true>, message: Message<true>, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} First argument must be either \`create\` or \`scan\`. Check \`${client.prefixes[0]} help qr\` for reference.`);
     const argsr = args.ordered.map(arg => arg.raw + arg.trailing);
     const subcommand = argsr.shift()!.trim();

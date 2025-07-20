@@ -3,7 +3,7 @@ import figlet from 'figlet';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export function run(client: Bot, message: Message<true>, args: Args) {
+export function run(client: Bot<true>, message: Message<true>, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} You need to provide some text.`);
     const text = args.basic.map(arg => arg.raw + arg.trailing).join('');
 

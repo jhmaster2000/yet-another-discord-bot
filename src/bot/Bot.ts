@@ -2,7 +2,7 @@ import { Client, type ClientOptions, Collection, Message, EmbedBuilder, User } f
 import type Command from './Command.js';
 import { type CustomReactions } from './reactionListener.js';
 
-export default class Bot extends Client {
+export default class Bot<Ready extends boolean = boolean> extends Client<Ready> {
     constructor(options: ClientOptions) {
         super(options);
 

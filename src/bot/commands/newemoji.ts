@@ -3,7 +3,7 @@ import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export async function run(client: Bot, message: Message<true>, args: Args) {
+export async function run(client: Bot<true>, message: Message<true>, args: Args) {
     const argsr = args.basic.map(arg => arg.raw);
     
     const hasAttachment = Boolean(message.attachments.first());

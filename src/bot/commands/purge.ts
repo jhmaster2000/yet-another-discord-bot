@@ -2,7 +2,7 @@ import { Message, type PermissionsString } from 'discord.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export function run(client: Bot, message: Message<true>, argsx: Args) {
+export function run(client: Bot<true>, message: Message<true>, argsx: Args) {
     const args = argsx.ordered.map(arg => arg.value);
     const msgcount = Number(args[0]);
 

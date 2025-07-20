@@ -32,7 +32,7 @@ interface Schema {
     duration: string // Nanoseconds
 }
 
-export function run(client: Bot, message: Message<true>, args: Args) {
+export function run(client: Bot<true>, message: Message<true>, args: Args) {
     if (!args.ordered.length) return message.channel.send(`${client.em.xmark} No Minecraft server IP provided.`);
 
     const ip = args.ordered[0].value.split(':');

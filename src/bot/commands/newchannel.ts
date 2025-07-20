@@ -23,7 +23,7 @@ const TempMap = {
     4: 'Category',
 }
 
-export function run(client: Bot, message: Message<true>, args: Args) {
+export function run(client: Bot<true>, message: Message<true>, args: Args) {
     if (!args.ordered.length) return message.channel.send(`${client.em.xmark} A channel name is required!`);
     const argsv = args.ordered.map(arg => arg.raw);
 
@@ -75,7 +75,7 @@ export function run(client: Bot, message: Message<true>, args: Args) {
     }).catch(console.error);
 }
 
-function parseSlowmode(client: Bot, message: Message<true>, slowmode: string): number | undefined {
+function parseSlowmode(client: Bot<true>, message: Message<true>, slowmode: string): number | undefined {
     if (!isNaN(Number(slowmode))) {
         if (Number(slowmode) < 0 || Number(slowmode) > 21600) return void message.channel.send(`${client.em.xmark} The slowmode must be between \`0\` and \`21600\` seconds`);
         else return Number(slowmode);

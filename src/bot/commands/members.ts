@@ -3,7 +3,7 @@ import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export function run(client: Bot, message: Message<true>, args: Args) {
+export function run(client: Bot<true>, message: Message<true>, args: Args) {
     void message.guild.members.fetch();
     const pagesCount = message.guild.members.cache.size;
     let members: Discord.EmbedBuilder[] = [];

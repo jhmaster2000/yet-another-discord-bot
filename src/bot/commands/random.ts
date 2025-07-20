@@ -22,7 +22,7 @@ interface CatDogApiResponse {
     height: number,
 }
 
-export async function run(client: Bot, message: Message<true>, argsx: Args) {
+export async function run(client: Bot<true>, message: Message<true>, argsx: Args) {
     xmark ??= client.em.xmark;
     if (!argsx.basic.length) return invalidArguments(message);
     const args = argsx.basic.map(arg => arg.raw);

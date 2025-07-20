@@ -2,7 +2,7 @@ import { GuildEmoji, Message, type PermissionsString } from 'discord.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export async function run(client: Bot, message: Message<true>, argsx: Args) {
+export async function run(client: Bot<true>, message: Message<true>, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} Please provide at least **1** custom emoji to delete.`);
     let args = argsx.basic.map(arg => arg.raw);
     args = args.join(' ').replace(/<a??:(\w{2,32}):([0-9]{17,20})>/g, match => match + ' ').split(' ');

@@ -5,7 +5,7 @@ import Bot from '../Bot.js';
 import type Command from '../Command.js';
 import { type Args } from '../events/messageCreate.js';
 
-export async function run(client: Bot, message: Message<true>, argsx: Args) {
+export async function run(client: Bot<true>, message: Message<true>, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} No command to reload was given.`);
     const args = argsx.basic.map(arg => arg.value);
 

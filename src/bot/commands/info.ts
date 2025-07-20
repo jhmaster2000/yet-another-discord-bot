@@ -4,7 +4,7 @@ import os from 'os';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export function run(client: Bot, message: Message<true>, args: Args) {
+export function run(client: Bot<true>, message: Message<true>, args: Args) {
     const memory = `${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(1)}/${(os.totalmem() / 1024 / 1024).toFixed(1)} MB`;
     const gitHash = process.env.GIT_HASH || process.env.VERSION_TIMESTAMP;
     const versionHash = crypto.createHash('shake256', { outputLength: 4 }).update(gitHash!).digest('hex').toUpperCase();
@@ -28,7 +28,7 @@ export function run(client: Bot, message: Message<true>, args: Args) {
         const infoEmbed = new Discord.EmbedBuilder()
             .setColor(0x27D11A)
             .setTimestamp()
-            .setAuthor({ name: 'Bot Information', iconURL: client.user!.displayAvatarURL({ extension: 'png' }) })
+            .setAuthor({ name: 'Bot Information', iconURL: client.user.displayAvatarURL({ extension: 'png' }) })
             .setFooter({ text: `Developed by ${client.owner.tag}` })
             .setTimestamp()
             .addFields(

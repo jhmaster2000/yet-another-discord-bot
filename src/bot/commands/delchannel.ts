@@ -3,7 +3,7 @@ import Utils from '../../utils.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export async function run(client: Bot, message: Message<true>, args: Args) {
+export async function run(client: Bot<true>, message: Message<true>, args: Args) {
     if (!args.basic.length) return message.channel.send(`${client.em.xmark} Please provide a mention or ID of at least one channel.`);
 
     const argsr = args.ordered.map(arg => arg.raw);

@@ -58,7 +58,7 @@ interface DuckDuckGoResponse {
     Results: Result[];
 }
 
-export async function run(client: Bot, message: Message<true>, argsx: Args) {
+export async function run(client: Bot<true>, message: Message<true>, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} You must provide something to search!`);
     const args = argsx.basic.map(arg => arg.raw);
 

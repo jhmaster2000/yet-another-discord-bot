@@ -3,7 +3,7 @@ import { Message } from 'discord.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
-export function run(client: Bot, message: Message<true>, args: Args) {
+export function run(client: Bot<true>, message: Message<true>, args: Args) {
     void message.channel.send(`${client.em.loadingfast} Restarting...`).then(msg => {
         try {
             const newInstance = spawn('npm', ['start'], {

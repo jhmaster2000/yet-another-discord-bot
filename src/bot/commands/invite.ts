@@ -10,7 +10,7 @@ const cdn = {
     splash: (guild: string, id: string) => `${cdnurl}splashes/${guild}/${id}.png?size=4096`,
 };
 
-export async function run(client: Bot, message: Message<true>, argsx: Args) {
+export async function run(client: Bot<true>, message: Message<true>, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} No Discord invite provided.`);
     const args = argsx.basic.map(arg => arg.raw);
     const code = args[0];

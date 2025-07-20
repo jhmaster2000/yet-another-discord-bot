@@ -22,7 +22,7 @@ export default function loadEvents(client: Bot): void {
             }
             client.on(eventName, (...args: unknown[]) => {
                 try {
-                    event.run(client, ...args);
+                    event.run(client as Bot<true>, ...args);
                 } catch (err) {
                     console.error(
                         `[EVENT_HANDLER] An error occured while running the event: "${eventName}"\n` +
