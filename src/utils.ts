@@ -16,7 +16,7 @@ export default class Utils {
         if (parsed === null) return false;
 
         const isHTTP = parsed.protocol === 'http:' || parsed.protocol === 'https:';
-        const isImage = /\.(a?png|jpe?g|gif|webp|avif)$/i.test(parsed.pathname);
+        const isImage = /\.(a?png|jpe?g|gif|webp)$/i.test(parsed.pathname);
         return isHTTP && isImage;
     }
 
