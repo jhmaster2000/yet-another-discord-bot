@@ -5,7 +5,7 @@ import { type Args } from '../events/messageCreate.js';
 
 interface MOTDObject {
     text: string;
-    extra?: MOTDObject[];
+    extra?: string | MOTDObject[];
     bold?: true;
     italic?: true;
     strikethrough?: true;
@@ -32,7 +32,7 @@ interface Schema {
     duration: string // Nanoseconds
 }
 
-export function run(client: Bot<true>, message: Message<true>, args: Args) {
+export async function run(client: Bot<true>, message: Message<true>, args: Args) {
     if (!args.ordered.length) return message.channel.send(`${client.em.xmark} No Minecraft server IP provided.`);
 
     const ip = args.ordered[0].value.split(':');
@@ -73,9 +73,16 @@ export function run(client: Bot<true>, message: Message<true>, args: Args) {
     });
 }
 
-function parseEntry(e: MOTDObject): string {
+// TODO: Could actually make colored text now with ANSI codeblocks.
+function parseEntry(e: string | MOTDObject): string {
+    if (typeof e === 'string') return e;
+    if (!e.text) return '';
+
     let text = e.text;
-    if (e.extra) text += e.extra.map(parseEntry).join('');
+    if (e.extra) {
+        if (typeof e.extra === 'string') text += e.extra;
+        else text += e.extra.map(parseEntry).join('');
+    }
     if (e.bold && e.italic) text = `***${text}***\u200B`;
     if (e.bold && !e.italic) text = `**${text}**\u200B`;
     if (e.italic && !e.bold) text = `*${text}*\u200B`;
@@ -89,7 +96,8 @@ function parseMOTD(motdjson: string | MOTDObject, motd: string) {
     if (typeof motdjson === 'string') return removeColorCodes(motdjson || motd || 'A Minecraft Server');
     if (!Object.keys(motdjson).length) return removeColorCodes(motd || 'A Minecraft Server');
     if (!motdjson.extra) return removeColorCodes(motdjson.text || motd || 'A Minecraft Server');
-    return motdjson.text + motdjson.extra.map(parseEntry).join('');
+    const extra = typeof motdjson.extra === 'string' ? motdjson.extra : motdjson.extra.map(parseEntry).join('');
+    return motdjson.text + extra;
 }
 
 function removeColorCodes(str: string): string {
