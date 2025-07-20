@@ -6,7 +6,7 @@ import { checkPermissions } from '../permissionsHandler.js';
 
 export function run(client: Bot<true>, message: Message<true>, args: Args) {
     const commands = client.commands;
-    const command = args.ordered.length ? args.ordered[0].value : null;
+    const command = args.ordered.length ? args.ordered[0].value.toLowerCase() : null;
     const helpEmbed = new Discord.EmbedBuilder();
 
     if (!command) {
