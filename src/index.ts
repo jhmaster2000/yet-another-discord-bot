@@ -24,5 +24,4 @@ console.info(
     `Logging level: ${process.env.LOGLEVEL} | Stacktrace limit: ${Error.stackTraceLimit}`
 );
 
-import('./utils.js');
 import('./bot/core.js');
