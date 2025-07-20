@@ -11,6 +11,15 @@ export interface ExtendedEscapeMarkdownOptions extends EscapeMarkdownOptions {
 }
 
 export default class Utils {
+    static isValidImageUrl(url: string): boolean {
+        const parsed = URL.parse(url);
+        if (parsed === null) return false;
+
+        const isHTTP = parsed.protocol === 'http:' || parsed.protocol === 'https:';
+        const isImage = /\.(a?png|jpe?g|gif|webp|avif)$/i.test(parsed.pathname);
+        return isHTTP && isImage;
+    }
+
     static escapeRegex(str: string): string {
         return str.replace(/([.?*+^$[\]\\(){}|-])/g, '\\$1');
     }

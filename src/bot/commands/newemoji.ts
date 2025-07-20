@@ -11,8 +11,9 @@ export async function run(client: Bot<true>, message: Message<true>, args: Args)
     
     const name = argsr[0];
     const image = hasAttachment ? message.attachments.first()!.url : argsr[1];
+    const isImageUrlValid = Utils.isValidImageUrl(image);
     if (!name) return message.channel.send(`${client.em.xmark} Please provide a name for the emoji.`);
-    if (!image) return message.channel.send(`${client.em.xmark} Please provide an image link to be the emoji.`);
+    if (!image || !isImageUrlValid) return message.channel.send(`${client.em.xmark} Please provide a valid image link to be the emoji.`);
     if (!name.match(/^\w{2,32}$/i)) return message.channel.send(`${client.em.xmark} Emoji name must be between \`2\` and \`32\` characters long and **only contain letters, numbers or underscores**.`);
 
     let rolesInfo = '';
