@@ -26,7 +26,9 @@ export async function run(client: Bot<true>, message: Message<true>, argsx: Args
     xmark ??= client.em.xmark;
     if (!argsx.basic.length) return invalidArguments(message);
     const args = argsx.basic.map(arg => arg.raw);
-    if (items.includes(<Items>args[0].toLowerCase())) return Random[args[0] as Items](message);
+    const selected = args[0]?.toLowerCase() as Items | undefined;
+    if (!selected) return invalidArguments(message);
+    if (items.includes(selected)) return Random[selected](message);
     else return invalidArguments(message);
 }
 function invalidArguments(message: Message<true>) {
