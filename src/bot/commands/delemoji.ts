@@ -2,6 +2,8 @@ import { GuildEmoji, Message, type PermissionsString } from 'discord.js';
 import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
+// TODO(1): If the same emoji is mentioned multiple times, it should only be displayed in the prompt and deleted once.
+// TODO(2): Essentially, duplicate emojis should be ignored. This may also be an issue with other delete commands.
 export async function run(client: Bot<true>, message: Message<true>, argsx: Args) {
     if (!argsx.basic.length) return message.channel.send(`${client.em.xmark} Please provide at least **1** custom emoji to delete.`);
     let args = argsx.basic.map(arg => arg.raw);
