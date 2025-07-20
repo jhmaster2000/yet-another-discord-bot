@@ -6,11 +6,11 @@ import { type Args } from '../events/messageCreate.js';
 export function run(client: Bot<true>, message: Message<true>, args: Args) {
     void message.channel.send(`${client.em.loadingfast} Restarting...`).then(msg => {
         try {
-            const newInstance = spawn('npm', ['start'], {
+            const newInstance = spawn('npm start', {
                 cwd: process.env.workdir,
                 detached: true,
                 stdio: 'ignore',
-                shell: true
+                shell: true,
             });
             newInstance.unref();
             console.warn(`[RESTART_SUCCESS] Successfully spawned new instance and self-terminated.`);
