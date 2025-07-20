@@ -5,11 +5,25 @@ import Bot from '../Bot.js';
 import { type Args } from '../events/messageCreate.js';
 
 type Definitions = {
+    // These are missing in the case of no definitions, otherwise present
     text?: string;
-    partOfSpeech: string;
-    word: string;
-    attributionText: string;
-    wordnikUrl: string;
+    partOfSpeech?: string;
+    word?: string;
+    attributionText?: string;
+    attributionUrl?: string; // not used
+    sourceDictionary?: string; // not used
+    wordnikUrl?: string;
+    // Only present in some definitions, unused
+    id?: string;
+    sequence?: string;
+    score?: number;
+    // These are always present, even in the case of no definitions, but empty
+    citations: unknown[];
+    exampleUses: unknown[];
+    labels: object[];
+    notes: unknown[];
+    relatedWords: object[];
+    textProns: unknown[];
 }[];
 
 export async function run(client: Bot<true>, message: Message<true>, argsx: Args) {
@@ -18,12 +32,17 @@ export async function run(client: Bot<true>, message: Message<true>, argsx: Args
 
     const query = args.join(' ');
     const response = await got.get(`https://duckduckgo.com/js/spice/dictionary/definition/${encodeURIComponent(query)}`);
-    if (response.body.trim() === 'ddg_spice_dictionary_definition();')
-        return message.channel.send(`${client.em.xmark} No definition found for \`${query}\`.`);
-    const body = JSON.parse(response.body.slice(32, -3).trim()) as Definitions;
+
+    // The response body is a JSONP callback, we need to extract the JSON part
+    const body = JSON.parse(response.body.trim().slice(32, -2)) as Definitions;
     const mainDef = body[0];
+    // No, DDG doesn't return a 404, it just returns 200 with an array of empty definitions...
+    if (!mainDef || !mainDef.text || !mainDef.word || !mainDef.wordnikUrl || !mainDef.attributionText) {
+        return message.channel.send(`${client.em.xmark} No definition found for \`${query}\`.`);
+    }
+
     let definitions: string[] = [];
-    body.forEach((def: { text?: string; partOfSpeech: string; }) => {
+    body.forEach((def: { text?: string; partOfSpeech?: string; }) => {
         if (!def.text) return;
         def.text = striptags(def.text, { disallowedTags: new Set(['strong']), tagReplacementText: '**' });
         def.text = striptags(def.text, { disallowedTags: new Set(['em', 'i']), tagReplacementText: '*' });
