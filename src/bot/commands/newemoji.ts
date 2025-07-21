@@ -46,7 +46,6 @@ export async function run(client: Bot<true>, message: Message<true>, args: Args)
         return await message.channel.send(`${client.em.check} Successfully created emoji \`\`:${name}:\`\` ${emoji.toString()} ${rolesInfo}`);
     } catch (e: unknown) {
         const error = e as DiscordAPIError;
-        console.error(error);
         if (error.code === 30008)
             return message.channel.send(`${client.em.xmark} This server has reached the maximum number of emojis.`);
         if (error.code === 50035) {
@@ -63,6 +62,8 @@ export async function run(client: Bot<true>, message: Message<true>, args: Args)
         }
         if (<string><unknown>error.code === 'ENOENT' || <string><unknown>error.code === 'ENOTFOUND')
             return message.channel.send(`${client.em.xmark} The given link is not a valid URL.`);
+
+        console.error(error);
         return await message.channel.send(`${client.em.xmark} An unexpected error has occured (fallback B): ${error.message}`);
     }
 }
