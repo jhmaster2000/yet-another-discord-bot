@@ -8,6 +8,7 @@ export default function loadCustomEmojis(client: Bot) {
         xmark: '<:xmark:819709577451798589>',
         check: '<:check:819708497083629578>',
         critical: '<a:critical:831968070788055101>',
+        loadingslow: '<a:loadingslow:766093298363400242>',
         loadingfast: '<a:loadingfast:766093693823877151>',
         online: '<:online:819698342690291752>',
         offline: '<:offline:819698482415140874>',
